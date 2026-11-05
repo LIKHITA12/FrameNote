@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AI Note Assistant — FrameNote</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600&amp;family=Manrope:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              DEFAULT: "#4f46e5",
+              hover: "#4338ca",
+              light: "#eef2ff",
+              dark: "#3730a3",
+            },
+            surface: "#f8faff",
+          },
+          fontFamily: {
+            sans: ['"Inter"', 'sans-serif'],
+            display: ['"Manrope"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          boxShadow: {
+            'modal': '0 25px 70px -15px rgba(79, 70, 229, 0.16), 0 16px 36px -10px rgba(15, 23, 42, 0.08), 0 0 1px 1px rgba(99, 102, 241, 0.08)',
+            'card-glow': '0 10px 25px -5px rgba(79, 70, 229, 0.18)',
+            'subtle': '0 1px 3px 0 rgba(0, 0, 0, 0.05)',
+          },
+          keyframes: {
+            shimmer: {
+              '0%': { transform: 'translateX(-100%)' },
+              '100%': { transform: 'translateX(200%)' }
+            },
+            wave: {
+              '0%, 100%': { height: '8px' },
+              '50%': { height: '18px' },
+            },
+            sparkleRotate: {
+              '0%': { transform: 'rotate(0deg) scale(1)' },
+              '50%': { transform: 'rotate(180deg) scale(1.15)' },
+              '100%': { transform: 'rotate(360deg) scale(1)' }
+            }
+          },
+          animation: {
+            shimmer: 'shimmer 2.2s infinite linear',
+            wave1: 'wave 1.1s ease-in-out infinite',
+            wave2: 'wave 1.1s ease-in-out infinite 0.2s',
+            wave3: 'wave 1.1s ease-in-out infinite 0.4s',
+            sparkle: 'sparkleRotate 6s ease-in-out infinite',
+          }
+        },
+      },
+    };
+</script>
+<style>
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+  }
+  .material-symbols-outlined.fill {
+    font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24;
+  }
+</style>
+</head>
+<body class="bg-gradient-to-br from-[#eff3fc] via-[#f7f9ff] to-[#e8edfc] dark:from-[#0b101d] dark:via-[#0f172a] dark:to-[#080d19] min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8 font-sans antialiased text-slate-800 dark:text-slate-100 transition-colors duration-200">
+<!-- Dark/Light Mode Switcher -->
+<button aria-label="Toggle Theme" class="fixed top-5 right-5 p-2.5 rounded-full bg-white/90 dark:bg-slate-800/90 backdrop-blur border border-slate-200 dark:border-slate-700 shadow-sm text-slate-600 dark:text-slate-300 hover:scale-105 active:scale-95 transition-all z-50 cursor-pointer" onclick="document.documentElement.classList.toggle('dark')">
+<span class="material-symbols-outlined block dark:hidden text-[20px]">dark_mode</span>
+<span class="material-symbols-outlined hidden dark:block text-[20px]">light_mode</span>
+</button>
+<!-- Main Modal Card -->
+<div class="w-full max-w-[940px] bg-white dark:bg-slate-900 rounded-[28px] p-6 sm:p-8 lg:p-9 border border-indigo-100/80 dark:border-slate-800 shadow-modal relative overflow-hidden backdrop-blur-xl transition-all">
+<!-- Ambient background glow elements -->
+<div class="pointer-events-none absolute -top-24 -right-24 w-80 h-80 bg-indigo-500/10 dark:bg-indigo-500/15 rounded-full blur-3xl"></div>
+<div class="pointer-events-none absolute -bottom-24 -left-24 w-80 h-80 bg-purple-500/10 dark:bg-purple-500/15 rounded-full blur-3xl"></div>
+<!-- Header Section -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 relative">
+<div class="flex items-start gap-3.5">
+<div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white flex items-center justify-center shadow-md shadow-indigo-500/25 shrink-0">
+<span class="material-symbols-outlined text-[26px] animate-sparkle">auto_awesome</span>
+</div>
+<div>
+<div class="flex flex-wrap items-center gap-2.5">
+<h1 class="text-xl sm:text-[23px] font-extrabold font-display tracking-tight text-slate-900 dark:text-white">
+            Turning your video into actionable notes
+          </h1>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold tracking-wide bg-indigo-50 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-800/60 shadow-xs">
+<span class="w-2 h-2 rounded-full bg-indigo-600 dark:bg-indigo-400 animate-ping"></span>
+<span>In Progress • ~18s left</span>
+</span>
+</div>
+<p class="text-xs sm:text-[13px] text-slate-500 dark:text-slate-400 mt-1 font-medium leading-relaxed">
+          FrameNote AI is indexing key decisions, speakers, and summary takeaways for your team.
+        </p>
+</div>
+</div>
+<div class="flex items-center gap-2.5 self-end sm:self-center shrink-0">
+<button class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-[13px] font-semibold text-slate-700 dark:text-slate-200 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800/80 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 shadow-subtle transition-all hover:scale-[1.02] active:scale-[0.98]">
+<span class="material-symbols-outlined text-[17px] text-indigo-600 dark:text-indigo-400">notifications_active</span>
+<span>Notify when ready</span>
+</button>
+<button class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-[13px] font-semibold text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+<span class="material-symbols-outlined text-[17px]">collapse_content</span>
+<span class="hidden sm:inline">Minimize</span>
+</button>
+<button aria-label="Close" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+</div>
+<!-- Video Card with Progress Bar -->
+<div class="bg-gradient-to-r from-indigo-50/70 via-white to-indigo-50/40 dark:from-slate-800/60 dark:via-slate-800/30 dark:to-slate-800/50 border border-indigo-100/90 dark:border-slate-700/60 rounded-2xl p-4 sm:p-5 mb-6 shadow-sm">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="flex items-center gap-3.5">
+<div class="relative w-16 h-12 rounded-xl overflow-hidden bg-slate-900 shrink-0 border border-slate-700/40 flex items-center justify-center shadow-sm group">
+<img alt="Video preview thumbnail" class="w-full h-full object-cover opacity-75 group-hover:scale-105 transition-transform duration-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDH_bTXT1Aj5vjxgBa45PACaVjm38iZYbxfAnyINFjsI0zH_BXKQTE86fRbE-DaOVS3TDMgliLdyWXPx02lzVqGiwfo-JK_D0UBZSlSfe8ptm4LpYbF35Rmp7Ut06Yr0o9dKtuuTBAnH9KsYYcFTqF4xONjhbzI9a5VmVt-zQT2MZB4B3IVhPdMijrDpdudunqsv9TimOyhEAFcT0DtVLuyqcpDnj7nv77GHQSE2XW96E536qDF0veh5Q"/>
+<div class="absolute inset-0 bg-slate-950/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[20px] drop-shadow">play_circle</span>
+</div>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<h2 class="font-bold text-sm sm:text-[15px] text-slate-900 dark:text-slate-100 font-display tracking-tight">
+              Q3 Product Strategy All-Hands
+            </h2>
+<span class="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-indigo-100/80 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300">
+              48 mins
+            </span>
+</div>
+<div class="text-[12px] text-slate-500 dark:text-slate-400 font-medium flex items-center gap-2 mt-0.5">
+<span>Video file processed</span>
+<span>•</span>
+<span class="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>
+              High Definition
+            </span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-6 sm:gap-8 self-end md:self-auto pl-2">
+<div>
+<div class="text-[10px] uppercase tracking-wider font-semibold text-slate-400 dark:text-slate-500">
+            Speed
+          </div>
+<div class="text-xs sm:text-[13px] font-bold text-slate-800 dark:text-slate-200 font-mono">
+            14.2× Superfast
+          </div>
+</div>
+<div class="text-right">
+<div class="text-[10px] uppercase tracking-wider font-semibold text-slate-400 dark:text-slate-500">
+            Total Progress
+          </div>
+<div class="text-sm font-extrabold text-indigo-600 dark:text-indigo-400 font-mono">
+            74%
+          </div>
+</div>
+</div>
+</div>
+<!-- Progress Bar with subtle Shimmer -->
+<div class="mt-4 pt-1">
+<div class="w-full bg-slate-200/80 dark:bg-slate-700/60 rounded-full h-2.5 overflow-hidden relative">
+<div class="bg-gradient-to-r from-indigo-500 to-primary h-full rounded-full transition-all duration-500 ease-out relative overflow-hidden" style="width: 74%;">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/35 to-transparent animate-shimmer"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- 4 Step Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 mb-6">
+<!-- Step 1: Completed -->
+<div class="rounded-2xl p-4 bg-emerald-50/40 dark:bg-emerald-950/20 border border-emerald-200/70 dark:border-emerald-800/40 flex flex-col justify-between transition-all hover:shadow-sm">
+<div>
+<div class="flex items-center justify-between mb-3">
+<div class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">graphic_eq</span>
+</div>
+<div class="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-xs">
+<span class="material-symbols-outlined text-[13px] font-bold">check</span>
+</div>
+</div>
+<div class="text-xs font-bold text-slate-900 dark:text-slate-100 font-display">
+          1. Audio Extracted
+        </div>
+<p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-snug">
+          Full speech captured cleanly &amp; normalized.
+        </p>
+</div>
+<div class="mt-3 pt-2 border-t border-emerald-100 dark:border-emerald-900/30 flex items-center gap-1.5 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+<span>Ready</span>
+</div>
+</div>
+<!-- Step 2: Completed -->
+<div class="rounded-2xl p-4 bg-emerald-50/40 dark:bg-emerald-950/20 border border-emerald-200/70 dark:border-emerald-800/40 flex flex-col justify-between transition-all hover:shadow-sm">
+<div>
+<div class="flex items-center justify-between mb-3">
+<div class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">record_voice_over</span>
+</div>
+<div class="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-xs">
+<span class="material-symbols-outlined text-[13px] font-bold">check</span>
+</div>
+</div>
+<div class="text-xs font-bold text-slate-900 dark:text-slate-100 font-display">
+          2. Transcribed
+        </div>
+<p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-snug">
+          8,400+ words recognized with speaker detection.
+        </p>
+</div>
+<div class="mt-3 pt-2 border-t border-emerald-100 dark:border-emerald-900/30 flex items-center gap-1.5 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+<span>Ready</span>
+</div>
+</div>
+<!-- Step 3: Active In-Progress -->
+<div class="rounded-2xl p-4 bg-gradient-to-b from-indigo-50/80 to-white dark:from-slate-800/90 dark:to-slate-800/40 border-2 border-primary shadow-card-glow flex flex-col justify-between relative overflow-hidden transition-all">
+<div class="absolute -top-1 -right-1 w-8 h-8 bg-primary flex items-center justify-center rounded-bl-xl text-white shadow-sm">
+<span class="material-symbols-outlined text-[15px] animate-spin" style="animation-duration: 3s;">sync</span>
+</div>
+<div>
+<div class="flex items-center justify-between mb-3">
+<div class="w-8 h-8 rounded-xl bg-indigo-100 dark:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px] animate-pulse">psychology</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-600"></span>
+</span>
+<span class="text-xs font-bold text-indigo-700 dark:text-indigo-300 font-display">
+            3. AI Summarizing
+          </span>
+</div>
+<p class="text-[11px] text-slate-600 dark:text-slate-300 mt-1 leading-snug">
+          Distilling executive summary &amp; action items...
+        </p>
+</div>
+<div class="mt-3 pt-2 border-t border-indigo-100 dark:border-slate-700 flex items-center justify-between text-[11px]">
+<span class="font-semibold text-indigo-600 dark:text-indigo-400">Synthesizing...</span>
+<span class="text-indigo-600 dark:text-indigo-400 font-mono font-bold text-[10px]">Step 3/4</span>
+</div>
+</div>
+<!-- Step 4: Up Next -->
+<div class="rounded-2xl p-4 bg-slate-50/70 dark:bg-slate-800/30 border border-slate-200/80 dark:border-slate-800 flex flex-col justify-between opacity-80 transition-all">
+<div>
+<div class="flex items-center justify-between mb-3">
+<div class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">article</span>
+</div>
+<div class="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 flex items-center justify-center text-[10px] font-bold">
+            4
+          </div>
+</div>
+<div class="text-xs font-semibold text-slate-700 dark:text-slate-300 font-display">
+          4. Generate Report
+        </div>
+<p class="text-[11px] text-slate-400 dark:text-slate-500 mt-1 leading-snug">
+          Ready as PDF, Notion page &amp; Slack recap.
+        </p>
+</div>
+<div class="mt-3 pt-2 border-t border-slate-200/60 dark:border-slate-800 flex items-center gap-1.5 text-[11px] text-slate-400 font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600"></span>
+<span>Up next</span>
+</div>
+</div>
+</div>
+<!-- Executive Live Preview of Discovered Insights -->
+<div class="bg-gradient-to-b from-indigo-50/40 via-white/40 to-indigo-50/20 dark:from-slate-900/80 dark:via-slate-900/50 dark:to-slate-950/60 border border-indigo-100/90 dark:border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xs">
+<div class="flex items-center justify-between pb-3.5 mb-3.5 border-b border-indigo-100/60 dark:border-slate-800">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-lg bg-indigo-100 dark:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+<span class="material-symbols-outlined text-[15px]">tips_and_updates</span>
+</div>
+<span class="font-bold text-xs sm:text-sm text-slate-900 dark:text-slate-100 font-display tracking-tight">
+          Live Preview of Discovered Insights
+        </span>
+</div>
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200/70 dark:border-emerald-800/40 shadow-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+<span>Live Stream</span>
+</span>
+</div>
+</div>
+<!-- Friendly Insight Cards -->
+<div class="space-y-2.5">
+<!-- Item 1: Speaker -->
+<div class="flex items-start gap-3 p-2.5 sm:p-3 rounded-xl bg-white dark:bg-slate-800/60 border border-indigo-50 dark:border-slate-700/60 shadow-xs transition-all hover:border-indigo-200 dark:hover:border-slate-600">
+<div class="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[16px]">person</span>
+</div>
+<div class="text-xs sm:text-[13px] leading-relaxed">
+<span class="font-semibold text-slate-900 dark:text-slate-100">Speaker Detected:</span>
+<span class="text-slate-600 dark:text-slate-300 ml-1">Elena Rostova (VP of Product)</span>
+<span class="text-indigo-600 dark:text-indigo-400 font-medium ml-1.5">— 3 key product roadmap proposals identified</span>
+</div>
+</div>
+<!-- Item 2: Key Decision -->
+<div class="flex items-start gap-3 p-2.5 sm:p-3 rounded-xl bg-white dark:bg-slate-800/60 border border-indigo-50 dark:border-slate-700/60 shadow-xs transition-all hover:border-indigo-200 dark:hover:border-slate-600">
+<div class="w-7 h-7 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+</div>
+<div class="text-xs sm:text-[13px] leading-relaxed">
+<span class="font-semibold text-slate-900 dark:text-slate-100">Key Decision:</span>
+<span class="text-slate-600 dark:text-slate-300 ml-1">Strategic Focus prioritized</span>
+<span class="font-medium text-slate-800 dark:text-slate-200 ml-1">“Q4 Vector Search &amp; Realtime Indexing”</span>
+</div>
+</div>
+<!-- Item 3: Action Item / Generating -->
+<div class="flex items-start gap-3 p-2.5 sm:p-3 rounded-xl bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/40 shadow-xs transition-all">
+<div class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[16px]">task_alt</span>
+</div>
+<div class="text-xs sm:text-[13px] leading-relaxed flex-1">
+<div class="flex items-center gap-2">
+<span class="font-semibold text-indigo-900 dark:text-indigo-200">Action Items Extracted:</span>
+<span class="inline-flex items-center gap-1 text-[11px] font-semibold text-indigo-600 dark:text-indigo-300">
+<span class="w-1.5 h-1.5 rounded-full bg-indigo-600 dark:bg-indigo-400 animate-pulse"></span>
+              Generating
+            </span>
+</div>
+<span class="text-indigo-700 dark:text-indigo-300 font-medium">Assigned 8 key deliverables with deadlines to respective engineering leads.</span>
+</div>
+</div>
+</div>
+<!-- Helpful Footnote / Tooltip Explainer -->
+<div class="mt-3.5 pt-3 border-t border-indigo-100/60 dark:border-slate-800 flex items-start gap-2 text-[11px] text-slate-500 dark:text-slate-400 leading-normal">
+<span class="material-symbols-outlined text-[15px] text-indigo-500 shrink-0 mt-0.5">info</span>
+<span>
+<strong class="font-semibold text-slate-700 dark:text-slate-300">Why live insights?</strong> While processing, our AI captures key decisions and speaker takeaways in real time so you never have to wait for the complete download to see what was discussed.
+      </span>
+</div>
+</div>
+<!-- Footer Actions -->
+<div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+<span>Safe &amp; private: Encrypted end-to-end processing</span>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-4 py-2 rounded-xl text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-slate-800 transition-colors">
+        Cancel Process
+      </button>
+<button class="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-primary hover:bg-primary-hover shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98]">
+        Run in Background
+      </button>
+</div>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,389 @@
+<!DOCTYPE html><html lang="en" style=""><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config={theme:{extend:{"colors":{"on-primary":"#ffffff","inverse-primary":"#c3c0ff","surface-variant":"#d3e4fe","surface":"#f8f9ff","surface-container-highest":"#d3e4fe","outline":"#777587","surface-container-low":"#eff4ff","on-secondary-fixed-variant":"#3f465c","on-surface-variant":"#464555","primary-fixed-dim":"#c3c0ff","on-tertiary":"#ffffff","on-error-container":"#93000a","on-secondary-fixed":"#131b2e","on-surface":"#0b1c30","secondary-fixed-dim":"#bec6e0","primary-fixed":"#e2dfff","background":"#f8f9ff","surface-tint":"#4d44e3","on-primary-fixed-variant":"#3323cc","inverse-on-surface":"#eaf1ff","on-primary-fixed":"#0f0069","primary-container":"#4f46e5","tertiary-fixed-dim":"#c4c7c9","surface-dim":"#cbdbf5","on-secondary-container":"#5c647a","on-secondary":"#ffffff","tertiary-container":"#5e6163","on-tertiary-fixed-variant":"#444749","on-tertiary-fixed":"#191c1e","secondary-container":"#dae2fd","inverse-surface":"#213145","surface-bright":"#f8f9ff","tertiary":"#46494b","on-primary-container":"#dad7ff","secondary-fixed":"#dae2fd","secondary":"#565e74","outline-variant":"#c7c4d8","on-error":"#ffffff","error-container":"#ffdad6","surface-container":"#e5eeff","primary":"#4f46e5","on-background":"#0b1c30","on-tertiary-container":"#dadcde","tertiary-fixed":"#e0e3e5","surface-container-lowest":"#ffffff","error":"#ba1a1a","surface-container-high":"#dce9ff"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"container-max":"1280px","gutter":"24px","xs":"8px","sm":"16px","md":"24px","base":"4px","xl":"64px","lg":"40px"},"fontFamily":{"headline-md":["Manrope","sans-serif"],"label-caps":["JetBrains Mono","monospace"],"display-lg":["Manrope","sans-serif"],"body-sm":["Inter","sans-serif"],"headline-lg":["Manrope","sans-serif"],"body-md":["Inter","sans-serif"],"headline-lg-mobile":["Manrope","sans-serif"],"body-lg":["Inter","sans-serif"],"button":["Inter","sans-serif"]},"fontSize":{"headline-md":["24px",{"lineHeight":"32px","fontWeight":"600"}],"label-caps":["12px",{"lineHeight":"16px","letterSpacing":"0.05em","fontWeight":"600"}],"display-lg":["48px",{"lineHeight":"56px","letterSpacing":"-0.02em","fontWeight":"800"}],"body-sm":["14px",{"lineHeight":"20px","fontWeight":"400"}],"headline-lg":["32px",{"lineHeight":"40px","letterSpacing":"-0.01em","fontWeight":"700"}],"body-md":["16px",{"lineHeight":"24px","fontWeight":"400"}],"headline-lg-mobile":["24px",{"lineHeight":"32px","fontWeight":"700"}],"body-lg":["18px",{"lineHeight":"28px","fontWeight":"400"}],"button":["14px",{"lineHeight":"20px","fontWeight":"600"}]}}}}</script><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=JetBrains+Mono:wght@100..900&amp;family=Manrope:wght@100..900&amp;display=swap" rel="stylesheet"><style class="">@keyframes pulse-ring{0%{transform:scale(0.95);box-shadow:0 0 0 0 rgba(79,70,229,0.5);}70%{transform:scale(1.05);box-shadow:0 0 0 16px rgba(79,70,229,0);}100%{transform:scale(0.95);box-shadow:0 0 0 0 rgba(79,70,229,0);}}@keyframes progress-shimmer{0%{background-position:-200% 0;}100%{background-position:200% 0;}}@keyframes shimmer-sweep{0%{transform:translateX(-100%);}100%{transform:translateX(100%);}}@keyframes subtle-float{0%,100%{transform:translateY(0px) rotate(0deg);}50%{transform:translateY(-8px) rotate(0.5deg);}}.anim-pulse-ring{animation:pulse-ring 2.8s cubic-bezier(0.4,0,0.6,1) infinite;}.anim-shimmer{position:relative;overflow:hidden;}.anim-shimmer::after{content:'';position:absolute;top:0;right:0;bottom:0;left:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);animation:shimmer-sweep 2s infinite;}.anim-float-smooth{animation:subtle-float 4.5s ease-in-out infinite;}.anim-progress-glow{background-size:200% 100%;background-image:linear-gradient(90deg,#4f46e5 0%,#818cf8 50%,#4f46e5 100%);animation:progress-shimmer 2.5s linear infinite;}</style><style>@keyframes scanline{0%{top:0%;opacity:0;}20%{opacity:0.8;}80%{opacity:0.8;}100%{top:100%;opacity:0;}}@keyframes aura-pulse{0%,100%{opacity:0.35;transform:scale(1);}50%{opacity:0.65;transform:scale(1.02);}}@keyframes synthesize-dots{0%,20%{content:'.';}40%{content:'..';}60%,100%{content:'...';}}@keyframes live-ping{0%{transform:scale(1);opacity:0.9;}75%,100%{transform:scale(2);opacity:0;}}.anim-scanline{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(99,102,241,0.9),rgba(168,85,247,0.9),transparent);box-shadow:0 0 12px 2px rgba(99,102,241,0.6);animation:scanline 3.2s cubic-bezier(0.4,0,0.2,1) infinite;pointer-events:none;z-index:15;}.anim-aura{animation:aura-pulse 4s ease-in-out infinite;pointer-events:none;}@media (prefers-reduced-motion: reduce){.anim-scanline,.anim-aura,.anim-pulse-ring,.anim-float-smooth{animation:none !important;}}</style></head><body class="bg-background font-body-md text-on-background"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-low z-50 flex flex-col pt-sm border-r border-outline-variant/30 transition-all duration-300"><div class="px-md mb-lg flex items-center gap-xs"><img alt="FrameNote Logo" class="h-9 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1U73IVFxm8GehfqP1ozgc1vijE6KZ2ZyrCyDoioO0QWXL7MJEXmE3vpsvVAgpDKQLOjTT-rKE5bN-kC7r2mSw18UQ9cc8M9wyM9w3la7VghgoYrhwGZ1CM1v1uXcbBscMeKjsarVfj98e1zfRPgLrOBm-ohy9nVxLkVyGBJuFZnwootLBMzNWziJCSRcIyvXhdDQW1-vj36nGSCpZnCGUal7_sAEmHvQEJfBtQF-D_8mKF3xPUHayohKzhP"></div><nav class="flex-1 px-sm space-y-base" data-active-classes="bg-primary-container text-on-primary-container font-button rounded-xl"><a aria-current="page" class="flex items-center px-sm py-sm transition-all bg-primary-container text-on-primary-container font-button rounded-xl shadow-sm" data-path="dashboard" href="#"><span class="material-symbols-outlined mr-sm">grid_view</span>Dashboard</a><a class="flex items-center px-sm py-sm text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all rounded-xl" data-path="history" href="#"><span class="material-symbols-outlined mr-sm">history</span>History</a><div class="h-px bg-outline-variant/20 my-md mx-sm"></div><p class="px-sm py-xs font-label-caps text-label-caps text-on-surface-variant opacity-60 uppercase">Organization</p><a class="flex items-center px-sm py-sm text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all rounded-xl" data-path="workspace" href="#"><span class="material-symbols-outlined mr-sm">workspaces</span>Workspace</a><a class="flex items-center px-sm py-sm text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all rounded-xl" data-path="team" href="#"><span class="material-symbols-outlined mr-sm">group</span>Team</a><a class="flex items-center px-sm py-sm text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all rounded-xl" data-path="pricing" href="#pricing"><span class="material-symbols-outlined mr-sm">payments</span>Pricing &amp; Plans</a><a class="flex items-center px-sm py-sm text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all rounded-xl" data-path="settings" href="#"><span class="material-symbols-outlined mr-sm">settings</span>Settings</a></nav><div class="px-sm pb-lg"><button class="w-full flex items-center justify-center gap-xs bg-primary text-on-primary font-button py-sm rounded-xl hover:shadow-lg transition-all"><span class="material-symbols-outlined">add</span>New Note</button></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/10 z-40 flex items-center px-lg justify-between"><div class="flex items-center gap-md"><div class="flex items-center bg-surface-container-highest/50 px-sm py-xs rounded-full border border-outline-variant/20"><span class="material-symbols-outlined text-on-surface-variant text-[20px] mr-xs">search</span><input class="bg-transparent border-none focus:ring-0 text-sm w-64 text-on-surface placeholder:text-on-surface-variant/60 outline-none" placeholder="Search notes..." type="text"></div></div><div class="flex items-center gap-md"><a class="text-sm font-button text-primary hover:text-primary-container transition-colors hidden sm:block" href="#pricing">Upgrade to Pro</a><button class="text-on-surface-variant hover:text-on-surface p-1 rounded-full hover:bg-surface-container transition-colors"><span class="material-symbols-outlined">notifications</span></button><img alt="Profile" class="w-8 h-8 rounded-full border border-outline-variant object-cover cursor-pointer" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyZdkgr5REMGHBO-7sRNCAsGDa2jyVQGLB5QGctkQlseptxacOyhLhelnstMisZJg-AhYu5tcBnBcGyKoJUmZDT6XHWA6dbdy7DeVoBRanqUnMDMr6aTuo2Z-WKIK-MCVy0VPrmmYkoYP0m8iGBuCnC6ppqnazSSL2n8iMXa5OsxkScqUtgBMfbbokldIy9q5_NLQl6X8sCs0TqDO0dBd-kknsPKlXd3hLYe7JCldqp28BMyOU4PwKXQ"></div></header><main class="relative pt-16 min-h-screen bg-background"><div class="flex flex-col w-full relative">
+<!-- Decorative Background Glow -->
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-primary/5 rounded-full blur-3xl -z-10 pointer-events-none"></div>
+<!-- Hero Section -->
+<section class="w-full max-w-container-max mx-auto px-lg pt-xl pb-xl flex flex-col items-center text-center mt-xl">
+<div class="inline-flex items-center gap-xs px-sm py-1 bg-surface-container-high text-on-surface-variant font-label-caps text-label-caps rounded-full mb-md uppercase tracking-widest border border-outline-variant/30">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+      FrameNote AI Engine 2.0 Now Live
+    </div>
+<h1 class="font-display-lg text-display-lg text-on-background max-w-3xl mb-md font-extrabold tracking-tight">
+      Turn hours of video into <span class="text-primary relative inline-block">minutes of notes.<svg class="absolute -bottom-2 left-0 w-full h-3 text-surface-tint opacity-30" preserveAspectRatio="none" viewBox="0 0 100 10"><path d="M0,5 Q50,10 100,5" fill="none" stroke="currentColor" stroke-width="2"></path></svg></span>
+</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mb-lg">
+      Instantly transcribe, summarize, and extract key moments from any video. Paste a link or upload a file to get started.
+    </p>
+<!-- Primary Input Container -->
+<div class="w-full max-w-2xl bg-surface p-base rounded-2xl shadow-lg border border-outline-variant/20 flex flex-col sm:flex-row items-center gap-sm relative z-10 transition-shadow hover:shadow-xl group">
+<div class="flex-1 w-full flex items-center bg-surface-container-lowest px-md py-sm rounded-xl border border-transparent group-focus-within:border-primary/50 group-focus-within:ring-2 group-focus-within:ring-primary/10 transition-all">
+<span class="material-symbols-outlined text-outline mr-sm">link</span>
+<input class="w-full bg-transparent border-none focus:ring-0 font-body-md text-on-surface placeholder:text-outline-variant outline-none" placeholder="Paste YouTube, Vimeo, or Loom URL..." type="url">
+</div>
+<div class="flex items-center gap-xs w-full sm:w-auto px-xs sm:px-0">
+<span class="text-outline-variant font-body-sm px-xs hidden sm:inline-block">or</span>
+<button class="flex-1 sm:flex-none flex items-center justify-center gap-xs bg-surface-container text-on-surface font-button py-sm px-md rounded-xl hover:bg-surface-container-high transition-colors border border-outline-variant/20 whitespace-nowrap">
+<span class="material-symbols-outlined text-[20px]">upload_file</span>
+          Upload
+        </button>
+<button class="flex-1 sm:flex-none flex items-center justify-center gap-xs bg-primary text-on-primary font-button py-sm px-lg rounded-xl hover:bg-surface-tint shadow-sm hover:shadow-md transition-all whitespace-nowrap">
+          Generate
+          <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<p class="mt-sm text-on-surface-variant/60 font-body-sm text-sm">Supports MP4, MOV, WEBM up to 2GB.</p>
+</section>
+<!-- Interactive Demo / Visual Area -->
+<section class="w-full max-w-container-max mx-auto px-lg py-xl relative">
+<div class="absolute inset-0 bg-gradient-to-b from-transparent to-surface-container-low/50 pointer-events-none -z-10 rounded-3xl"></div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-md items-center">
+<!-- Feature Column -->
+<div class="lg:col-span-4 flex flex-col gap-md">
+<!-- Feature 1 -->
+<div class="p-md rounded-2xl bg-surface border border-outline-variant/20 shadow-sm relative overflow-hidden group hover:border-primary/30 transition-colors">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary scale-y-0 group-hover:scale-y-100 transition-transform origin-top"></div>
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center mb-sm">
+<span class="material-symbols-outlined">psychology</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-xs">AI Summaries</h3>
+<p class="font-body-md text-on-surface-variant">Get the gist in seconds. Our models generate structured, contextual overviews covering main topics and conclusions.</p>
+</div>
+<!-- Feature 2 -->
+<div class="p-md rounded-2xl bg-surface border border-outline-variant/20 shadow-sm relative overflow-hidden group hover:border-primary/30 transition-colors">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary scale-y-0 group-hover:scale-y-100 transition-transform origin-top"></div>
+<div class="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center mb-sm">
+<span class="material-symbols-outlined">bookmarks</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-xs">Key Moments</h3>
+<p class="font-body-md text-on-surface-variant">Clickable timestamped highlights automatically identified, letting you jump straight to the crucial parts of the video.</p>
+</div>
+<!-- Feature 3 -->
+<div class="p-md rounded-2xl bg-surface border border-outline-variant/20 shadow-sm relative overflow-hidden group hover:border-primary/30 transition-colors">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary scale-y-0 group-hover:scale-y-100 transition-transform origin-top"></div>
+<div class="w-10 h-10 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center mb-sm">
+<span class="material-symbols-outlined">picture_as_pdf</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-xs">Export &amp; Share</h3>
+<p class="font-body-md text-on-surface-variant">Export beautiful PDF reports, sync to Notion, or share a secure link with your team instantly.</p>
+</div>
+</div>
+<!-- Preview Image Column -->
+<div class="lg:col-span-8 relative">
+<div class="relative group/preview"><div class="absolute -inset-1 rounded-3xl bg-gradient-to-r from-primary/30 via-surface-tint/20 to-primary-container/30 blur-xl anim-aura -z-10"></div><div class="bg-surface-container-highest p-sm rounded-3xl border border-outline-variant/30 shadow-2xl transition-all duration-300 hover:shadow-primary/20 hover:border-primary/40"><div class="bg-surface rounded-2xl overflow-hidden border border-outline-variant/20 relative aspect-video flex flex-col"><!-- Mock Header --><div class="h-12 border-b border-outline-variant/10 flex items-center justify-between px-sm bg-surface-container-lowest/50"><div class="flex items-center gap-xs"><div class="w-3 h-3 rounded-full bg-error animate-pulse"></div><div class="w-3 h-3 rounded-full bg-outline-variant"></div><div class="w-3 h-3 rounded-full bg-outline-variant"></div><div class="ml-3 h-6 bg-surface-container-high rounded px-sm flex items-center text-xs text-on-surface-variant font-label-caps">framenote.ai/n/q3-all-hands</div></div><div class="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-label-caps text-primary"><span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span></span><span class="font-semibold uppercase tracking-wider">Live Analyzing</span></div></div><!-- Mock Content --><div class="flex-1 flex overflow-hidden"><!-- Mock Video Area --><div class="w-1/2 bg-inverse-surface border-r border-outline-variant/10 relative overflow-hidden group cursor-pointer" data-alt="A cinematic conference meeting with live AI scanning overlays" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCAtsp4jJmziJ_L542ogsQS0T87t4aESFS6IMMt7lD9zFgMRexKy4nlhZeodcfvCq7xsNlo1vlyxNmxAKAr5hoSGv5c5pQQRyj1FkOJtEv1VsUJVytnT9qJiGPgWk3g9PNcGWquWQeLm5LTlGnjux5zoIMIKKBusdY6T2vqJBUiYaUTD1axe80_s-l1CsLHndyjJLb_6D4pN1uEolYRvWS_yZvwH3ZiTbmA-8_yMKHdrn4SqUyCkqWgLw'); background-size: cover; background-position: center;"><div class="anim-scanline"></div><div class="absolute inset-0 bg-black/40 flex items-center justify-center"><div class="w-16 h-16 rounded-full bg-surface/25 backdrop-blur-md flex items-center justify-center border border-white/40 shadow-lg group-hover:scale-110 transition-transform anim-pulse-ring"><span class="material-symbols-outlined text-white text-[32px] ml-1">play_arrow</span></div></div><!-- Live OCR / Speech Indicator Badge --><div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-2 py-1 rounded-md border border-white/20 flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span><span class="text-[10px] font-label-caps text-white font-medium tracking-wide">OCR &amp; Audio Stream Active</span></div><!-- Mock Progress --><div class="absolute bottom-4 left-4 right-4 h-1.5 bg-white/30 rounded-full overflow-hidden backdrop-blur-sm"><div class="w-2/5 h-full bg-primary relative anim-progress-glow"><div class="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-md"></div></div></div></div><!-- Mock Notes Area --><div class="w-1/2 bg-surface p-md flex flex-col gap-sm overflow-y-auto"><div class="flex items-center justify-between"><div class="w-2/3 h-6 bg-surface-container-highest rounded animate-pulse anim-shimmer"></div><span class="px-2 py-0.5 rounded bg-primary-fixed text-primary font-label-caps text-[10px] font-bold uppercase tracking-wider">Realtime</span></div><div class="flex gap-2 mb-xs"><span class="px-2 py-1 bg-primary-container text-on-primary-container text-xs rounded-lg font-label-caps transition-all hover:scale-105 cursor-pointer inline-flex items-center gap-1 shadow-sm"><span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>Q3 Review</span><span class="px-2 py-1 bg-surface-container-high text-on-surface-variant text-xs rounded-lg font-label-caps transition-all hover:scale-105 hover:bg-surface-container-highest cursor-pointer">Strategy</span><span class="px-2 py-1 bg-surface-container-high text-on-surface-variant text-xs rounded-lg font-label-caps transition-all hover:scale-105 hover:bg-surface-container-highest cursor-pointer">Roadmap</span></div><div class="space-y-2"><div class="w-full h-3.5 bg-surface-container rounded"></div><div class="w-5/6 h-3.5 bg-surface-container rounded"></div><div class="w-3/4 h-3.5 bg-surface-container rounded"></div></div><!-- Active Moment with Pulsing Marker --><div class="mt-2 border-l-4 border-primary pl-3 py-1.5 bg-primary/5 rounded-r-lg transition-colors hover:bg-primary/10 cursor-pointer"><div class="flex items-center justify-between mb-1"><span class="text-xs text-primary font-label-caps font-bold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span>14:32 - Q4 Outlook</span><span class="text-[10px] font-label-caps text-on-surface-variant/70">Key Takeaway</span></div><div class="w-full h-3 bg-surface-container rounded mb-1.5"></div><div class="w-2/3 h-3 bg-surface-container rounded"></div></div><!-- Next Moment --><div class="mt-2 border-l-4 border-outline-variant/40 pl-3 py-1.5 rounded-r-lg transition-colors hover:bg-surface-container cursor-pointer"><div class="text-xs text-outline font-label-caps mb-1">21:15 - Budget Allocation</div><div class="w-5/6 h-3 bg-surface-container rounded mb-1.5"></div><div class="w-4/5 h-3 bg-surface-container rounded"></div></div><!-- Live Synthesizing Footer Chip --><div class="mt-auto pt-2 border-t border-outline-variant/15 flex items-center gap-2 text-xs text-primary font-label-caps"><span class="material-symbols-outlined text-[16px] animate-spin">sync</span><span class="">Synthesizing actionable action items...</span></div></div></div></div></div></div>
+<!-- Decorative Floating Elements -->
+<div class="absolute -right-6 top-12 bg-surface p-sm rounded-xl shadow-xl border border-outline-variant/20 flex items-center gap-sm transition-all hover:shadow-xl anim-float-smooth">
+<div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">bolt</span>
+</div>
+<div class="flex flex-col">
+<span class="text-xs font-label-caps text-on-surface font-semibold">Insight Extracted</span>
+<span class="text-xs text-on-surface-variant">0.4 seconds ago</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Pricing Plans & Free Trials Section -->
+<section class="w-full max-w-container-max mx-auto px-lg pt-xl pb-xl flex flex-col items-center" id="pricing">
+<div class="text-center max-w-3xl mb-lg">
+<span class="inline-block px-sm py-1 bg-surface-container-high text-primary font-label-caps text-label-caps rounded-full uppercase tracking-widest border border-primary/20 mb-sm">
+      Transparent Pricing
+    </span>
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-xs font-bold">
+      Simple, scalable plans for every creator &amp; team
+    </h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">
+      Turn video content into searchable intelligence. Upgrade or cancel anytime.
+    </p>
+<!-- Free Trial Banner -->
+<div class="mt-md inline-flex items-center gap-xs px-md py-2 rounded-full bg-primary-fixed text-on-primary-fixed border border-primary/20 text-xs font-button shadow-sm">
+<span class="material-symbols-outlined text-[18px] text-primary">verified_user</span>
+<span class="">14-Day Free Trial on all paid plans • No credit card required to start</span>
+</div>
+<!-- Billing Cycle Toggle -->
+<div class="mt-lg flex items-center justify-center gap-sm">
+<span class="text-sm font-body-md text-on-surface-variant font-medium">Monthly</span>
+<div class="relative inline-flex items-center bg-surface-container-high p-1 rounded-full border border-outline-variant/30 cursor-pointer">
+<button class="px-3 py-1 rounded-full text-xs font-button text-on-surface-variant hover:text-on-surface">Monthly</button>
+<button class="px-3 py-1 rounded-full text-xs font-button bg-primary text-on-primary shadow-sm flex items-center gap-1">
+          Annual
+          <span class="bg-surface-container-lowest text-primary text-[10px] px-1.5 py-0.5 rounded-full font-bold">Save 20%</span>
+</button>
+</div>
+<span class="text-sm font-body-md text-on-surface font-semibold">Yearly</span>
+</div>
+</div>
+<!-- Pricing Cards Grid -->
+<div class="w-full grid grid-cols-1 md:grid-cols-3 gap-md items-stretch mb-xl">
+<!-- Free Starter Card -->
+<div class="bg-surface-container-lowest rounded-3xl p-lg border border-outline-variant/20 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+<div>
+<div class="flex items-center justify-between mb-xs">
+<h3 class="font-headline-md text-headline-md text-on-surface">Free Starter</h3>
+<span class="p-1.5 rounded-lg bg-surface-container text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">person</span>
+</span>
+</div>
+<p class="text-body-sm text-on-surface-variant mb-md min-h-[40px]">For individuals exploring video summaries and quick insights.</p>
+<div class="flex items-baseline gap-1 mb-md pb-md border-b border-outline-variant/15">
+<span class="text-4xl font-extrabold text-on-surface">$0</span>
+<span class="text-sm text-on-surface-variant">/month</span>
+<span class="ml-2 text-xs font-label-caps text-on-surface-variant bg-surface-container px-2 py-0.5 rounded">Free forever</span>
+</div>
+<ul class="space-y-sm mb-lg text-sm text-on-surface-variant">
+<li class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px] mt-0.5">check_circle</span>
+<span class=""><strong class="text-on-surface font-medium">3 video summaries</strong> / month (up to 20 mins)</span>
+</li>
+<li class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px] mt-0.5">check_circle</span>
+<span class="">Standard 720p audio &amp; video analysis</span>
+</li>
+<li class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px] mt-0.5">check_circle</span>
+<span class="">Standard Markdown &amp; plain text export</span>
+</li>
+<li class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px] mt-0.5">check_circle</span>
+<span class="">Community forum support</span>
+</li>
+</ul>
+</div>
+<button class="w-full py-3 px-md rounded-xl font-button text-sm border border-outline-variant/40 text-on-surface hover:bg-surface-container-high transition-colors text-center">
+        Start Free
+      </button>
+</div>
+<!-- Pro Plan Card (Featured) -->
+<div class="relative bg-surface-container-lowest rounded-3xl p-lg border-2 border-primary shadow-xl flex flex-col justify-between scale-[1.02] z-10">
+<div class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-primary text-on-primary text-xs font-label-caps px-3 py-1 rounded-full uppercase tracking-wider font-semibold shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">auto_awesome</span> Most Popular
+      </div>
+<div>
+<div class="flex items-center justify-between mb-xs">
+<h3 class="font-headline-md text-headline-md text-on-surface">Pro</h3>
+<span class="p-1.5 rounded-lg bg-primary-container/20 text-primary">
+<span class="material-symbols-outlined text-[20px]">bolt</span>
+</span>
+</div>
+<p class="text-body-sm text-on-surface-variant mb-md min-h-[40px]">For creators, researchers &amp; heavy note-takers wanting speed and power.</p>
+<div class="flex items-baseline gap-1 mb-md pb-md border-b border-outline-variant/15">
+<span class="text-4xl font-extrabold text-on-surface">$15</span>
+<span class="text-sm text-on-surface-variant">/month</span>
+<span class="ml-2 text-xs font-label-caps text-primary bg-primary-fixed px-2 py-0.5 rounded font-semibold">Billed annually ($19/mo)</span>
+</div>
+<ul class="space-y-sm mb-lg text-sm text-on-surface-variant">
+<li class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px] mt-0.5">check_circle</span>
+<span class=""><strong class="text-on-surface font-medium">Unlimited</strong> video uploads &amp; YouTube imports</span>
+</li>
+<li class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px] mt-0.5">check_circle</span>
+<span class="">Interactive transcripts &amp; speaker timeline</span>
+</li>
+<li class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px] mt-0.5">check_circle</span>
+<span class="">1-click export to <strong class="text-on-surface font-medium">Notion, PDF, Markdown &amp; Slack</strong></span>
+</li>
+<li class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px] mt-0.5">check_circle</span>
+<span class="">Priority 4K video AI processing &amp; whisper model</span>
+</li>
+<li class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px] mt-0.5">check_circle</span>
+<span class="">Includes 14-day free trial</span>
+</li>
+</ul>
+</div>
+<button class="w-full py-3 px-md rounded-xl font-button text-sm bg-primary text-on-primary hover:bg-surface-tint transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-1.5">
+        Start 14-Day Free Trial
+        <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+<!-- Team / Enterprise Card -->
+<div class="bg-surface-container-lowest rounded-3xl p-lg border border-outline-variant/20 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+<div>
+<div class="flex items-center justify-between mb-xs">
+<h3 class="font-headline-md text-headline-md text-on-surface">Team</h3>
+<span class="p-1.5 rounded-lg bg-surface-container text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">corporate_fare</span>
+</span>
+</div>
+<p class="text-body-sm text-on-surface-variant mb-md min-h-[40px]">For collaborative product teams, research labs &amp; media agencies.</p>
+<div class="flex items-baseline gap-1 mb-md pb-md border-b border-outline-variant/15">
+<span class="text-4xl font-extrabold text-on-surface">$39</span>
+<span class="text-sm text-on-surface-variant">/user/mo</span>
+<span class="ml-2 text-xs font-label-caps text-on-surface-variant bg-surface-container px-2 py-0.5 rounded font-medium">Billed annually ($49/mo)</span>
+</div>
+<ul class="space-y-sm mb-lg text-sm text-on-surface-variant">
+<li class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px] mt-0.5">check_circle</span>
+<span class=""><strong class="text-on-surface font-medium">Everything in Pro</strong> plan included</span>
+</li>
+<li class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px] mt-0.5">check_circle</span>
+<span class="">Shared team workspaces &amp; centralized notes</span>
+</li>
+<li class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px] mt-0.5">check_circle</span>
+<span class="">Custom prompt templates &amp; company glossary</span>
+</li>
+<li class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px] mt-0.5">check_circle</span>
+<span class="">SOC-2 Type II, GDPR compliance &amp; SSO login</span>
+</li>
+<li class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px] mt-0.5">check_circle</span>
+<span class="">Dedicated account manager &amp; 99.9% uptime SLA</span>
+</li>
+</ul>
+</div>
+<button class="w-full py-3 px-md rounded-xl font-button text-sm border border-outline-variant/40 text-on-surface hover:bg-surface-container-high transition-colors text-center">
+        Try Team Plan
+      </button>
+</div>
+</div>
+<!-- Feature Comparison Table -->
+<div class="w-full bg-surface-container-lowest rounded-3xl p-md sm:p-lg border border-outline-variant/20 shadow-sm mt-md">
+<div class="mb-md flex flex-col sm:flex-row sm:items-center justify-between gap-xs border-b border-outline-variant/15 pb-md">
+<div>
+<h4 class="font-headline-md text-headline-md text-on-surface">Detailed Feature Breakdown</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Compare specs, capabilities, and limits across all tiers.</p>
+</div>
+<div class="text-xs font-label-caps text-primary bg-primary-fixed/50 px-3 py-1.5 rounded-full inline-flex items-center gap-1 self-start sm:self-auto">
+<span class="material-symbols-outlined text-[16px]">verified</span> 99.4% Speech-to-Text Accuracy
+      </div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left text-sm text-on-surface">
+<thead>
+<tr class="border-b border-outline-variant/20 text-xs font-label-caps text-on-surface-variant uppercase">
+<th class="py-3 px-4 w-2/5">Capability</th>
+<th class="py-3 px-4 text-center w-1/5">Starter</th>
+<th class="py-3 px-4 text-center w-1/5 text-primary font-bold">Pro</th>
+<th class="py-3 px-4 text-center w-1/5">Team</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10 font-body-sm">
+<tr>
+<td class="py-3.5 px-4 font-medium text-on-surface">Monthly video summaries</td>
+<td class="py-3.5 px-4 text-center text-on-surface-variant">3 videos</td>
+<td class="py-3.5 px-4 text-center font-semibold text-primary">Unlimited</td>
+<td class="py-3.5 px-4 text-center text-on-surface font-semibold">Unlimited</td>
+</tr>
+<tr>
+<td class="py-3.5 px-4 font-medium text-on-surface">Max video length</td>
+<td class="py-3.5 px-4 text-center text-on-surface-variant">20 mins / file</td>
+<td class="py-3.5 px-4 text-center font-semibold text-primary">3 hours / file</td>
+<td class="py-3.5 px-4 text-center text-on-surface font-semibold">Unlimited length</td>
+</tr>
+<tr>
+<td class="py-3.5 px-4 font-medium text-on-surface">Transcription &amp; OCR accuracy</td>
+<td class="py-3.5 px-4 text-center text-on-surface-variant">94%</td>
+<td class="py-3.5 px-4 text-center font-semibold text-primary">99.4% (Whisper v3)</td>
+<td class="py-3.5 px-4 text-center text-on-surface font-semibold">99.4% (Fine-tuned)</td>
+</tr>
+<tr>
+<td class="py-3.5 px-4 font-medium text-on-surface">Export formats</td>
+<td class="py-3.5 px-4 text-center text-on-surface-variant">Markdown, TXT</td>
+<td class="py-3.5 px-4 text-center font-semibold text-primary">PDF, Notion, DOCX, MD</td>
+<td class="py-3.5 px-4 text-center text-on-surface font-semibold">All + API &amp; Webhooks</td>
+</tr>
+<tr>
+<td class="py-3.5 px-4 font-medium text-on-surface">Interactive speaker timeline</td>
+<td class="py-3.5 px-4 text-center text-outline-variant"><span class="material-symbols-outlined text-[18px]">remove</span></td>
+<td class="py-3.5 px-4 text-center text-primary"><span class="material-symbols-outlined text-[20px]">check_circle</span></td>
+<td class="py-3.5 px-4 text-center text-primary"><span class="material-symbols-outlined text-[20px]">check_circle</span></td>
+</tr>
+<tr>
+<td class="py-3.5 px-4 font-medium text-on-surface">Team workspace &amp; roles</td>
+<td class="py-3.5 px-4 text-center text-outline-variant"><span class="material-symbols-outlined text-[18px]">remove</span></td>
+<td class="py-3.5 px-4 text-center text-outline-variant"><span class="material-symbols-outlined text-[18px]">remove</span></td>
+<td class="py-3.5 px-4 text-center text-primary"><span class="material-symbols-outlined text-[20px]">check_circle</span></td>
+</tr>
+<tr>
+<td class="py-3.5 px-4 font-medium text-on-surface">Support level</td>
+<td class="py-3.5 px-4 text-center text-on-surface-variant">Community</td>
+<td class="py-3.5 px-4 text-center font-semibold text-primary">Priority Email (4h)</td>
+<td class="py-3.5 px-4 text-center text-on-surface font-semibold">Dedicated Slack &amp; SLA</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<!-- Footer Section (matching reference design layout) -->
+<footer class="w-full bg-surface-container-lowest border-t border-outline-variant/20 pt-xl pb-lg">
+<div class="w-full max-w-container-max mx-auto px-lg">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-lg pb-xl border-b border-outline-variant/15">
+<!-- Col 1: Brand & Bio -->
+<div class="md:col-span-4 flex flex-col items-start pr-0 md:pr-lg">
+<a class="mb-md inline-block" href="#">
+<img alt="FrameNote Logo" class="h-9 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1U73IVFxm8GehfqP1ozgc1vijE6KZ2ZyrCyDoioO0QWXL7MJEXmE3vpsvVAgpDKQLOjTT-rKE5bN-kC7r2mSw18UQ9cc8M9wyM9w3la7VghgoYrhwGZ1CM1v1uXcbBscMeKjsarVfj98e1zfRPgLrOBm-ohy9nVxLkVyGBJuFZnwootLBMzNWziJCSRcIyvXhdDQW1-vj36nGSCpZnCGUal7_sAEmHvQEJfBtQF-D_8mKF3xPUHayohKzhP">
+</a>
+<p class="font-body-md text-body-md text-on-surface-variant mb-md leading-relaxed">
+          Empowering teams and creators to turn hours of video into actionable knowledge with AI.
+        </p>
+<!-- Social Icons -->
+<div class="flex items-center gap-sm text-outline hover:text-on-surface">
+<a class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors" href="#" title="Twitter / X">
+<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
+</a>
+<a class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors" href="#" title="GitHub">
+<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" fill-rule="evenodd"></path></svg>
+</a>
+<a class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors" href="#" title="LinkedIn">
+<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"></path></svg>
+</a>
+<a class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors" href="#" title="Discord">
+<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.893.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"></path></svg>
+</a>
+</div>
+</div>
+<!-- Col 2: Product -->
+<div class="md:col-span-3 flex flex-col">
+<h5 class="text-sm font-headline-md font-semibold text-on-surface mb-md">Product</h5>
+<ul class="space-y-sm text-sm text-on-surface-variant font-body-sm">
+<li class=""><a class="hover:text-primary transition-colors" href="#">AI Summarizer</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Video Transcripts</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#pricing">Pricing &amp; Plans</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Chrome Extension</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Roadmap</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Integrations</a></li>
+</ul>
+</div>
+<!-- Col 3: Company -->
+<div class="md:col-span-3 flex flex-col">
+<h5 class="text-sm font-headline-md font-semibold text-on-surface mb-md">Company</h5>
+<ul class="space-y-sm text-sm text-on-surface-variant font-body-sm">
+<li class=""><a class="hover:text-primary transition-colors" href="#">About Us</a></li>
+<li class="flex items-center gap-2">
+<a class="hover:text-primary transition-colors" href="#">Careers</a>
+<span class="text-[10px] font-label-caps uppercase bg-primary-fixed text-on-primary-fixed-variant px-1.5 py-0.5 rounded-full font-bold">We're hiring!</span>
+</li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Blog</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="mailto:support@framenote.ai">Contact &amp; Support</a></li>
+</ul>
+</div>
+<!-- Col 4: Legal -->
+<div class="md:col-span-2 flex flex-col">
+<h5 class="text-sm font-headline-md font-semibold text-on-surface mb-md">Legal</h5>
+<ul class="space-y-sm text-sm text-on-surface-variant font-body-sm">
+<li class=""><a class="hover:text-primary transition-colors" href="#">Privacy Policy</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Terms of Service</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Security &amp; SOC-2</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Cookie Settings</a></li>
+</ul>
+</div>
+</div>
+<!-- Bottom Copyright Bar (inspired by reference image) -->
+<div class="pt-lg flex flex-col sm:flex-row items-center justify-between text-xs text-on-surface-variant gap-sm">
+<p class="">© 2026 FrameNote AI Inc. All rights reserved.</p>
+<p class="italic text-on-surface-variant/70">Built for the future of video productivity.</p>
+</div>
+</div>
+</footer>
+</div></main></div>
+
+</body></html>

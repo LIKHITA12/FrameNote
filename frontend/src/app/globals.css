@@ -1,0 +1,223 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Colour tokens live here as space-separated RGB channels rather than hex, because
+   tailwind.config.ts wraps them as `rgb(var(--token) / <alpha-value>)` so that opacity
+   modifiers (bg-core-primary/40) keep working. Swapping .dark below rethemes the whole app. */
+:root {
+  color-scheme: light;
+  --radius-card: 1.25rem;
+  --elevation-card: 0 1px 2px rgba(17, 24, 39, 0.04), 0 8px 24px -12px rgba(17, 24, 39, 0.12);
+
+  --page-bg:
+    radial-gradient(circle at 0% 0%, #d9eee4 0, transparent 45%),
+    radial-gradient(circle at 100% 100%, #dce8f8 0, transparent 40%), #f5f7f3;
+
+  /* Legacy palette (auth pages, ui/ primitives, analyzing page) */
+  --canvas: 245 247 243;
+  --surface: 255 255 255;
+  --ink: 17 24 39;
+  --muted: 91 100 114;
+  --border: 226 229 225;
+  --accent: 27 127 95;
+  --accent-dark: 20 99 73;
+  --accent-soft: 228 243 236;
+  --danger: 179 38 30;
+  --danger-soft: 251 233 231;
+  --warning: 138 90 0;
+  --warning-soft: 253 241 220;
+  --brand: 37 99 235;
+  --brand-light: 147 197 253;
+  --brand-dark: 30 58 138;
+  --brand-ink: 15 23 42;
+  --brand-soft: 238 242 255;
+
+  /* FrameNote Core palette (the authenticated workspace) */
+  --core-primary: 30 64 175;
+  --core-on-primary: 255 255 255;
+  --core-primary-container: 30 64 175;
+  --core-on-primary-container: 191 219 254;
+  --core-primary-fixed: 219 234 254;
+  --core-on-primary-fixed: 30 64 175;
+  --core-surface-tint: 30 58 138;
+  --core-secondary: 86 94 116;
+  --core-on-secondary: 255 255 255;
+  --core-secondary-container: 218 226 253;
+  --core-on-secondary-container: 92 100 122;
+  --core-tertiary: 70 73 75;
+  --core-on-tertiary: 255 255 255;
+  --core-tertiary-container: 94 97 99;
+  --core-on-tertiary-container: 218 220 222;
+  --core-error: 186 26 26;
+  --core-background: 248 249 255;
+  --core-on-background: 11 28 48;
+  --core-surface: 248 249 255;
+  --core-surface-dim: 203 219 245;
+  --core-surface-bright: 248 249 255;
+  --core-surface-container-lowest: 255 255 255;
+  --core-surface-container-low: 239 244 255;
+  --core-surface-container: 229 238 255;
+  --core-surface-container-high: 220 233 255;
+  --core-surface-container-highest: 211 228 254;
+  --core-on-surface: 11 28 48;
+  --core-on-surface-variant: 70 69 85;
+  --core-outline: 119 117 135;
+  --core-outline-variant: 199 196 216;
+  --core-inverse-surface: 33 49 69;
+  --core-inverse-on-surface: 234 241 255;
+
+  /* Semantic status pairs, replacing hand-rolled emerald/amber/rose literals. */
+  --state-success: 4 120 87;
+  --state-success-soft: 236 253 245;
+  --state-on-success-soft: 6 95 70;
+  --state-warning: 180 83 9;
+  --state-warning-soft: 255 251 235;
+  --state-on-warning-soft: 146 64 14;
+  --state-danger: 190 18 60;
+  --state-danger-soft: 255 241 242;
+  --state-on-danger-soft: 159 18 57;
+}
+
+.dark {
+  color-scheme: dark;
+  --elevation-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px -12px rgba(0, 0, 0, 0.6);
+
+  --page-bg:
+    radial-gradient(circle at 0% 0%, #13202b 0, transparent 45%),
+    radial-gradient(circle at 100% 100%, #141c2e 0, transparent 40%), #0d1117;
+
+  --canvas: 13 17 23;
+  --surface: 22 27 34;
+  --ink: 230 237 243;
+  --muted: 155 167 180;
+  --border: 48 54 61;
+  --accent: 63 185 140;
+  --accent-dark: 46 153 112;
+  --accent-soft: 16 41 31;
+  --danger: 242 147 140;
+  --danger-soft: 58 26 24;
+  --warning: 224 163 58;
+  --warning-soft: 58 42 16;
+  --brand: 91 141 239;
+  --brand-light: 175 203 251;
+  /* brand-dark / brand-ink stay dark: they are the far end of the auth hero gradient
+     and the background of the processing-log panel, both of which are dark by design. */
+  --brand-dark: 30 58 138;
+  --brand-ink: 11 16 23;
+  --brand-soft: 26 32 51;
+
+  --core-primary: 138 180 248;
+  --core-on-primary: 11 42 91;
+  --core-primary-container: 43 80 168;
+  --core-on-primary-container: 215 227 255;
+  --core-primary-fixed: 26 43 77;
+  --core-on-primary-fixed: 215 227 255;
+  --core-surface-tint: 138 180 248;
+  --core-secondary: 191 198 220;
+  --core-on-secondary: 40 48 74;
+  --core-secondary-container: 51 59 77;
+  --core-on-secondary-container: 211 219 240;
+  --core-tertiary: 196 199 201;
+  --core-on-tertiary: 43 46 48;
+  --core-tertiary-container: 68 71 74;
+  --core-on-tertiary-container: 218 220 222;
+  --core-error: 242 147 140;
+  --core-background: 13 17 23;
+  --core-on-background: 230 237 243;
+  --core-surface: 13 17 23;
+  --core-surface-dim: 10 14 19;
+  --core-surface-bright: 45 53 63;
+  /* Inverted elevation: this app uses container-lowest as its card colour, so in dark it has
+     to sit *above* the page background rather than below it, or every card would disappear. */
+  --core-surface-container-lowest: 22 27 34;
+  --core-surface-container-low: 28 34 43;
+  --core-surface-container: 33 39 47;
+  --core-surface-container-high: 39 46 55;
+  --core-surface-container-highest: 45 53 63;
+  --core-on-surface: 230 237 243;
+  --core-on-surface-variant: 177 186 196;
+  --core-outline: 139 148 158;
+  --core-outline-variant: 48 54 61;
+  --core-inverse-surface: 230 237 243;
+  --core-inverse-on-surface: 28 33 40;
+
+  --state-success: 74 222 128;
+  --state-success-soft: 12 44 32;
+  --state-on-success-soft: 134 239 172;
+  --state-warning: 251 191 36;
+  --state-warning-soft: 51 35 16;
+  --state-on-warning-soft: 253 224 71;
+  --state-danger: 251 113 133;
+  --state-danger-soft: 58 22 32;
+  --state-on-danger-soft: 253 164 175;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
+  background: var(--page-bg);
+  color: rgb(var(--ink));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Material Symbols icon font used on the /welcome page (FrameNote Core design system). */
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Product-preview mock browser scanline sweep on the /welcome hero. */
+.anim-scanline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.9), rgba(168, 85, 247, 0.9), transparent);
+  box-shadow: 0 0 12px 2px rgba(99, 102, 241, 0.6);
+}
+
+/* Retro candy-stripe progress bar for the processing modal (uses the app's primary color, no green). */
+@keyframes retro-bar-stripes {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 28px 0;
+  }
+}
+
+.retro-progress-bar {
+  background-color: #1e40af;
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.35) 0px,
+    rgba(255, 255, 255, 0.35) 10px,
+    rgba(255, 255, 255, 0) 10px,
+    rgba(255, 255, 255, 0) 20px
+  );
+  background-size: 28px 28px;
+  animation: retro-bar-stripes 0.9s linear infinite;
+}

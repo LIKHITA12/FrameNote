@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={theme:{extend:{"colors":{"on-primary":"#ffffff","inverse-primary":"#c3c0ff","surface-variant":"#d3e4fe","surface":"#f8f9ff","surface-container-highest":"#d3e4fe","outline":"#777587","surface-container-low":"#eff4ff","on-secondary-fixed-variant":"#3f465c","on-surface-variant":"#464555","primary-fixed-dim":"#c3c0ff","on-tertiary":"#ffffff","on-error-container":"#93000a","on-secondary-fixed":"#131b2e","on-surface":"#0b1c30","secondary-fixed-dim":"#bec6e0","primary-fixed":"#e2dfff","background":"#f8f9ff","surface-tint":"#4d44e3","on-primary-fixed-variant":"#3323cc","inverse-on-surface":"#eaf1ff","on-primary-fixed":"#0f0069","primary-container":"#4f46e5","tertiary-fixed-dim":"#c4c7c9","surface-dim":"#cbdbf5","on-secondary-container":"#5c647a","on-secondary":"#ffffff","tertiary-container":"#5e6163","on-tertiary-fixed-variant":"#444749","on-tertiary-fixed":"#191c1e","secondary-container":"#dae2fd","inverse-surface":"#213145","surface-bright":"#f8f9ff","tertiary":"#46494b","on-primary-container":"#dad7ff","secondary-fixed":"#dae2fd","secondary":"#565e74","outline-variant":"#c7c4d8","on-error":"#ffffff","error-container":"#ffdad6","surface-container":"#e5eeff","primary":"#3525cd","on-background":"#0b1c30","on-tertiary-container":"#dadcde","tertiary-fixed":"#e0e3e5","surface-container-lowest":"#ffffff","error":"#ba1a1a","surface-container-high":"#dce9ff"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"container-max":"1280px","gutter":"24px","xs":"8px","sm":"16px","md":"24px","base":"4px","xl":"64px","lg":"40px"},"fontFamily":{"headline-md":["Manrope"],"label-caps":["JetBrains Mono"],"display-lg":["Manrope"],"body-sm":["Inter"],"headline-lg":["Manrope"],"body-md":["Inter"],"headline-lg-mobile":["Manrope"],"body-lg":["Inter"],"button":["Inter"]},"fontSize":{"headline-md":["24px",{"lineHeight":"32px","fontWeight":"600"}],"label-caps":["12px",{"lineHeight":"16px","letterSpacing":"0.05em","fontWeight":"600"}],"display-lg":["48px",{"lineHeight":"56px","letterSpacing":"-0.02em","fontWeight":"800"}],"body-sm":["14px",{"lineHeight":"20px","fontWeight":"400"}],"headline-lg":["32px",{"lineHeight":"40px","letterSpacing":"-0.01em","fontWeight":"700"}],"body-md":["16px",{"lineHeight":"24px","fontWeight":"400"}],"headline-lg-mobile":["24px",{"lineHeight":"32px","fontWeight":"700"}],"body-lg":["18px",{"lineHeight":"28px","fontWeight":"400"}],"button":["14px",{"lineHeight":"20px","fontWeight":"600"}]}}}}</script><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=JetBrains+Mono:wght@100..900&amp;family=Manrope:wght@100..900&amp;display=swap" rel="stylesheet"/></head><body class="bg-background font-body-md text-on-background"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-low z-50 flex flex-col pt-sm border-r border-outline-variant/30 transition-all duration-300"><div class="px-md mb-lg flex items-center gap-xs"><img alt="FrameNote Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5lHPUB9eGt9mwwroOchtuDGX_BsSUySHMdme8fxbH_KbPe5DFwGfi3kDO7OPnfoM0ecwvwf71fyh4nTyOXt8qlQDJGLmFDmaF733vOYrrm9MnOehkJq0lh6KV5BaFW_Cmx4KlgpBTeuUb8kUDDULLq0_6K1gpnpRbxr2rbqnxHSBd8RHFBo8W3Kgoig3wxBQcQ7ltvzR95FiWPMUJTE7OzV1jf6uZlvfj9FjzqNv_z6RiRMjD7OCUUw"/></div><nav class="flex-1 px-sm space-y-base" data-active-classes="bg-primary-container text-on-primary-container font-button rounded-xl"><a aria-current="page" class="flex items-center px-sm py-sm transition-all bg-primary-container text-on-primary-container font-button rounded-xl" data-path="dashboard" href="#"><span class="material-symbols-outlined mr-sm">grid_view</span>Dashboard</a><a class="flex items-center px-sm py-sm text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all rounded-xl" data-path="history" href="#"><span class="material-symbols-outlined mr-sm">history</span>History</a><div class="h-px bg-outline-variant/20 my-md mx-sm"></div><p class="px-sm py-xs font-label-caps text-label-caps text-on-surface-variant opacity-60 uppercase">Organization</p><a class="flex items-center px-sm py-sm text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all rounded-xl" data-path="workspace" href="#"><span class="material-symbols-outlined mr-sm">workspaces</span>Workspace</a><a class="flex items-center px-sm py-sm text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all rounded-xl" data-path="team" href="#"><span class="material-symbols-outlined mr-sm">group</span>Team</a><a class="flex items-center px-sm py-sm text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all rounded-xl" data-path="settings" href="#"><span class="material-symbols-outlined mr-sm">settings</span>Settings</a></nav><div class="px-sm pb-lg"><button class="w-full flex items-center justify-center gap-xs bg-primary text-on-primary font-button py-sm rounded-xl hover:shadow-lg transition-all"><span class="material-symbols-outlined">add</span>New Note</button></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/10 z-40 flex items-center px-lg justify-between"><div class="flex items-center gap-md"><div class="flex items-center bg-surface-container-highest/50 px-sm py-xs rounded-full border border-outline-variant/20"><span class="material-symbols-outlined text-on-surface-variant text-[20px] mr-xs">search</span><input class="bg-transparent border-none focus:ring-0 text-sm w-64" placeholder="Search notes..." type="text"/></div></div><div class="flex items-center gap-md"><button class="text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined">notifications</span></button><img alt="Profile" class="w-8 h-8 rounded-full border border-outline-variant object-cover cursor-pointer" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyZdkgr5REMGHBO-7sRNCAsGDa2jyVQGLB5QGctkQlseptxacOyhLhelnstMisZJg-AhYu5tcBnBcGyKoJUmZDT6XHWA6dbdy7DeVoBRanqUnMDMr6aTuo2Z-WKIK-MCVy0VPrmmYkoYP0m8iGBuCnC6ppqnazSSL2n8iMXa5OsxkScqUtgBMfbbokldIy9q5_NLQl6X8sCs0TqDO0dBd-kknsPKlXd3hLYe7JCldqp28BMyOU4PwKXQ"/></div></header><main class="relative pt-16 min-h-screen bg-background"><div class="flex flex-col w-full h-[calc(100vh-64px)] overflow-hidden bg-background">
+<div class="flex flex-1 overflow-hidden">
+<!-- Left Panel: Video & Analytics -->
+<div class="w-[55%] flex flex-col border-r border-outline-variant/20 bg-surface-container-lowest">
+<!-- Video Player Container -->
+<div class="relative w-full aspect-video bg-inverse-surface flex items-center justify-center group overflow-hidden shrink-0">
+<div class="absolute inset-0 bg-cover bg-center w-full h-full opacity-80 mix-blend-luminosity" data-alt="A sleek, modern interface showing a high-resolution video of a design team collaborating around a whiteboard in a bright, minimalist office setting. Cool natural lighting, subtle energetic indigo accents." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCu68Y5FuD-bjMw6rtIUfVYqoADWXXYSc9cRkB084P_XckodNjHXcqMiXMPQTOgF3_xu-1UHKyPPFNHCyiAJqFPP6alJX1R84_9wsy4ZQALJnM9caqd-KbOqssAblaYIbMo0H5sqEsVwDL7aPqLDskRz57Z8K4IIF0oPQ4_txoS7oyDEEnxwu1N1OIDuki3D96S9ThAxX-IPwklWVaaoviGZWWdVTIVJLb8DEYeK347dI0S25ORBq4f8A')"></div>
+<!-- Subtle gradient overlay -->
+<div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/80 via-transparent to-transparent"></div>
+<!-- Play Button -->
+<button class="absolute z-10 w-xl h-xl bg-primary/90 text-on-primary rounded-full flex items-center justify-center shadow-xl backdrop-blur-md hover:scale-105 transition-transform duration-300">
+<span class="material-symbols-outlined text-[32px] ml-1" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+<!-- Video Controls Bar -->
+<div class="absolute bottom-0 left-0 right-0 p-md flex flex-col gap-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-4 group-hover:translate-y-0">
+<!-- Scrubber -->
+<div class="w-full h-1 bg-surface-variant/30 rounded-full cursor-pointer relative group/scrubber">
+<div class="absolute left-0 top-0 h-full w-[45%] bg-primary rounded-full group-hover/scrubber:h-1.5 transition-all -translate-y-0 hover:-translate-y-[1px]"></div>
+<div class="absolute left-[45%] top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 bg-on-primary rounded-full shadow-md scale-0 group-hover/scrubber:scale-100 transition-transform"></div>
+</div>
+<!-- Controls -->
+<div class="flex items-center justify-between text-on-primary">
+<div class="flex items-center gap-md">
+<button class="hover:text-primary-fixed transition-colors"><span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">pause</span></button>
+<button class="hover:text-primary-fixed transition-colors"><span class="material-symbols-outlined text-[20px]">volume_up</span></button>
+<span class="font-label-caps text-label-caps opacity-80 font-mono tracking-wider">12:04 / 28:30</span>
+</div>
+<div class="flex items-center gap-md">
+<button class="hover:text-primary-fixed transition-colors"><span class="material-symbols-outlined text-[20px]">closed_caption</span></button>
+<button class="hover:text-primary-fixed transition-colors"><span class="material-symbols-outlined text-[20px]">settings</span></button>
+<button class="hover:text-primary-fixed transition-colors"><span class="material-symbols-outlined text-[20px]">fullscreen</span></button>
+</div>
+</div>
+</div>
+</div>
+<!-- Analytics / Metadata -->
+<div class="flex-1 overflow-y-auto hidden-scrollbar flex flex-col">
+<!-- Talk Time Visualization -->
+<div class="p-md border-b border-outline-variant/20 flex flex-col gap-sm">
+<div class="flex items-center gap-2 mb-2">
+<button class="px-3 py-1 bg-surface-container-high rounded-full font-label-caps text-label-caps text-on-surface border border-outline-variant/30">Speakers</button>
+<button class="px-3 py-1 bg-surface-container rounded-full font-label-caps text-label-caps text-on-surface-variant border border-transparent hover:bg-surface-container-high transition-colors">Topics</button>
+<button class="px-3 py-1 bg-surface-container rounded-full font-label-caps text-label-caps text-on-surface-variant border border-transparent hover:bg-surface-container-high transition-colors">Chapters</button>
+</div>
+<div class="flex flex-col gap-3">
+<!-- Speaker 1 -->
+<div class="flex items-center gap-md">
+<div class="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-button shrink-0 border border-primary/30">AC</div>
+<div class="flex-1">
+<div class="font-body-sm text-body-sm text-on-surface mb-1 flex justify-between"><span>Alex Chen</span></div>
+<div class="w-full h-2 bg-surface-container rounded-full flex relative overflow-hidden">
+<div class="absolute left-[5%] w-[10%] h-full bg-primary rounded-full"></div>
+<div class="absolute left-[20%] w-[15%] h-full bg-primary rounded-full"></div>
+<div class="absolute left-[45%] w-[5%] h-full bg-primary rounded-full"></div>
+<div class="absolute left-[60%] w-[20%] h-full bg-primary rounded-full"></div>
+<div class="absolute left-[90%] w-[5%] h-full bg-primary rounded-full"></div>
+</div>
+</div>
+</div>
+<!-- Speaker 2 -->
+<div class="flex items-center gap-md">
+<img alt="Sarah" class="w-8 h-8 rounded-full object-cover shrink-0 border border-outline-variant/30" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyZdkgr5REMGHBO-7sRNCAsGDa2jyVQGLB5QGctkQlseptxacOyhLhelnstMisZJg-AhYu5tcBnBcGyKoJUmZDT6XHWA6dbdy7DeVoBRanqUnMDMr6aTuo2Z-WKIK-MCVy0VPrmmYkoYP0m8iGBuCnC6ppqnazSSL2n8iMXa5OsxkScqUtgBMfbbokldIy9q5_NLQl6X8sCs0TqDO0dBd-kknsPKlXd3hLYe7JCldqp28BMyOU4PwKXQ"/>
+<div class="flex-1">
+<div class="font-body-sm text-body-sm text-on-surface mb-1 flex justify-between"><span>Sarah Jenkins</span></div>
+<div class="w-full h-2 bg-surface-container rounded-full flex relative overflow-hidden">
+<div class="absolute left-[15%] w-[5%] h-full bg-secondary rounded-full"></div>
+<div class="absolute left-[35%] w-[10%] h-full bg-secondary rounded-full"></div>
+<div class="absolute left-[50%] w-[10%] h-full bg-secondary rounded-full"></div>
+<div class="absolute left-[80%] w-[10%] h-full bg-secondary rounded-full"></div>
+</div>
+</div>
+</div>
+<!-- Speaker 3 -->
+<div class="flex items-center gap-md">
+<div class="w-8 h-8 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center font-button shrink-0 border border-tertiary/30">DB</div>
+<div class="flex-1">
+<div class="font-body-sm text-body-sm text-on-surface mb-1 flex justify-between"><span>David Byrnes</span></div>
+<div class="w-full h-2 bg-surface-container rounded-full flex relative overflow-hidden">
+<div class="absolute left-[0%] w-[5%] h-full bg-tertiary rounded-full"></div>
+<div class="absolute left-[85%] w-[5%] h-full bg-tertiary rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-2 flex justify-between items-center text-on-surface-variant">
+<button class="text-primary hover:underline font-body-sm">Show all 5 speakers</button>
+<div class="flex items-center gap-2 font-body-sm">
+<span>Is this info useful?</span>
+<button class="hover:text-on-surface"><span class="material-symbols-outlined text-[16px]">thumb_up</span></button>
+<button class="hover:text-on-surface"><span class="material-symbols-outlined text-[16px]">thumb_down</span></button>
+</div>
+</div>
+</div>
+<!-- Details -->
+<div class="p-lg flex flex-col gap-xl">
+<div class="flex flex-col gap-sm">
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Q3 Product Roadmap Review</h1>
+<div class="flex items-center gap-sm text-on-surface-variant font-body-sm text-body-sm">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">calendar_today</span> Oct 24, 2023</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">person</span> Presenter: Alex Chen</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="bg-surface-container py-0.5 px-2 rounded-md font-label-caps text-label-caps text-primary">INTERNAL</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Panel: Notes & Synthesis -->
+<div class="w-[45%] flex flex-col bg-surface">
+<!-- Header Actions -->
+<div class="h-16 px-md flex items-center justify-between border-b border-outline-variant/20 bg-surface/90 backdrop-blur-sm z-10 shrink-0">
+<div class="flex items-center gap-2 overflow-x-auto hidden-scrollbar">
+<button class="px-4 py-2 rounded-full font-button text-button text-on-surface-variant hover:bg-surface-container transition-colors border border-outline-variant/30 whitespace-nowrap">Notes</button>
+<button class="px-4 py-2 rounded-full font-button text-button bg-primary-container text-on-primary-container border border-primary/20 whitespace-nowrap">AI summary</button>
+<button class="px-4 py-2 rounded-full font-button text-button text-on-surface-variant hover:bg-surface-container transition-colors border border-outline-variant/30 flex items-center gap-1 whitespace-nowrap">Custom summary <span class="bg-primary text-on-primary text-[10px] px-1.5 py-0.5 rounded-full uppercase tracking-wider font-bold">New</span></button>
+<button class="px-4 py-2 rounded-full font-button text-button text-on-surface-variant hover:bg-surface-container transition-colors border border-outline-variant/30 whitespace-nowrap">Mentions</button>
+<button class="px-4 py-2 rounded-full font-button text-button text-on-surface-variant hover:bg-surface-container transition-colors border border-outline-variant/30 whitespace-nowrap">Transcript</button>
+</div>
+<div class="flex items-center gap-sm ml-4 shrink-0">
+<button class="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors">
+<span class="material-symbols-outlined text-[20px]">content_copy</span>
+</button>
+</div>
+</div>
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-y-auto flex flex-col hidden-scrollbar relative">
+<!-- Shared Files Section -->
+<div class="p-md border-b border-outline-variant/20 bg-surface-container-lowest">
+<div class="flex items-center gap-2 mb-sm text-on-surface">
+<h3 class="font-button text-button">Shared files</h3>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">info</span>
+</div>
+<div class="grid grid-cols-2 gap-sm">
+<a class="flex items-center gap-2 p-2 rounded border border-outline-variant/30 hover:bg-surface-container transition-colors group" href="#">
+<span class="material-symbols-outlined text-primary">description</span>
+<span class="font-body-sm text-body-sm text-on-surface truncate group-hover:text-primary transition-colors">Q3_Roadmap_Draft.docx</span>
+</a>
+<a class="flex items-center gap-2 p-2 rounded border border-outline-variant/30 hover:bg-surface-container transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#0F9D58]">table_chart</span>
+<span class="font-body-sm text-body-sm text-on-surface truncate group-hover:text-primary transition-colors">Resource_Allocation.xlsx</span>
+</a>
+<a class="flex items-center gap-2 p-2 rounded border border-outline-variant/30 hover:bg-surface-container transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#DB4437]">picture_as_pdf</span>
+<span class="font-body-sm text-body-sm text-on-surface truncate group-hover:text-primary transition-colors">Design_Specs_v2.pdf</span>
+</a>
+<a class="flex items-center gap-2 p-2 rounded border border-outline-variant/30 hover:bg-surface-container transition-colors group" href="#">
+<span class="material-symbols-outlined text-outline">image</span>
+<span class="font-body-sm text-body-sm text-on-surface truncate group-hover:text-primary transition-colors">Screenshot_Canvas.png</span>
+</a>
+</div>
+<button class="mt-sm text-primary font-body-sm text-body-sm hover:underline">Show more</button>
+</div>
+<div class="p-md">
+<p class="text-on-surface-variant font-body-sm mb-md flex items-center justify-between">
+<span>AI-generated content may be incorrect</span>
+</p>
+<div class="flex items-center justify-between mb-md">
+<h2 class="font-headline-md text-headline-md text-on-surface">Meeting notes</h2>
+<button class="text-primary hover:underline font-body-sm">Expand all</button>
+</div>
+<!-- Key Moments (Expandable) -->
+<div class="flex flex-col gap-sm">
+<!-- Item 1 -->
+<details class="group bg-surface-container-lowest rounded-xl border border-outline-variant/20 overflow-hidden" open="">
+<summary class="flex items-start gap-3 p-3 cursor-pointer hover:bg-surface-container/50 transition-colors list-none [&amp;::-webkit-details-marker]:hidden">
+<span class="material-symbols-outlined mt-0.5 text-on-surface-variant group-open:rotate-90 transition-transform">arrow_right</span>
+<div class="flex-1 pr-4">
+<h3 class="font-body-md text-body-md text-on-surface font-semibold mb-1">Contextual Canvas Interface Review <span class="text-primary font-normal font-mono ml-2">04:12</span></h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1 group-open:line-clamp-none transition-all">Sarah presented the new drag-and-drop mechanics for AI synthesis nodes, highlighting the deferred loading strategy.</p>
+</div>
+<div class="relative w-24 h-16 shrink-0 rounded overflow-hidden border border-outline-variant/20 hidden group-open:block">
+<img alt="Thumbnail" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCu68Y5FuD-bjMw6rtIUfVYqoADWXXYSc9cRkB084P_XckodNjHXcqMiXMPQTOgF3_xu-1UHKyPPFNHCyiAJqFPP6alJX1R84_9wsy4ZQALJnM9caqd-KbOqssAblaYIbMo0H5sqEsVwDL7aPqLDskRz57Z8K4IIF0oPQ4_txoS7oyDEEnxwu1N1OIDuki3D96S9ThAxX-IPwklWVaaoviGZWWdVTIVJLb8DEYeK347dI0S25ORBq4f8A"/>
+<div class="absolute top-1 right-1 bg-surface-variant text-on-surface-variant text-[10px] px-1 rounded shadow-sm font-mono">2</div>
+</div>
+</summary>
+<div class="px-10 pb-4 pt-1">
+<p class="font-body-sm text-body-sm text-on-surface-variant">Key takeaway: The team agreed that the initial payload is still too heavy despite lazy loading non-critical elements. Design to provide optimized SVGs by EOD.</p>
+</div>
+</details>
+<!-- Item 2 -->
+<details class="group bg-surface-container-lowest rounded-xl border border-outline-variant/20 overflow-hidden">
+<summary class="flex items-start gap-3 p-3 cursor-pointer hover:bg-surface-container/50 transition-colors list-none [&amp;::-webkit-details-marker]:hidden">
+<span class="material-symbols-outlined mt-0.5 text-on-surface-variant group-open:rotate-90 transition-transform">arrow_right</span>
+<div class="flex-1 pr-4">
+<h3 class="font-body-md text-body-md text-on-surface font-semibold mb-1">Backend API Latency Issues <span class="text-primary font-normal font-mono ml-2">12:04</span></h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1 group-open:line-clamp-none transition-all">Engineering discussed blocking issues with GraphQL resolvers taking &gt;800ms due to unindexed vector embeddings.</p>
+</div>
+<div class="relative w-24 h-16 shrink-0 rounded overflow-hidden border border-outline-variant/20 hidden group-open:block">
+<div class="w-full h-full bg-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-outline">terminal</span>
+</div>
+<div class="absolute top-1 right-1 bg-surface-variant text-on-surface-variant text-[10px] px-1 rounded shadow-sm font-mono">3</div>
+</div>
+</summary>
+<div class="px-10 pb-4 pt-1">
+<p class="font-body-sm text-body-sm text-on-surface-variant">Action Item: David B. to schedule architecture review for DB indexing strategy before next sprint planning.</p>
+</div>
+</details>
+<!-- Item 3 -->
+<details class="group bg-surface-container-lowest rounded-xl border border-outline-variant/20 overflow-hidden">
+<summary class="flex items-start gap-3 p-3 cursor-pointer hover:bg-surface-container/50 transition-colors list-none [&amp;::-webkit-details-marker]:hidden">
+<span class="material-symbols-outlined mt-0.5 text-on-surface-variant group-open:rotate-90 transition-transform">arrow_right</span>
+<div class="flex-1 pr-4">
+<h3 class="font-body-md text-body-md text-on-surface font-semibold mb-1">Beta Rollout Strategy <span class="text-primary font-normal font-mono ml-2">21:45</span></h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1 group-open:line-clamp-none transition-all">Agreement to push beta to 10% of user base starting August 28th, pending resolution of latency blockers.</p>
+</div>
+<div class="relative w-24 h-16 shrink-0 rounded overflow-hidden border border-outline-variant/20 hidden group-open:block">
+<div class="w-full h-full bg-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-outline">calendar_month</span>
+</div>
+<div class="absolute top-1 right-1 bg-surface-variant text-on-surface-variant text-[10px] px-1 rounded shadow-sm font-mono">1</div>
+</div>
+</summary>
+<div class="px-10 pb-4 pt-1">
+<p class="font-body-sm text-body-sm text-on-surface-variant">Marketing team needs final copy by Aug 20th. Feature flag configuration to be handled by DevOps.</p>
+</div>
+</details>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></main></div>
+</body></html>

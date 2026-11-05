@@ -1,0 +1,51 @@
+# OS
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Backend local/runtime files
+/.env.local
+backend/.env
+backend/framenote.db
+backend/framenote.db-*
+backend/*.sqlite
+backend/*.sqlite3
+backend/.coverage
+backend/htmlcov/
+backend/data/
+
+# Local pipeline testing dirs (folders kept via .gitkeep, contents ignored)
+backend/input/*
+!backend/input/.gitkeep
+backend/output/*
+!backend/output/.gitkeep
+
+# Frontend
+frontend/node_modules/
+frontend/.next/
+frontend/.next-dev/
+frontend/out/
+frontend/.turbo/
+frontend/*.tsbuildinfo
+frontend/.env.local
+frontend/.env*.local
+
+# Build / temp
+*.tmp
+*.swp

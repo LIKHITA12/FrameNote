@@ -1,0 +1,28 @@
+{
+  "name": "framenote-frontend",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "NEXT_DIST_DIR=.next-dev next dev",
+    "dev:stable": "NEXT_DISABLE_WEBPACK_CACHE=1 NEXT_DIST_DIR=.next-dev next dev",
+    "dev:clean": "rm -rf .next-dev .next node_modules/.cache && NEXT_DISABLE_WEBPACK_CACHE=1 NEXT_DIST_DIR=.next-dev next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "15.4.4",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-youtube": "10.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.17.1",
+    "@types/react": "19.1.9",
+    "@types/react-dom": "19.1.7",
+    "autoprefixer": "10.4.21",
+    "postcss": "8.5.6",
+    "tailwindcss": "3.4.17",
+    "typescript": "5.8.3"
+  }
+}

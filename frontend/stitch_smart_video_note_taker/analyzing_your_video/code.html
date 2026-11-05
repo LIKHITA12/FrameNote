@@ -1,0 +1,291 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={theme:{extend:{"colors":{"on-primary":"#ffffff","inverse-primary":"#c3c0ff","surface-variant":"#d3e4fe","surface":"#f8f9ff","surface-container-highest":"#d3e4fe","outline":"#777587","surface-container-low":"#eff4ff","on-secondary-fixed-variant":"#3f465c","on-surface-variant":"#464555","primary-fixed-dim":"#c3c0ff","on-tertiary":"#ffffff","on-error-container":"#93000a","on-secondary-fixed":"#131b2e","on-surface":"#0b1c30","secondary-fixed-dim":"#bec6e0","primary-fixed":"#e2dfff","background":"#f8f9ff","surface-tint":"#4d44e3","on-primary-fixed-variant":"#3323cc","inverse-on-surface":"#eaf1ff","on-primary-fixed":"#0f0069","primary-container":"#4f46e5","tertiary-fixed-dim":"#c4c7c9","surface-dim":"#cbdbf5","on-secondary-container":"#5c647a","on-secondary":"#ffffff","tertiary-container":"#5e6163","on-tertiary-fixed-variant":"#444749","on-tertiary-fixed":"#191c1e","secondary-container":"#dae2fd","inverse-surface":"#213145","surface-bright":"#f8f9ff","tertiary":"#46494b","on-primary-container":"#dad7ff","secondary-fixed":"#dae2fd","secondary":"#565e74","outline-variant":"#c7c4d8","on-error":"#ffffff","error-container":"#ffdad6","surface-container":"#e5eeff","primary":"#3525cd","on-background":"#0b1c30","on-tertiary-container":"#dadcde","tertiary-fixed":"#e0e3e5","surface-container-lowest":"#ffffff","error":"#ba1a1a","surface-container-high":"#dce9ff"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"container-max":"1280px","gutter":"24px","xs":"8px","sm":"16px","md":"24px","base":"4px","xl":"64px","lg":"40px"},"fontFamily":{"headline-md":["Manrope"],"label-caps":["JetBrains Mono"],"display-lg":["Manrope"],"body-sm":["Inter"],"headline-lg":["Manrope"],"body-md":["Inter"],"headline-lg-mobile":["Manrope"],"body-lg":["Inter"],"button":["Inter"]},"fontSize":{"headline-md":["24px",{"lineHeight":"32px","fontWeight":"600"}],"label-caps":["12px",{"lineHeight":"16px","letterSpacing":"0.05em","fontWeight":"600"}],"display-lg":["48px",{"lineHeight":"56px","letterSpacing":"-0.02em","fontWeight":"800"}],"body-sm":["14px",{"lineHeight":"20px","fontWeight":"400"}],"headline-lg":["32px",{"lineHeight":"40px","letterSpacing":"-0.01em","fontWeight":"700"}],"body-md":["16px",{"lineHeight":"24px","fontWeight":"400"}],"headline-lg-mobile":["24px",{"lineHeight":"32px","fontWeight":"700"}],"body-lg":["18px",{"lineHeight":"28px","fontWeight":"400"}],"button":["14px",{"lineHeight":"20px","fontWeight":"600"}]}}}}</script><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=JetBrains+Mono:wght@100..900&amp;family=Manrope:wght@100..900&amp;display=swap" rel="stylesheet"></head><body class="bg-background font-body-md text-on-background"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-low z-50 flex flex-col pt-sm border-r border-outline-variant/30 transition-all duration-300"><div class="px-md mb-lg flex items-center gap-xs"><img alt="FrameNote Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5lHPUB9eGt9mwwroOchtuDGX_BsSUySHMdme8fxbH_KbPe5DFwGfi3kDO7OPnfoM0ecwvwf71fyh4nTyOXt8qlQDJGLmFDmaF733vOYrrm9MnOehkJq0lh6KV5BaFW_Cmx4KlgpBTeuUb8kUDDULLq0_6K1gpnpRbxr2rbqnxHSBd8RHFBo8W3Kgoig3wxBQcQ7ltvzR95FiWPMUJTE7OzV1jf6uZlvfj9FjzqNv_z6RiRMjD7OCUUw"></div><nav class="flex-1 px-sm space-y-base" data-active-classes="bg-primary-container text-on-primary-container font-button rounded-xl"><a aria-current="page" class="flex items-center px-sm py-sm transition-all bg-primary-container text-on-primary-container font-button rounded-xl" data-path="dashboard" href="#"><span class="material-symbols-outlined mr-sm">grid_view</span>Dashboard</a><a class="flex items-center px-sm py-sm text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all rounded-xl" data-path="history" href="#"><span class="material-symbols-outlined mr-sm">history</span>History</a><div class="h-px bg-outline-variant/20 my-md mx-sm"></div><p class="px-sm py-xs font-label-caps text-label-caps text-on-surface-variant opacity-60 uppercase">Organization</p><a class="flex items-center px-sm py-sm text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all rounded-xl" data-path="workspace" href="#"><span class="material-symbols-outlined mr-sm">workspaces</span>Workspace</a><a class="flex items-center px-sm py-sm text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all rounded-xl" data-path="team" href="#"><span class="material-symbols-outlined mr-sm">group</span>Team</a><a class="flex items-center px-sm py-sm text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all rounded-xl" data-path="settings" href="#"><span class="material-symbols-outlined mr-sm">settings</span>Settings</a></nav><div class="px-sm pb-lg"><button class="w-full flex items-center justify-center gap-xs bg-primary text-on-primary font-button py-sm rounded-xl hover:shadow-lg transition-all"><span class="material-symbols-outlined">add</span>New Note</button></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/10 z-40 flex items-center px-lg justify-between"><div class="flex items-center gap-md"><div class="flex items-center bg-surface-container-highest/50 px-sm py-xs rounded-full border border-outline-variant/20"><span class="material-symbols-outlined text-on-surface-variant text-[20px] mr-xs">search</span><input class="bg-transparent border-none focus:ring-0 text-sm w-64" placeholder="Search notes..." type="text"></div></div><div class="flex items-center gap-md"><button class="text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined">notifications</span></button><img alt="Profile" class="w-8 h-8 rounded-full border border-outline-variant object-cover cursor-pointer" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyZdkgr5REMGHBO-7sRNCAsGDa2jyVQGLB5QGctkQlseptxacOyhLhelnstMisZJg-AhYu5tcBnBcGyKoJUmZDT6XHWA6dbdy7DeVoBRanqUnMDMr6aTuo2Z-WKIK-MCVy0VPrmmYkoYP0m8iGBuCnC6ppqnazSSL2n8iMXa5OsxkScqUtgBMfbbokldIy9q5_NLQl6X8sCs0TqDO0dBd-kknsPKlXd3hLYe7JCldqp28BMyOU4PwKXQ"></div></header><main class="relative pt-16 min-h-screen bg-background"><div class="flex flex-col w-full h-full p-lg gap-lg font-body-md text-on-surface">
+<!-- Header Area -->
+<div class="flex items-center justify-between mb-sm">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-xs tracking-tight">Active Processing</h1>
+<p class="text-on-surface-variant font-body-sm text-body-sm max-w-2xl">
+                Synthesizing video content into actionable intelligence. The AI is currently analyzing the latest upload.
+            </p>
+</div>
+<div class="flex gap-sm">
+<button class="px-sm py-xs border border-outline-variant rounded-lg text-secondary font-button text-button hover:bg-surface-container transition-colors flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">pause</span> Pause
+            </button>
+<button class="px-sm py-xs bg-error text-on-error rounded-lg font-button text-button hover:bg-error/90 transition-colors flex items-center gap-xs shadow-sm">
+<span class="material-symbols-outlined text-[18px]">close</span> Cancel
+            </button>
+</div>
+</div>
+<!-- Main Content Split Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter flex-1">
+<!-- Left Panel: Video Context & Status -->
+<div class="lg:col-span-4 flex flex-col gap-md">
+<!-- Video Thumbnail Card -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-sm overflow-hidden flex flex-col">
+<div class="relative w-full aspect-video bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A sleek, modern video conference room setup with participants visible on screen, representing a webinar or internal team meeting, in a crisp, bright, professional lighting setup with soft blue and slate tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBtsbWnTmM3TvEnDSKQdAWlzUvrReC0rUzBccGdXG7vTFmaFGR6hgEUhaehS8RiiEg2OZZRYpALXYLG5n0Thv2dJoc5I8iXqVnzN00WiXgMwZOfeL0dX7_H821gXwh5FNuSVdGRUvKc2qiqPeXGbkqXkPa3orRpYcUeXauivczoPb0pn36uj0E3fu4QpeVMU3Y3ez266WqWn8VH0VaPC2tPJbND1bvFozvYoC-m0NVB_ZdHJVyO8CyeA">
+<!-- Processing Overlay -->
+<div class="absolute inset-0 bg-inverse-surface/60 backdrop-blur-sm flex items-center justify-center">
+<div class="relative">
+<svg class="animate-spin text-primary w-12 h-12" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+<path class="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" fill="currentColor"></path>
+</svg>
+<!-- Fake progress pulse -->
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary animate-pulse text-[20px]">smart_toy</span>
+</div>
+</div>
+</div>
+<!-- Time Badge -->
+<div class="absolute bottom-xs right-xs bg-inverse-surface/90 text-inverse-on-surface px-2 py-1 rounded font-label-caps text-label-caps tracking-widest backdrop-blur-md">
+                        42:15
+                    </div>
+</div>
+<div class="p-md">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-xs truncate">Q3 All-Hands Engineering Review</h2>
+<div class="flex items-center gap-xs text-on-surface-variant font-body-sm text-body-sm mb-md">
+<span class="material-symbols-outlined text-[16px]">videocam</span>
+<span class="">MP4 Video File</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="">1.2 GB</span>
+</div>
+<div class="bg-surface-container-low rounded-lg p-sm border border-outline-variant/20">
+<div class="flex justify-between items-center mb-xs">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Overall Progress</span>
+<span class="font-label-caps text-label-caps text-primary">68%</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full transition-all duration-1000 ease-in-out" style="width: 68%;"></div>
+</div>
+<p class="text-xs text-on-surface-variant mt-xs text-right">Est. time remaining: 2m 14s</p>
+</div>
+</div>
+</div>
+<!-- Meta Data Card -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-sm p-md flex flex-col gap-sm">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest border-b border-outline-variant/20 pb-xs">Metadata Extracted</h3>
+<div class="grid grid-cols-2 gap-y-sm">
+<div>
+<span class="block text-xs text-on-surface-variant mb-1">Detected Language</span>
+<span class="font-body-sm text-body-sm text-on-surface flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-primary">language</span> English (US)
+                        </span>
+</div>
+<div>
+<span class="block text-xs text-on-surface-variant mb-1">Speakers Identified</span>
+<span class="font-body-sm text-body-sm text-on-surface flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-primary">record_voice_over</span> 4 Active
+                        </span>
+</div>
+<div>
+<span class="block text-xs text-on-surface-variant mb-1">Audio Quality</span>
+<span class="font-body-sm text-body-sm text-on-surface flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-primary">graphic_eq</span> High (Clear)
+                        </span>
+</div>
+<div>
+<span class="block text-xs text-on-surface-variant mb-1">Target Output</span>
+<span class="font-body-sm text-body-sm text-on-surface flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-primary">summarize</span> Exec Summary
+                        </span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Panel: Detailed Progress & Log -->
+<div class="lg:col-span-8 flex flex-col gap-md">
+<!-- AI Task Pipeline -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-sm p-lg">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-lg">Synthesis Pipeline</h2>
+<div class="relative pl-sm">
+<!-- Vertical Line connecting steps -->
+<div class="absolute left-[27px] top-[30px] bottom-[40px] w-[2px] bg-surface-container-highest"></div>
+<!-- Step 1: Complete -->
+<div class="flex items-start gap-md mb-lg relative">
+<div class="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center border border-primary/30 z-10 shrink-0">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+<div class="flex-1 pt-1">
+<div class="flex justify-between items-center mb-xs">
+<h4 class="font-button text-button text-on-surface">Audio Separation &amp; Transcribing</h4>
+<span class="text-xs text-on-surface-variant">100%</span>
+</div>
+<p class="text-body-sm text-on-surface-variant mb-sm">Converted 42 minutes of audio to raw text tokens. Identified primary speaker segments.</p>
+</div>
+</div>
+<!-- Step 2: In Progress -->
+<div class="flex items-start gap-md mb-lg relative">
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-sm shadow-primary/40 z-10 shrink-0 ring-4 ring-primary/10 animate-pulse">
+<span class="material-symbols-outlined text-[16px]">analytics</span>
+</div>
+<div class="flex-1 pt-1">
+<div class="flex justify-between items-center mb-xs">
+<h4 class="font-button text-button text-on-surface">Analyzing Key Moments</h4>
+<span class="text-xs text-primary font-bold">In Progress</span>
+</div>
+<p class="text-body-sm text-on-surface-variant mb-sm">Identifying topics, sentiment shifts, and actionable insights.</p>
+<!-- Sub-progress indicators -->
+<div class="space-y-3 bg-surface-container p-sm rounded-lg border border-outline-variant/10">
+<div>
+<div class="flex justify-between text-xs mb-1">
+<span class="text-on-surface-variant">Topic Extraction</span>
+<span class="text-on-surface-variant">85%</span>
+</div>
+<div class="w-full bg-outline-variant/20 h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full transition-all duration-500" style="width: 85%;"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-xs mb-1">
+<span class="text-on-surface-variant">Action Item Detection</span>
+<span class="text-on-surface-variant">40%</span>
+</div>
+<div class="w-full bg-outline-variant/20 h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full transition-all duration-500" style="width: 40%;"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Step 3: Pending -->
+<div class="flex items-start gap-md relative opacity-50">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center border border-outline-variant/30 z-10 shrink-0">
+<span class="material-symbols-outlined text-[16px]">edit_document</span>
+</div>
+<div class="flex-1 pt-1">
+<div class="flex justify-between items-center mb-xs">
+<h4 class="font-button text-button text-on-surface">Generating Final Summary</h4>
+<span class="text-xs text-on-surface-variant">Pending</span>
+</div>
+<p class="text-body-sm text-on-surface-variant">Formatting insights into chosen template structure.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Real-time Log Feed -->
+<div class="bg-inverse-surface rounded-xl border border-inverse-on-surface/10 shadow-sm flex-1 flex flex-col overflow-hidden min-h-[250px]">
+<div class="p-sm border-b border-inverse-on-surface/10 flex justify-between items-center bg-inverse-surface/80 backdrop-blur-sm z-10">
+<h3 class="font-label-caps text-label-caps text-inverse-on-surface uppercase tracking-widest flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px] animate-pulse text-primary-fixed">terminal</span> Engine Log
+                    </h3>
+<span class="flex items-center gap-1 text-xs text-primary-fixed font-label-caps">
+<span class="w-2 h-2 rounded-full bg-primary-fixed animate-ping"></span> Live
+                    </span>
+</div>
+<!-- Log Container - styled as monospaced terminal -->
+<div class="p-sm flex-1 overflow-y-auto font-label-caps text-xs text-secondary-fixed-dim/70 space-y-2 bg-[#0F172A] relative" id="log-container">
+<!-- Decorative gradient for depth -->
+<div class="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-[#0F172A] to-transparent z-10 pointer-events-none"></div>
+<div class="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-[#0F172A] to-transparent z-10 pointer-events-none"></div>
+
+
+
+
+
+
+
+
+<div class="flex gap-sm hover:bg-white/5 p-1 rounded transition-colors animate-fade-in opacity-0" style="transition: opacity 0.5s ease-in; opacity: 1;">
+                    <span class="text-primary-fixed w-[60px] shrink-0">[22:09:31]</span>
+                    <span class="text-surface-variant/80">Analyzer: Scanning entity relations...</span>
+                </div><div class="flex gap-sm hover:bg-white/5 p-1 rounded transition-colors animate-fade-in opacity-0" style="transition: opacity 0.5s ease-in; opacity: 1;">
+                    <span class="text-primary-fixed w-[60px] shrink-0">[22:09:35]</span>
+                    <span class="text-surface-variant/80">Analyzer: Scanning entity relations...</span>
+                </div><div class="flex gap-sm hover:bg-white/5 p-1 rounded transition-colors animate-fade-in opacity-0" style="transition: opacity 0.5s ease-in; opacity: 1;">
+                    <span class="text-primary-fixed w-[60px] shrink-0">[22:09:38]</span>
+                    <span class="text-surface-variant/80">Analyzer: Scanning entity relations...</span>
+                </div><div class="flex gap-sm hover:bg-white/5 p-1 rounded transition-colors animate-fade-in opacity-0" style="transition: opacity 0.5s ease-in; opacity: 1;">
+                    <span class="text-primary-fixed w-[60px] shrink-0">[22:09:42]</span>
+                    <span class="text-surface-variant/80">Analyzer: Scanning entity relations...</span>
+                </div><div class="flex gap-sm hover:bg-white/5 p-1 rounded transition-colors animate-fade-in opacity-0" style="transition: opacity 0.5s ease-in; opacity: 1;">
+                    <span class="text-primary-fixed w-[60px] shrink-0">[22:09:45]</span>
+                    <span class="text-surface-variant/80">Analyzer: Scanning entity relations...</span>
+                </div><div class="flex gap-sm hover:bg-white/5 p-1 rounded transition-colors animate-fade-in opacity-0" style="transition: opacity 0.5s ease-in; opacity: 1;">
+                    <span class="text-primary-fixed w-[60px] shrink-0">[22:09:49]</span>
+                    <span class="text-surface-variant/80">Analyzer: Scanning entity relations...</span>
+                </div><div class="flex gap-sm hover:bg-white/5 p-1 rounded transition-colors animate-fade-in opacity-0" style="transition: opacity 0.5s ease-in; opacity: 1;">
+                    <span class="text-primary-fixed w-[60px] shrink-0">[22:09:52]</span>
+                    <span class="text-surface-variant/80">Analyzer: Scanning entity relations...</span>
+                </div><div class="flex gap-sm hover:bg-white/5 p-1 rounded transition-colors animate-fade-in opacity-0" style="transition: opacity 0.5s ease-in; opacity: 1;">
+                    <span class="text-primary-fixed w-[60px] shrink-0">[22:09:56]</span>
+                    <span class="text-surface-variant/80">Analyzer: Scanning entity relations...</span>
+                </div><div class="flex gap-sm hover:bg-white/5 p-1 rounded transition-colors animate-fade-in opacity-0" style="transition: opacity 0.5s ease-in; opacity: 1;">
+                    <span class="text-primary-fixed w-[60px] shrink-0">[22:09:59]</span>
+                    <span class="text-surface-variant/80">Analyzer: Scanning entity relations...</span>
+                </div><div class="flex gap-sm hover:bg-white/5 p-1 rounded transition-colors animate-fade-in opacity-0" style="transition: opacity 0.5s ease-in; opacity: 1;">
+                    <span class="text-primary-fixed w-[60px] shrink-0">[22:10:03]</span>
+                    <span class="text-surface-variant/80">Analyzer: Scanning entity relations...</span>
+                </div><div class="flex gap-sm hover:bg-white/5 p-1 rounded transition-colors animate-fade-in opacity-0" style="transition: opacity 0.5s ease-in; opacity: 1;">
+                    <span class="text-primary-fixed w-[60px] shrink-0">[22:10:06]</span>
+                    <span class="text-surface-variant/80">Analyzer: Scanning entity relations...</span>
+                </div><div class="flex gap-sm hover:bg-white/5 p-1 rounded transition-colors animate-fade-in opacity-0" style="transition: opacity 0.5s ease-in; opacity: 1;">
+                    <span class="text-primary-fixed w-[60px] shrink-0">[22:10:10]</span>
+                    <span class="text-surface-variant/80">Analyzer: Scanning entity relations...</span>
+                </div><div class="flex gap-sm hover:bg-white/5 p-1 rounded transition-colors animate-fade-in opacity-0" style="transition: opacity 0.5s ease-in; opacity: 1;">
+                    <span class="text-primary-fixed w-[60px] shrink-0">[22:10:13]</span>
+                    <span class="text-surface-variant/80">Analyzer: Scanning entity relations...</span>
+                </div><div class="flex gap-sm hover:bg-white/5 p-1 rounded transition-colors animate-fade-in opacity-0" style="transition: opacity 0.5s ease-in; opacity: 1;">
+                    <span class="text-primary-fixed w-[60px] shrink-0">[22:10:17]</span>
+                    <span class="text-surface-variant/80">Analyzer: Scanning entity relations...</span>
+                </div><div class="flex gap-sm hover:bg-white/5 p-1 rounded transition-colors animate-fade-in opacity-0" style="transition: opacity 0.5s ease-in; opacity: 1;">
+                    <span class="text-primary-fixed w-[60px] shrink-0">[22:10:20]</span>
+                    <span class="text-surface-variant/80">Analyzer: Scanning entity relations...</span>
+                </div><div class="flex gap-sm hover:bg-white/5 p-1 rounded transition-colors animate-fade-in opacity-0" style="transition: opacity 0.5s ease-in; opacity: 1;">
+                    <span class="text-primary-fixed w-[60px] shrink-0">[22:10:24]</span>
+                    <span class="text-surface-variant/80">Analyzer: Scanning entity relations...</span>
+                </div><div class="flex gap-sm hover:bg-white/5 p-1 rounded transition-colors animate-fade-in opacity-0" style="transition: opacity 0.5s ease-in; opacity: 1;">
+                    <span class="text-primary-fixed w-[60px] shrink-0">[22:10:27]</span>
+                    <span class="text-surface-variant/80">Analyzer: Scanning entity relations...</span>
+                </div><div class="flex gap-sm hover:bg-white/5 p-1 rounded transition-colors animate-fade-in opacity-0" style="transition: opacity 0.5s ease-in; opacity: 1;">
+                    <span class="text-primary-fixed w-[60px] shrink-0">[22:10:31]</span>
+                    <span class="text-surface-variant/80">Analyzer: Scanning entity relations...</span>
+                </div></div>
+</div>
+</div>
+</div>
+</div>
+<script>
+    // Simple script to auto-scroll the log feed to the bottom to simulate activity
+    document.addEventListener("DOMContentLoaded", () => {
+        const logContainer = document.getElementById('log-container');
+        if(logContainer) {
+            logContainer.scrollTop = logContainer.scrollHeight;
+            
+            // Simulate incoming logs slightly
+            setInterval(() => {
+                const newLog = document.createElement('div');
+                newLog.className = 'flex gap-sm hover:bg-white/5 p-1 rounded transition-colors animate-fade-in opacity-0';
+                
+                const now = new Date();
+                const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+                
+                newLog.innerHTML = `
+                    <span class="text-primary-fixed w-[60px] shrink-0">[${timeStr}]</span>
+                    <span class="text-surface-variant/80">Analyzer: Scanning entity relations...</span>
+                `;
+                
+                // Add tiny animation class inline
+                newLog.style.transition = "opacity 0.5s ease-in";
+                
+                logContainer.appendChild(newLog);
+                
+                // Trigger reflow to start transition
+                void newLog.offsetWidth;
+                newLog.style.opacity = "1";
+                
+                logContainer.scrollTop = logContainer.scrollHeight;
+                
+                // Keep list from growing infinitely
+                if(logContainer.children.length > 20) {
+                    logContainer.removeChild(logContainer.children[2]); // remove first real log after gradients
+                }
+                
+            }, 3500);
+        }
+    });
+</script></main></div>
+
+</body></html>

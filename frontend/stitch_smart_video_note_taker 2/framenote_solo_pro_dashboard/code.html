@@ -1,0 +1,373 @@
+<!DOCTYPE html><html lang="en" style=""><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_dashboard" name="shell-type"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"error-container":"#ffdad6","on-primary-fixed":"#0f0069","on-background":"#0b1c30","on-error":"#ffffff","tertiary":"#46494b","inverse-on-surface":"#eaf1ff","surface-container-low":"#eff4ff","error":"#ba1a1a","surface-container-high":"#dce9ff","on-secondary-fixed":"#131b2e","surface-bright":"#f8f9ff","background":"#f8f9ff","primary-container":"#4f46e5","surface-container":"#e5eeff","tertiary-container":"#5e6163","surface":"#f8f9ff","on-error-container":"#93000a","surface-variant":"#d3e4fe","on-primary":"#ffffff","secondary-fixed-dim":"#bec6e0","outline":"#777587","primary-fixed-dim":"#c3c0ff","inverse-surface":"#213145","surface-container-lowest":"#ffffff","on-secondary":"#ffffff","on-tertiary-fixed-variant":"#444749","primary-fixed":"#e2dfff","secondary-fixed":"#dae2fd","primary":"#3525cd","on-primary-fixed-variant":"#3323cc","on-primary-container":"#dad7ff","on-surface-variant":"#464555","outline-variant":"#c7c4d8","surface-container-highest":"#d3e4fe","inverse-primary":"#c3c0ff","on-tertiary-container":"#dadcde","surface-tint":"#4d44e3","secondary-container":"#dae2fd","on-tertiary":"#ffffff","tertiary-fixed":"#e0e3e5","on-surface":"#0b1c30","on-tertiary-fixed":"#191c1e","on-secondary-container":"#5c647a","surface-dim":"#cbdbf5","on-secondary-fixed-variant":"#3f465c","tertiary-fixed-dim":"#c4c7c9","secondary":"#565e74"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"md":"24px","gutter":"24px","container-max":"1280px","xs":"8px","xl":"64px","base":"4px","sm":"16px","lg":"40px"},"fontFamily":{"display-lg":["Manrope"],"body-lg":["Inter"],"label-caps":["JetBrains Mono"],"headline-lg-mobile":["Manrope"],"body-sm":["Inter"],"body-md":["Inter"],"button":["Inter"],"headline-md":["Manrope"],"headline-lg":["Manrope"]},"fontSize":{"display-lg":["48px",{"lineHeight":"56px","letterSpacing":"-0.02em","fontWeight":"800"}],"body-lg":["18px",{"lineHeight":"28px","fontWeight":"400"}],"label-caps":["12px",{"lineHeight":"16px","letterSpacing":"0.05em","fontWeight":"600"}],"headline-lg-mobile":["24px",{"lineHeight":"32px","fontWeight":"700"}],"body-sm":["14px",{"lineHeight":"20px","fontWeight":"400"}],"body-md":["16px",{"lineHeight":"24px","fontWeight":"400"}],"button":["14px",{"lineHeight":"20px","fontWeight":"600"}],"headline-md":["24px",{"lineHeight":"32px","fontWeight":"600"}],"headline-lg":["32px",{"lineHeight":"40px","letterSpacing":"-0.01em","fontWeight":"700"}]}}}};</script></head><body class="bg-background font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-64 bg-surface-container-low z-50 flex flex-col pt-6 pb-8 shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><!-- Top Branding / Logo -->
+<div class="px-6 mb-8 flex items-center gap-3">
+<img alt="FrameNote Logo" class="h-9 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1X5Gu6JY2S-dVjDeTCRg0TicoASQJIrzJECWEqHrjwkmQcLzBl93MPTAYfNABSHBwSk_kSpM2G6Rts7DelW0rDH-6f6gUYmUshWYAhQHM4EsDreDbJMvMORiNwo8mTBe2tuxzGYS-wYb8JYU5Vmnsw7nGjk_XbO5ECsH_uUrxZABBQDYCsuAvIPxZsknynNEYp8AN8Uw0Gy1Bf6SwNYw6macg_N2mqRccuPu0ktEwD9XetgnKgiJLaknSf_">
+</div>
+<!-- Navigation Items (Exact match to SCREEN_19) -->
+<nav class="flex-1 px-4 space-y-1.5 overflow-y-auto">
+<!-- Dashboard (Active) -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary text-on-primary font-semibold text-body-sm shadow-sm transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">grid_view</span>
+<span class="">Dashboard</span>
+</a>
+<!-- History -->
+<a class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-on-surface-variant font-body-sm hover:bg-surface-container-high hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">history</span>
+<span class="">History</span>
+</a>
+<!-- Section Heading: ORGANIZATION -->
+<div class="pt-5 pb-2 px-3">
+<span class="font-label-caps text-label-caps uppercase tracking-wider text-outline font-semibold">ORGANIZATION</span>
+</div>
+<!-- Workspace -->
+<a class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-on-surface-variant font-body-sm hover:bg-surface-container-high hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">hub</span>
+<span class="">Workspace</span>
+</a>
+<!-- Team -->
+<a class="flex items-center justify-between px-4 py-2.5 rounded-xl text-on-surface-variant font-body-sm hover:bg-surface-container-high hover:text-on-surface transition-all" href="#"><div class="flex items-center gap-3"><span class="material-symbols-outlined text-[20px]">extension</span><span class="">Integrations</span></div><span class="font-label-caps text-[11px] px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant">Notion</span></a>
+<!-- Pricing & Plans -->
+<a class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-on-surface-variant font-body-sm hover:bg-surface-container-high hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">credit_card</span>
+<span class="">Pricing &amp; Plans</span>
+</a>
+<!-- Settings -->
+<a class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-on-surface-variant font-body-sm hover:bg-surface-container-high hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="">Settings</span>
+</a>
+</nav>
+<!-- Bottom Section: New Note Action & Transcription Limit -->
+<div class="px-4 pt-4 mt-auto space-y-3">
+<button class="w-full h-11 px-4 rounded-xl bg-primary text-on-primary font-button text-button flex items-center justify-center gap-2 hover:bg-primary-container shadow-sm transition-all">
+<span class="material-symbols-outlined text-[20px]">add</span>
+<span class="">New Note</span>
+</button>
+
+</div></aside><div class="pl-64"><header class="fixed top-0 left-64 right-0 h-16 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-8"><!-- Pill Search Bar matching SCREEN_19 -->
+<div class="flex items-center gap-4 flex-1 max-w-md">
+<div class="w-full relative flex items-center">
+<span class="material-symbols-outlined absolute left-3.5 text-outline text-[20px] pointer-events-none">search</span>
+<input class="w-full h-10 pl-10 pr-4 rounded-full bg-surface-container-lowest font-body-sm text-body-sm text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary shadow-sm transition-all" placeholder="Search notes..." type="text">
+</div>
+</div>
+<!-- Header Actions: Upgrade pill, Notifications, Profile Avatar -->
+<div class="flex items-center gap-3">
+<div class="hidden sm:inline-flex items-center gap-2"><span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 font-label-caps text-[12px] font-semibold border-emerald-500/20"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Solo Pro</span><a class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-fixed text-primary font-button text-[12px] font-semibold hover:bg-primary-container hover:text-on-primary transition-colors shadow-sm" href="#"><span class="material-symbols-outlined text-[14px]">group_add</span><span class="">Upgrade to Team</span></a></div>
+<button class="w-10 h-10 rounded-full bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors flex items-center justify-center shadow-sm relative">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-error"></span>
+</button>
+<div class="h-6 w-px bg-outline-variant mx-1"></div>
+<div class="flex items-center gap-2.5 pl-1 cursor-pointer">
+<img alt="Elena Rostova" class="w-9 h-9 rounded-full object-cover shadow-sm" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQV7-17eU4yJt6uUfT4HhI6x58YJ6B9pG0E_lT7J0v8M9q_2rW7_pZ8q0=s160" style="display: none;">
+<div class="w-9 h-9 rounded-full bg-primary items-center justify-center text-on-primary hidden shadow-sm" style="display: flex;">
+<span class="material-symbols-outlined text-[18px]">person</span>
+</div>
+<div class="hidden lg:flex flex-col text-left">
+<span class="font-body-sm text-body-sm font-semibold text-on-surface leading-tight">Elena Rostova</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Solo Pro</span>
+</div>
+</div>
+</div></header><main class="relative pt-16 bg-background w-full px-8 pb-12"><div class="flex flex-col w-full">
+<div class="w-full max-w-container-max mx-auto py-8 space-y-10">
+<!-- Active Job Notification Strip -->
+<div class="w-full rounded-2xl bg-secondary-fixed/50 p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm transition-all hover:bg-secondary-fixed/70">
+<div class="flex items-center gap-4 w-full sm:w-auto">
+<div class="relative flex items-center justify-center w-10 h-10 rounded-full bg-primary-container text-on-primary-container shrink-0">
+<span class="material-symbols-outlined text-[20px] animate-pulse">auto_awesome</span>
+<span class="absolute -top-0.5 -right-0.5 flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-2">
+<span class="font-body-md text-body-md font-semibold text-on-surface truncate">Currently summarizing: Q3 Strategy Meeting</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-primary/10 text-primary font-label-caps text-label-caps">Almost ready</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Estimated finish in ~15 seconds • Writing final bullet points</p>
+</div>
+</div>
+<div class="flex items-center gap-3 w-full sm:w-auto justify-end shrink-0">
+<button class="h-9 px-4 rounded-xl bg-surface-container-lowest font-button text-button text-primary hover:bg-surface-bright transition-colors shadow-sm flex items-center gap-1.5">
+<span class="">View Progress</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Warm Welcome & Fast Input Hero -->
+<div class="relative rounded-3xl bg-surface-container-lowest p-8 sm:p-10 shadow-sm overflow-hidden">
+<div class="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-primary-fixed-dim/20 blur-3xl pointer-events-none"></div>
+<div class="relative z-10 max-w-3xl space-y-3">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-low text-primary font-label-caps text-label-caps">
+<span class="material-symbols-outlined text-[14px]">bolt</span>
+<span class="">Effortless Meeting &amp; Video Recaps</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Good afternoon, Elena</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Paste any video or meeting link to get instant, organized notes without lifting a finger.</p>
+</div>
+<!-- Quick Action Input Bar -->
+<div class="relative z-10 mt-8">
+<form class="flex flex-col md:flex-row items-stretch gap-3 p-2 rounded-2xl bg-surface-container-low shadow-inner" onsubmit="event.preventDefault();">
+<div class="relative flex items-center flex-1 min-w-0 px-3">
+<span class="material-symbols-outlined text-outline text-[22px] ml-1 mr-3 shrink-0">link</span>
+<input class="w-full bg-transparent font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none" placeholder="Paste YouTube, Zoom, Loom, or meeting link here..." type="url">
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<button class="h-12 px-4 rounded-xl bg-surface-container-lowest text-on-surface-variant hover:text-on-surface hover:bg-surface-bright transition-colors flex items-center gap-2 font-button text-button shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px]">cloud_upload</span>
+<span class="hidden sm:inline">Upload</span>
+</button>
+<button class="h-12 px-6 rounded-xl bg-primary text-on-primary hover:bg-primary-container transition-all flex items-center justify-center gap-2 font-button text-button shadow-md hover:shadow-lg" type="submit">
+<span class="">Get Notes</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</form>
+<div class="mt-3 flex items-center gap-4 px-2 text-on-surface-variant font-body-sm text-body-sm">
+<span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Auto-detects speakers</span>
+<span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Action items highlighted</span>
+<span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>No setup needed</span>
+</div>
+</div>
+</div>
+<!-- Essential High-Impact Metrics (Calm & Non-Technical) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="p-6 rounded-2xl bg-surface-container-lowest shadow-sm flex items-center justify-between">
+<div class="space-y-1">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant tracking-wider">Notes Created</span>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg text-headline-lg text-on-surface">24</span>
+<span class="font-body-sm text-body-sm text-emerald-600 font-semibold">+4 this week</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Ready to read, share, and export</p>
+</div>
+<div class="w-12 h-12 rounded-2xl bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[26px]">description</span>
+</div>
+</div>
+<div class="p-6 rounded-2xl bg-surface-container-lowest shadow-sm flex flex-col justify-between"><div class="flex items-start justify-between gap-4"><div class="space-y-1"><span class="font-label-caps text-label-caps uppercase text-on-surface-variant tracking-wider">Storage Used</span><div class="flex items-baseline gap-1.5 pt-0.5"><span class="font-headline-lg text-headline-lg text-on-surface">6.4</span><span class="text-body-md text-on-surface-variant font-semibold">/ 25 GB</span><span class="font-body-sm text-[12px] text-emerald-600 font-semibold ml-1.5">+1.2 GB</span></div></div><div class="w-12 h-12 rounded-2xl bg-surface-container flex items-center justify-center text-primary shrink-0"><span class="material-symbols-outlined text-[26px]">cloud_done</span></div></div><div class="mt-3 space-y-2"><div class="w-full h-1.5 rounded-full bg-surface-container overflow-hidden"><div class="h-full rounded-full bg-primary" style="width: 25.6%;"></div></div><div class="flex items-center justify-between text-body-sm text-on-surface-variant"><span class="font-body-sm text-[13px] truncate">18.6 GB available • Auto-cleans cache</span><span class="font-label-caps text-[12px] text-primary font-semibold">25%</span></div></div></div>
+<div class="p-6 rounded-2xl bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+<div class="flex items-start justify-between gap-4">
+<div class="space-y-1">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant tracking-wider">Transcription Limit</span>
+<div class="flex items-baseline gap-1.5 pt-0.5">
+<span class="font-headline-lg text-headline-lg text-on-surface">14.2</span>
+<span class="text-body-md text-on-surface-variant font-semibold">/ 20 hrs</span>
+</div>
+</div>
+<div class="w-12 h-12 rounded-2xl bg-surface-container flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[26px]">bolt</span>
+</div>
+</div>
+<div class="mt-3 space-y-2">
+<div class="w-full h-1.5 rounded-full bg-surface-container overflow-hidden">
+<div class="h-full rounded-full bg-primary" style="width: 71%;"></div>
+</div>
+<div class="flex items-center justify-between text-body-sm text-on-surface-variant">
+<span class="font-body-sm text-[13px]">5.8 hrs remaining • Resets in 12d</span>
+<a href="#" class="font-button text-[13px] text-primary font-semibold hover:underline flex items-center gap-0.5">
+<span class="">Upgrade</span>
+<span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Content Split: Notes Feed & Soft Sidebar -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- Primary Column: Recent Summaries -->
+<div class="lg:col-span-8 space-y-6">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Recent Summaries</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Clear, executive takeaways from your recordings</p>
+</div>
+<div class="flex items-center gap-2">
+<button class="h-9 px-3.5 rounded-xl bg-surface-container-lowest text-on-surface font-button text-button shadow-sm flex items-center gap-1.5 hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+<span class="">All Types</span>
+</button>
+<button class="h-9 px-3.5 rounded-xl bg-surface-container-lowest text-on-surface font-button text-button shadow-sm flex items-center gap-1.5 hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[18px]">sort</span>
+<span class="">Newest first</span>
+</button>
+</div>
+</div>
+<!-- Note Card 1 -->
+<article class="p-6 rounded-2xl bg-surface-container-lowest shadow-sm hover:shadow-md transition-shadow group flex flex-col md:flex-row gap-6 items-start">
+<div class="relative w-full md:w-56 h-36 rounded-xl overflow-hidden shrink-0 bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="A modern tech conference room with an executive presentation on a digital screen displaying enterprise cloud architectures, soft ambient cool lighting with deep indigo tones, professional cinematic photography" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxZfLPoCZejc3M7iDd6zd79Dr_ryTQK-WeEoHStbb1linqr2-UyDSJ3p7xpa4dFMz6xRKAFFvtiXav7OyERcSAmDTAA7WhyVH-x33iwchxfZWX4MypMtXyTwp94iezqetrw5FOdk8NuBikFwgGtDmSL_hmjY6k_St9_ppqyKnvrRgfVWgTcIc-dUjflC9JWdwsCE_th9h1M0gLUnCYZq39_JHWIJcvPfi20dKK_jiiibMOB0ClqntiGw">
+<div class="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded-md bg-inverse-surface/85 backdrop-blur-sm text-inverse-on-surface font-label-caps text-label-caps flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">schedule</span>
+<span class="">42 min</span>
+</div>
+<div class="absolute top-2.5 left-2.5 w-7 h-7 rounded-lg bg-surface-container-lowest/90 backdrop-blur-sm flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined text-[16px]">videocam</span>
+</div>
+</div>
+<div class="flex-1 min-w-0 space-y-3">
+<div class="flex items-center justify-between gap-2">
+<span class="inline-flex items-center gap-1 text-emerald-700 font-label-caps text-label-caps bg-emerald-50 px-2.5 py-1 rounded-full">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+<span class="">Ready to read</span>
+</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Yesterday at 4:15 PM</span>
+</div>
+<h3 class="font-headline-md text-[20px] leading-snug text-on-surface group-hover:text-primary transition-colors font-bold">
+              FY25 Enterprise AI Infrastructure Roadmap
+            </h3>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">
+              Leadership alignment on GPU capacity, security guardrails, and rollout milestones for the enterprise platform expansion next quarter.
+            </p>
+<div class="pt-2 flex items-center justify-between gap-4">
+<div class="flex items-center gap-2"><span class="px-2.5 py-1 rounded-lg bg-surface-container-low text-on-surface-variant font-label-caps text-label-caps">Zoom Recording</span><span class="px-2.5 py-1 rounded-lg bg-surface-container-low text-on-surface-variant font-label-caps text-label-caps">3 Action Items</span></div>
+<button class="h-10 px-5 rounded-xl bg-primary text-on-primary font-button text-button hover:bg-primary-container transition-colors shadow-sm flex items-center gap-2">
+<span class="">Read Note</span>
+<span class="material-symbols-outlined text-[16px]">menu_book</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Note Card 2 -->
+<article class="p-6 rounded-2xl bg-surface-container-lowest shadow-sm hover:shadow-md transition-shadow group flex flex-col md:flex-row gap-6 items-start">
+<div class="relative w-full md:w-56 h-36 rounded-xl overflow-hidden shrink-0 bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Close up of a designer wireframing user interfaces on a high resolution tablet and laptop in a bright sunny design studio, clean minimalist desk setup, warm sunlight, gentle depth of field" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3J3hUnseGJkghOhw9-ZqRqybtNXQE3PKhmtMS9hv-JxYp3YuzGoxb4W0OJZHijNNnUUugWpIfiapHgRi_onLKpG4Vz4h8HGQcVTAmhkA6_eJs7w24MpM3oyogGd8yFta0440sezwObJthFaC7lSuq8Pq6A_uRzt9Uh-IzJflDG4KsUloGGQmH_3iT1zEGbYxQU8LyFbHiG_3dolsjHi8NHTHrmXPqhtdyTLWe5vUqf4QKInxAVF1OdQ">
+<div class="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded-md bg-inverse-surface/85 backdrop-blur-sm text-inverse-on-surface font-label-caps text-label-caps flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">schedule</span>
+<span class="">28 min</span>
+</div>
+<div class="absolute top-2.5 left-2.5 w-7 h-7 rounded-lg bg-surface-container-lowest/90 backdrop-blur-sm flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined text-[16px]">slideshow</span>
+</div>
+</div>
+<div class="flex-1 min-w-0 space-y-3">
+<div class="flex items-center justify-between gap-2">
+<span class="inline-flex items-center gap-1 text-emerald-700 font-label-caps text-label-caps bg-emerald-50 px-2.5 py-1 rounded-full">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+<span class="">Ready to read</span>
+</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">3 days ago</span>
+</div>
+<h3 class="font-headline-md text-[20px] leading-snug text-on-surface group-hover:text-primary transition-colors font-bold">
+              UX Design Critique: Canvas Interaction &amp; Navigation
+            </h3>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">
+              Reviewing timeline scrubbing, high-contrast states, and simplified docking for non-technical stakeholders to eliminate cognitive drag.
+            </p>
+<div class="pt-2 flex items-center justify-between gap-4">
+<div class="flex items-center gap-2">
+<span class="px-2.5 py-1 rounded-lg bg-surface-container-low text-on-surface-variant font-label-caps text-label-caps">Loom Walkthrough</span>
+<span class="px-2.5 py-1 rounded-lg bg-surface-container-low text-on-surface-variant font-label-caps text-label-caps">Design Assets</span>
+</div>
+<button class="h-10 px-5 rounded-xl bg-primary text-on-primary font-button text-button hover:bg-primary-container transition-colors shadow-sm flex items-center gap-2">
+<span class="">Read Note</span>
+<span class="material-symbols-outlined text-[16px]">menu_book</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Note Card 3 -->
+<article class="p-6 rounded-2xl bg-surface-container-lowest shadow-sm hover:shadow-md transition-shadow group flex flex-col md:flex-row gap-6 items-start">
+<div class="relative w-full md:w-56 h-36 rounded-xl overflow-hidden shrink-0 bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="A modern software executive giving a keynote speech at a company summit, warm stage lights, wide shot of an attentive audience in an elegant auditorium" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzU78VrR-AD9k_cR08LppjubTV8RT95w9VF1QPSbTz4B3AxTdmTZVR9RH7DEnV3Pb5IEszKFL---u08cBXIVcD7u4s3glCJAYctsskDH8N1Lgs9xhALtaH7a9IrQws9D0MRD0HvOQWFx_JAchD95gx98xfA3rtgWpB6EgvdWxBv-PO53d5R6qrzpH0GOOyTfUcL9BKCFUDbWhktRiJ_srek8qPY1jOAPFkOYs0T9rkUryJ9zzfkQVr8A">
+<div class="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded-md bg-inverse-surface/85 backdrop-blur-sm text-inverse-on-surface font-label-caps text-label-caps flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">schedule</span>
+<span class="">18 min</span>
+</div>
+<div class="absolute top-2.5 left-2.5 w-7 h-7 rounded-lg bg-surface-container-lowest/90 backdrop-blur-sm flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined text-[16px]">play_circle</span>
+</div>
+</div>
+<div class="flex-1 min-w-0 space-y-3">
+<div class="flex items-center justify-between gap-2">
+<span class="inline-flex items-center gap-1 text-emerald-700 font-label-caps text-label-caps bg-emerald-50 px-2.5 py-1 rounded-full">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+<span class="">Ready to read</span>
+</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">May 12</span>
+</div>
+<h3 class="font-headline-md text-[20px] leading-snug text-on-surface group-hover:text-primary transition-colors font-bold">
+              Customer Journey Mapping &amp; Feedback Roundup
+            </h3>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">
+              Synthesized direct user interview highlights identifying three primary customer pain points in monthly budget approvals.
+            </p>
+<div class="pt-2 flex items-center justify-between gap-4">
+<div class="flex items-center gap-2">
+<span class="px-2.5 py-1 rounded-lg bg-surface-container-low text-on-surface-variant font-label-caps text-label-caps">Interview Series</span>
+<span class="px-2.5 py-1 rounded-lg bg-surface-container-low text-on-surface-variant font-label-caps text-label-caps">Customer Quotes</span>
+</div>
+<button class="h-10 px-5 rounded-xl bg-primary text-on-primary font-button text-button hover:bg-primary-container transition-colors shadow-sm flex items-center gap-2">
+<span class="">Read Note</span>
+<span class="material-symbols-outlined text-[16px]">menu_book</span>
+</button>
+</div>
+</div>
+</article>
+</div>
+<!-- Right Column: Clean Folders & Guidance -->
+<div class="lg:col-span-4 space-y-6">
+<!-- Shared with Team Collections -->
+
+<!-- How FrameNote Works / Friendly Help Box -->
+<div class="p-5 rounded-2xl bg-surface-container-low/80 border-outline-variant/40 shadow-sm space-y-3 relative overflow-hidden"><div class="flex items-center gap-2.5 text-primary"><span class="material-symbols-outlined text-[20px]">groups_3</span><span class="font-headline-md text-[14px] font-bold text-on-surface">Collaborate with your team?</span></div><p class="font-body-sm text-[13px] text-on-surface-variant leading-snug">Invite teammates, share instant notes, and set workspace permissions with FrameNote Team.</p><a class="inline-flex items-center gap-1 font-button text-[13px] text-primary font-semibold hover:underline" href="#"><span class="">Explore Team Plan</span><span class="material-symbols-outlined text-[16px]">arrow_forward</span></a></div><div class="p-6 rounded-2xl bg-gradient-to-br from-primary-fixed/40 to-surface-container-lowest shadow-sm space-y-4">
+<div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-on-primary shadow-sm">
+<span class="material-symbols-outlined text-[22px]">lightbulb</span>
+</div>
+<div class="space-y-1">
+<h4 class="font-headline-md text-[18px] text-on-surface font-bold">How FrameNote works</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+              We listen to your meeting or video, write a clear 1-page executive summary, and highlight decisions so you never have to re-watch a meeting.
+            </p>
+</div>
+<div class="pt-1 flex items-center justify-between">
+<a class="font-button text-button text-primary flex items-center gap-1 hover:underline" href="#">
+<span class="">Take a 2-min tour</span>
+<span class="material-symbols-outlined text-[16px]">north_east</span>
+</a>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Simple Guide</span>
+</div>
+</div>
+<!-- Weekly Summary Digest Pill -->
+<div class="p-5 rounded-2xl bg-surface-container-lowest shadow-sm flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[22px]">mark_email_read</span>
+</div>
+<div class="min-w-0 flex-1">
+<p class="font-body-sm text-body-sm font-semibold text-on-surface">Weekly Briefing Active</p>
+<p class="font-label-caps text-label-caps text-on-surface-variant truncate">Sent to your inbox Mondays at 8am</p>
+</div>
+<span class="material-symbols-outlined text-outline text-[20px]">toggle_on</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Friendly Minimized Background Processing Dock (Fixed Bottom-Right) -->
+
+</div>
+<script>
+  // Simple micro-interaction for dismissable dock
+  document.addEventListener('DOMContentLoaded', () => {
+    const dock = document.getElementById('frameNoteDock');
+    if (dock) {
+      dock.addEventListener('mouseenter', () => {
+        dock.classList.add('shadow-2xl');
+      });
+      dock.addEventListener('mouseleave', () => {
+        dock.classList.remove('shadow-2xl');
+      });
+    }
+  });
+</script><div id="frameNoteDock" class="fixed bottom-6 right-8 z-50 flex items-center gap-3.5 bg-surface-container-lowest/95 backdrop-blur-md px-4 py-2.5 rounded-full shadow-lg border border-outline-variant/40 transition-all duration-300 group hover:border-primary/40"><div class="relative flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary shrink-0"><span class="material-symbols-outlined text-[18px] animate-spin">sync</span><span class="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span></span></div><div class="flex flex-col min-w-0 pr-1"><div class="flex items-center gap-2"><span class="font-body-sm text-[13px] font-semibold text-on-surface truncate max-w-[200px]">Q3 Strategy Meeting</span><span class="font-label-caps text-[11px] text-primary font-semibold px-1.5 py-0.2 rounded bg-primary/10">74%</span></div><p class="font-label-caps text-[11px] text-on-surface-variant flex items-center gap-1.5"><span class="">Stage 3 of 4</span><span class="">•</span><span class="">~18s left</span></p></div><div class="flex items-center gap-1 pl-1 shrink-0"><button class="w-7 h-7 rounded-full text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors flex items-center justify-center" title="Expand" aria-label="Expand"><span class="material-symbols-outlined text-[16px]">open_in_full</span></button><button onclick="this.closest('#frameNoteDock').remove()" class="w-7 h-7 rounded-full text-on-surface-variant hover:text-error hover:bg-surface-container transition-colors flex items-center justify-center" title="Dismiss" aria-label="Dismiss"><span class="material-symbols-outlined text-[16px]">close</span></button></div></div></main></div>
+
+
+
+
+
+
+
+
+</body></html>

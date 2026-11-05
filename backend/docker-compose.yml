@@ -1,0 +1,59 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+      - postgres
+    volumes:
+      - framenote_data:/data/framenote
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A tasks.worker.celery_app worker --loglevel=info
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - postgres
+    volumes:
+      - framenote_data:/data/framenote
+
+  # Runs the periodic sweep that fails jobs a crashed worker left in "processing".
+  beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A tasks.worker.celery_app beat --loglevel=info --schedule /tmp/celerybeat-schedule
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - postgres
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: framenote
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
+  framenote_data:
