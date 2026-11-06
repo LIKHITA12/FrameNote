@@ -49,3 +49,6 @@ frontend/.env*.local
 # Build / temp
 *.tmp
 *.swp
+
+# Local VS Code MCP credentials
+.vscode/mcp.json
