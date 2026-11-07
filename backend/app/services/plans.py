@@ -51,9 +51,9 @@ _PLANS: list[PricingPlan] = [
         name="Solo Pro",
         icon="psychology",
         tagline="For regular use with longer recordings and detailed analysis.",
-        price_monthly=10,
-        price_annual_monthly=8,
-        price_annual_total=96,
+        price_monthly=15,
+        price_annual_monthly=12,
+        price_annual_total=144,
         features_heading="EVERYTHING IN STARTER PLUS:",
         features=[
             PlanFeature(emphasis="5 hours", text="of uploaded video / month"),

@@ -74,6 +74,14 @@ The backend can run fully via Docker Compose (API + worker + Redis + Postgres), 
    ```bash
    alembic upgrade head
    ```
+   If Alembic reports that the existing Neon database already has the tables but has no
+   migration history, mark the database as current instead of recreating the tables:
+   ```bash
+   alembic stamp head
+   alembic current
+   ```
+   Use `alembic stamp head` only when the existing tables already match the checked-out
+   application's schema. `alembic current` should then show the latest migration head.
 4. Start the API:
    ```bash
    uvicorn app.main:app --reload --port 8000
@@ -85,6 +93,38 @@ The backend can run fully via Docker Compose (API + worker + Redis + Postgres), 
    In production, also run `celery -A tasks.worker.celery_app beat` so jobs left behind by a crashed worker are marked failed and can be retried.
 
 The API is served under the `/api/v1` prefix, e.g. [http://localhost:8000/api/v1](http://localhost:8000/api/v1).
+
+### Cloudflare R2 uploads
+
+When using Cloudflare R2, `R2_ENDPOINT` must be the account-level endpoint only, and
+`R2_BUCKET` must contain the bucket name separately:
+
+```env
+R2_ENDPOINT=https://<account-id>.r2.cloudflarestorage.com
+R2_BUCKET=<bucket-name>
+```
+
+Do not append the bucket name to `R2_ENDPOINT`; the SDK adds it when creating the
+presigned PUT upload URL. Also configure the R2 bucket CORS policy to allow the
+frontend origin (for local development, `http://localhost:3000`) with `PUT`, `GET`,
+and `HEAD` methods and the headers used by the upload. In Cloudflare, open the bucket's
+**Settings → CORS policy** and add:
+
+```json
+[
+  {
+    "AllowedOrigins": ["http://localhost:3000", "http://127.0.0.1:3000"],
+    "AllowedMethods": ["PUT", "GET", "HEAD"],
+    "AllowedHeaders": ["*"],
+    "ExposeHeaders": ["ETag"],
+    "MaxAgeSeconds": 3600
+  }
+]
+```
+
+Restart the API after changing `backend/.env`. The R2 access key must have permission
+to read and update the bucket's CORS settings; an upload-only key cannot apply this
+change.
 
 ### Security mode
 

@@ -35,14 +35,16 @@ def create_upload_presign(object_key: str, content_type: str, fallback_base_url:
     headers = {"Content-Type": content_type}
 
     if _can_use_r2():
-        signed = _r2_client().generate_presigned_post(
-            Bucket=settings.r2_bucket,
-            Key=object_key,
-            Fields={"Content-Type": content_type},
-            Conditions=[{"Content-Type": content_type}, ["content-length-range", 1, settings.max_upload_bytes]],
+        signed_url = _r2_client().generate_presigned_url(
+            "put_object",
+            Params={
+                "Bucket": settings.r2_bucket,
+                "Key": object_key,
+                "ContentType": content_type,
+            },
             ExpiresIn=expires,
         )
-        return signed["url"], "POST", {}, signed["fields"], expires
+        return signed_url, "PUT", headers, {}, expires
 
     # Local fallback for immediate development without cloud storage credentials.
     token = sign_upload_token(user_id, object_key)

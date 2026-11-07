@@ -53,19 +53,19 @@ class SecuritySettingsTests(unittest.TestCase):
                 check_rate_limit("security-test", "unique-media-security-identity", 2, 3600)
             self.assertEqual(denied.exception.status_code, 429)
 
-    def test_r2_upload_uses_size_limited_post_policy(self) -> None:
+    def test_r2_upload_uses_presigned_put(self) -> None:
         s3 = MagicMock()
-        s3.generate_presigned_post.return_value = {"url": "https://r2.example.test/upload", "fields": {"key": "asset"}}
+        s3.generate_presigned_url.return_value = "https://r2.example.test/upload"
         with patch("app.services.storage._can_use_r2", return_value=True), patch("app.services.storage.boto3.client", return_value=s3):
             url, method, headers, fields, _ = create_upload_presign(
                 "uploads/user/file.mp4", "video/mp4", "http://localhost:8000/", "user"
             )
         self.assertEqual(url, "https://r2.example.test/upload")
-        self.assertEqual(method, "POST")
-        self.assertEqual(headers, {})
-        self.assertEqual(fields, {"key": "asset"})
-        conditions = s3.generate_presigned_post.call_args.kwargs["Conditions"]
-        self.assertIn(["content-length-range", 1, settings.max_upload_bytes], conditions)
+        self.assertEqual(method, "PUT")
+        self.assertEqual(headers, {"Content-Type": "video/mp4"})
+        self.assertEqual(fields, {})
+        self.assertEqual(s3.generate_presigned_url.call_args.args[0], "put_object")
+        self.assertEqual(s3.generate_presigned_url.call_args.kwargs["Params"]["ContentType"], "video/mp4")
 
     def test_production_startup_does_not_create_schema_or_demo_account(self) -> None:
         with patch.object(settings, "environment", "production"), patch.object(main.Base.metadata, "create_all") as create_all, patch.object(main, "_ensure_demo_account") as demo, patch.object(main, "assert_schema_current") as schema:

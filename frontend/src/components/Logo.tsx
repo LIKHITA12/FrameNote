@@ -1,3 +1,7 @@
+"use client";
+
+import { useId } from "react";
+
 type Props = {
   className?: string;
   /** Icon square size in pixels. Wordmark scales proportionally. */
@@ -12,6 +16,10 @@ type Props = {
  * paired with the "Frame" + cursive "note" lockup. No green, per brand update.
  */
 export function Logo({ className = "", size = 32, showWordmark = true, onDark = false }: Props) {
+  // Each instance needs its own gradient id: with a shared id, url(#...) can resolve to a copy inside a
+  // display:none container (e.g. the mobile header on desktop), which leaves the icon body unpainted.
+  const gradientId = `fn-logo-gradient-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
+
   return (
     <span className={`inline-flex items-center gap-2 ${className}`}>
       <span
@@ -29,14 +37,14 @@ export function Logo({ className = "", size = 32, showWordmark = true, onDark = 
           className="shrink-0"
         >
           <defs>
-            <linearGradient id="fn-logo-gradient" x1="6" y1="4" x2="42" y2="44" gradientUnits="userSpaceOnUse">
+            <linearGradient id={gradientId} x1="6" y1="4" x2="42" y2="44" gradientUnits="userSpaceOnUse">
               <stop offset="0" stopColor="#3B82F6" />
               <stop offset="1" stopColor="#1E3A8A" />
             </linearGradient>
           </defs>
           <path
             d="M14 4h13.17a4 4 0 0 1 2.83 1.17l10.83 10.83A4 4 0 0 1 42 18.83V40a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4Z"
-            fill="url(#fn-logo-gradient)"
+            fill={`url(#${gradientId})`}
           />
           <path d="M27 4v9a4 4 0 0 0 4 4h9L27 4Z" fill="#BFDBFE" />
           <path d="M21 16.5 32 24l-11 7.5v-15Z" fill="#ffffff" />
