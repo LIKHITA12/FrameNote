@@ -2,7 +2,7 @@ import os
 from typing import Literal
 
 import certifi
-from pydantic import field_validator, model_validator
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy.engine import make_url
 
@@ -40,6 +40,10 @@ class Settings(BaseSettings):
     openai_transcription_model: str = "whisper-1"
     gemini_api_key: str | None = None
     gemini_model: str = "gemini-2.0-flash"
+    # Groq serves Whisper through an OpenAI-compatible API; when set it is the preferred transcription provider.
+    groq_api_key: str | None = None
+    groq_transcription_model: str = "whisper-large-v3-turbo"
+    groq_base_url: str = "https://api.groq.com/openai/v1"
     public_api_base_url: str = "http://localhost:8000"
     # Public video link ingestion limits and its local-test escape hatch.
     video_url_max_bytes: int = 2 * 1024 * 1024 * 1024
@@ -55,6 +59,9 @@ class Settings(BaseSettings):
     # Stopgap providers in app/services/temp_*.py (local Whisper, UHG Azure gateway).
     # Unset means on in development only; production refuses to start with them enabled.
     enable_temp_providers: bool | None = None
+    # Offline Whisper fallback (needs `pip install openai-whisper`). Unset follows ENABLE_TEMP_PROVIDERS;
+    # production refuses to start with it enabled (CPU/RAM heavy, no GPU on the host).
+    enable_local_whisper: bool | None = None
     video_chat_context_chars: int = 30000
     video_chat_max_output_tokens: int = 500
     video_chat_monthly_token_budget: int = 2_000_000
@@ -106,12 +113,20 @@ class Settings(BaseSettings):
             return self.environment == "development"
         return self.enable_temp_providers
 
+    @property
+    def local_whisper_enabled(self) -> bool:
+        if self.enable_local_whisper is None:
+            return self.temp_providers_enabled
+        return self.enable_local_whisper
+
     @model_validator(mode="after")
     def validate_production_security(self) -> "Settings":
         if self.environment != "production":
             return self
         if self.enable_temp_providers:
             raise ValueError("Production requires ENABLE_TEMP_PROVIDERS to be unset or false")
+        if self.enable_local_whisper:
+            raise ValueError("Production requires ENABLE_LOCAL_WHISPER to be unset or false")
         if not (self.openai_api_key or self.gemini_api_key):
             raise ValueError("Production requires OPENAI_API_KEY or GEMINI_API_KEY")
         if self.job_hard_time_limit_seconds <= self.job_soft_time_limit_seconds:

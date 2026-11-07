@@ -27,7 +27,7 @@
 2. **Subscription quota enforcement** (planned) - limit free-tier jobs/month, surface usage in `/users/me`.
 3. **Operations page real data** (planned) - real Speakers/Mentions/Shared files APIs instead of hardcoded UI lists.
 4. **Polish/hardening** (planned) - rate limiting, upload size limits, job retry logic.
-5. **AI provider cost optimization** (planned) - swap OpenAI for Groq (transcription) + Gemini (summaries).
+5. **AI provider cost optimization** (in progress) - Groq Whisper transcription implemented (`GROQ_API_KEY`, long audio auto-chunked under the 25 MB limit), with automatic fallback to local Whisper (`ENABLE_LOCAL_WHISPER`, dev only - blocked in production), then OpenAI, then Gemini; Gemini for summaries/chat.
 
 ## Hosting & deployment (decided)
 Managed platforms only, no VM/Kubernetes:
@@ -36,3 +36,4 @@ Managed platforms only, no VM/Kubernetes:
 - Database: Neon (serverless Postgres, scale-to-zero)
 - File storage: Cloudflare R2 (free tier, zero egress fees)
 - Estimated cost at current scale: ~$5-20/month
+

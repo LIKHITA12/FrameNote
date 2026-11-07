@@ -166,7 +166,7 @@ class ProviderTests(unittest.TestCase):
     def test_production_fails_instead_of_placeholder_output(self) -> None:
         with patch.object(settings, "environment", "production"), patch.object(settings, "enable_temp_providers", False), patch.object(
             settings, "openai_api_key", None
-        ), patch.object(settings, "gemini_api_key", None):
+        ), patch.object(settings, "gemini_api_key", None), patch.object(settings, "groq_api_key", None):
             with self.assertRaises(ValueError):
                 processing.transcribe_audio_file(Path("audio.mp3"))
             with self.assertRaises(ValueError):
@@ -175,7 +175,7 @@ class ProviderTests(unittest.TestCase):
     def test_development_placeholder_does_not_leak_server_paths(self) -> None:
         with patch.object(settings, "environment", "development"), patch.object(settings, "enable_temp_providers", False), patch.object(
             settings, "openai_api_key", None
-        ), patch.object(settings, "gemini_api_key", None):
+        ), patch.object(settings, "gemini_api_key", None), patch.object(settings, "groq_api_key", None):
             text, _ = processing.transcribe_audio_file(Path("/srv/secret/audio.mp3"))
         self.assertNotIn("/srv/secret", text)
 
@@ -202,6 +202,76 @@ class SsrfTests(unittest.TestCase):
                     httpx.get("http://127.0.0.1:9/", timeout=2)
             # Outside a fetch (DB, Redis, other threads) lookups are untouched.
             self.assertTrue(socket.getaddrinfo("127.0.0.1", 80))
+
+
+class GroqTranscriptionTests(unittest.TestCase):
+    def _fake_client(self, segments: list) -> MagicMock:
+        client = MagicMock()
+        client.audio.transcriptions.create.return_value = MagicMock(text="hello world", segments=segments)
+        return client
+
+    def test_groq_is_preferred_over_openai_and_gemini(self) -> None:
+        client = self._fake_client([{"start": 1.0, "end": 2.5, "text": " hello "}, {"start": 3, "end": 4, "text": " "}])
+        models: list[str] = []
+        with tempfile.NamedTemporaryFile(suffix=".mp3") as audio, patch.object(
+            settings, "enable_local_whisper", False
+        ), patch.object(settings, "groq_api_key", "gsk-test"), patch.object(settings, "openai_api_key", "sk-test"), patch.object(
+            settings, "gemini_api_key", "gm-test"
+        ), patch.object(processing, "OpenAI", return_value=client) as openai_cls:
+            text, segments = processing.transcribe_audio_file(Path(audio.name), on_model=models.append)
+        openai_cls.assert_called_once_with(api_key="gsk-test", base_url=settings.groq_base_url)
+        self.assertEqual(client.audio.transcriptions.create.call_args.kwargs["model"], settings.groq_transcription_model)
+        self.assertEqual(text, "hello world")
+        self.assertEqual(segments, [{"start": 1.0, "end": 2.5, "text": "hello"}])
+        self.assertEqual(models, [f"Groq {settings.groq_transcription_model}"])
+
+    def test_large_audio_is_chunked_with_offset_timestamps(self) -> None:
+        client = self._fake_client([MagicMock(start=5.0, end=6.0, text="part")])
+        with tempfile.TemporaryDirectory() as tmp:
+            audio = Path(tmp) / "audio.mp3"
+            audio.write_bytes(b"0" * 10)
+            chunks = [Path(tmp) / "chunk-0000.mp3", Path(tmp) / "chunk-0001.mp3"]
+            for chunk in chunks:
+                chunk.write_bytes(b"0")
+            with patch.object(processing, "WHISPER_API_MAX_BYTES", 5), patch.object(processing, "_split_audio", return_value=chunks):
+                text, segments = processing._transcribe_with_whisper_api(client, "whisper", audio)
+        self.assertEqual(text, "hello world hello world")
+        offset = float(processing.WHISPER_API_CHUNK_SECONDS)
+        self.assertEqual([segment["start"] for segment in segments], [5.0, 5.0 + offset])
+
+    def _failing_groq(self) -> MagicMock:
+        client = MagicMock()
+        client.audio.transcriptions.create.side_effect = RuntimeError("429 rate limited")
+        return client
+
+    def test_groq_failure_falls_back_to_local_whisper(self) -> None:
+        models: list[str] = []
+        local = ("local text", [{"start": 0.0, "end": 1.0, "text": "local text"}])
+        with tempfile.NamedTemporaryFile(suffix=".mp3") as audio, patch.object(settings, "enable_local_whisper", True), patch.object(
+            settings, "groq_api_key", "gsk-test"
+        ), patch.object(settings, "openai_api_key", None), patch.object(settings, "gemini_api_key", None), patch.object(
+            processing, "OpenAI", return_value=self._failing_groq()
+        ), patch.object(processing, "_try_temp_local_whisper", return_value=local):
+            result = processing.transcribe_audio_file(Path(audio.name), on_model=models.append)
+        self.assertEqual(result, local)
+        self.assertTrue(models[0].startswith("Local Whisper"))
+
+    def test_groq_failure_without_fallback_raises_instead_of_placeholder(self) -> None:
+        with tempfile.NamedTemporaryFile(suffix=".mp3") as audio, patch.object(settings, "environment", "development"), patch.object(
+            settings, "enable_local_whisper", False
+        ), patch.object(settings, "groq_api_key", "gsk-test"), patch.object(settings, "openai_api_key", None), patch.object(
+            settings, "gemini_api_key", None
+        ), patch.object(processing, "OpenAI", return_value=self._failing_groq()):
+            with self.assertRaisesRegex(ValueError, "429 rate limited"):
+                processing.transcribe_audio_file(Path(audio.name))
+
+    def test_local_whisper_flag_overrides_temp_providers(self) -> None:
+        self.assertTrue(Settings(_env_file=None, environment="development").local_whisper_enabled)
+        self.assertFalse(Settings(_env_file=None, environment="development", enable_local_whisper=False).local_whisper_enabled)
+        self.assertTrue(Settings(_env_file=None, environment="test", enable_local_whisper=True).local_whisper_enabled)
+        self.assertFalse(Settings(**PRODUCTION_BASE, openai_api_key="sk").local_whisper_enabled)
+        with self.assertRaises(ValueError):
+            Settings(**PRODUCTION_BASE, openai_api_key="sk", enable_local_whisper=True)
 
 
 if __name__ == "__main__":

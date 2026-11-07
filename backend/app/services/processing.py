@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 from pathlib import Path
 import shutil
@@ -17,6 +18,8 @@ from app.services.storage import resolve_uploaded_object_path
 PARTICIPANT_FRAME_RATIOS = (0.002, 0.02, 0.25, 0.55, 0.95)
 
 OnStage = Callable[[int], None]
+
+logger = logging.getLogger("framenote.processing")
 
 
 def analyse_transcript(
@@ -194,7 +197,24 @@ def _transcribe_uploaded_media(
 
 
 def transcribe_audio_file(audio_path: Path, on_model: Callable[[str], None] | None = None) -> tuple[str, list[dict[str, Any]]]:
-    """Transcribe an already-extracted audio file, trying local Whisper, then OpenAI, then Gemini."""
+    """Transcribe an already-extracted audio file: Groq, then local Whisper, then OpenAI, then Gemini.
+
+    A provider that fails (rate limit, outage, network) falls through to the next one; if none
+    succeeds the last provider error is raised rather than returning a placeholder.
+    """
+    last_error: Exception | None = None
+
+    if settings.groq_api_key:
+        try:
+            client = OpenAI(api_key=settings.groq_api_key, base_url=settings.groq_base_url)
+            result = _transcribe_with_whisper_api(client, settings.groq_transcription_model, audio_path)
+            if on_model:
+                on_model(f"Groq {settings.groq_transcription_model}")
+            return result
+        except Exception as exc:
+            logger.warning("Groq transcription failed, trying fallback providers: %s", exc)
+            last_error = exc
+
     local_result = _try_temp_local_whisper(audio_path)
     if local_result is not None:
         if on_model:
@@ -202,34 +222,28 @@ def transcribe_audio_file(audio_path: Path, on_model: Callable[[str], None] | No
         return local_result
 
     if settings.openai_api_key:
-        client = OpenAI(api_key=settings.openai_api_key)
-        with open(audio_path, "rb") as media_file:
-            transcript = client.audio.transcriptions.create(
-                model=settings.openai_transcription_model,
-                file=media_file,
-                response_format="verbose_json",
-            )
-        text = getattr(transcript, "text", "")
-        if not text:
-            raise ValueError("Transcription returned empty output")
-        if on_model:
-            on_model(settings.openai_transcription_model)
-        raw_segments = getattr(transcript, "segments", None) or []
-        segments = [
-            {
-                "start": float(getattr(segment, "start", 0.0) or 0.0),
-                "end": float(getattr(segment, "end", 0.0) or 0.0),
-                "text": str(getattr(segment, "text", "") or "").strip(),
-            }
-            for segment in raw_segments
-        ]
-        return text, [segment for segment in segments if segment["text"]]
+        try:
+            client = OpenAI(api_key=settings.openai_api_key)
+            result = _transcribe_with_whisper_api(client, settings.openai_transcription_model, audio_path)
+            if on_model:
+                on_model(settings.openai_transcription_model)
+            return result
+        except Exception as exc:
+            logger.warning("OpenAI transcription failed, trying fallback providers: %s", exc)
+            last_error = exc
 
     if settings.gemini_api_key:
-        if on_model:
-            on_model(settings.gemini_model)
-        return _transcribe_with_gemini(audio_path), []
+        try:
+            text = _transcribe_with_gemini(audio_path)
+            if on_model:
+                on_model(settings.gemini_model)
+            return text, []
+        except Exception as exc:
+            logger.warning("Gemini transcription failed: %s", exc)
+            last_error = exc
 
+    if last_error is not None:
+        raise ValueError(f"All transcription providers failed: {last_error}") from last_error
     if settings.environment == "production":
         raise ValueError("No transcription provider is configured")
     if on_model:
@@ -238,14 +252,86 @@ def transcribe_audio_file(audio_path: Path, on_model: Callable[[str], None] | No
 
 
 def _try_temp_local_whisper(audio_path: Path) -> tuple[str, list[dict[str, Any]]] | None:
-    """Optional stopgap path; delete app/services/temp_local_whisper.py to fully remove it."""
-    if not settings.temp_providers_enabled:
+    """Optional offline path; delete app/services/temp_local_whisper.py to fully remove it."""
+    if not settings.local_whisper_enabled:
         return None
     try:
         from app.services.temp_local_whisper import transcribe_locally_with_segments
     except ImportError:
         return None
     return transcribe_locally_with_segments(audio_path)
+
+
+# Groq (free tier) and OpenAI both reject audio uploads over 25 MB, so larger files are split.
+WHISPER_API_MAX_BYTES = 24 * 1024 * 1024
+WHISPER_API_CHUNK_SECONDS = 20 * 60
+
+
+def _transcribe_with_whisper_api(client: OpenAI, model: str, audio_path: Path) -> tuple[str, list[dict[str, Any]]]:
+    if audio_path.stat().st_size <= WHISPER_API_MAX_BYTES:
+        return _transcribe_whisper_api_file(client, model, audio_path, offset_seconds=0.0)
+
+    texts: list[str] = []
+    segments: list[dict[str, Any]] = []
+    for index, chunk_path in enumerate(_split_audio(audio_path, WHISPER_API_CHUNK_SECONDS)):
+        text, chunk_segments = _transcribe_whisper_api_file(
+            client, model, chunk_path, offset_seconds=float(index * WHISPER_API_CHUNK_SECONDS)
+        )
+        texts.append(text)
+        segments.extend(chunk_segments)
+    text = " ".join(part for part in texts if part).strip()
+    if not text:
+        raise ValueError("Transcription returned empty output")
+    return text, segments
+
+
+def _transcribe_whisper_api_file(
+    client: OpenAI, model: str, audio_path: Path, offset_seconds: float
+) -> tuple[str, list[dict[str, Any]]]:
+    with open(audio_path, "rb") as media_file:
+        transcript = client.audio.transcriptions.create(model=model, file=media_file, response_format="verbose_json")
+    text = str(getattr(transcript, "text", "") or "").strip()
+    if not text and offset_seconds == 0.0:
+        raise ValueError("Transcription returned empty output")
+    segments = []
+    for segment in getattr(transcript, "segments", None) or []:
+        segment_text = str(_field(segment, "text") or "").strip()
+        if segment_text:
+            segments.append(
+                {
+                    "start": float(_field(segment, "start") or 0.0) + offset_seconds,
+                    "end": float(_field(segment, "end") or 0.0) + offset_seconds,
+                    "text": segment_text,
+                }
+            )
+    return text, segments
+
+
+def _field(item: Any, key: str) -> Any:
+    # The OpenAI SDK returns objects, but extra fields from OpenAI-compatible APIs (Groq) can be plain dicts.
+    return item.get(key) if isinstance(item, dict) else getattr(item, key, None)
+
+
+def _split_audio(audio_path: Path, chunk_seconds: int) -> list[Path]:
+    chunk_dir = Path(tempfile.mkdtemp(prefix="framenote-audio-chunks-", dir=audio_path.parent))
+    command = [
+        "ffmpeg",
+        "-y",
+        "-i",
+        str(audio_path),
+        "-f",
+        "segment",
+        "-segment_time",
+        str(chunk_seconds),
+        "-c",
+        "copy",
+        str(chunk_dir / "chunk-%04d.mp3"),
+    ]
+    _run_command(command=command, error_message="Failed to split audio for transcription")
+    chunks = sorted(chunk_dir.glob("chunk-*.mp3"))
+    if not chunks:
+        raise ValueError("Failed to split audio for transcription: no chunks produced")
+    return chunks
 
 
 def _transcribe_with_gemini(audio_path: Path) -> str:
@@ -562,6 +648,13 @@ def extract_audio_track(media_path: Path) -> Path:
         "-i",
         str(media_path),
         "-vn",
+        # Mono 16 kHz 32 kbps keeps speech quality while fitting ~100 minutes under the 25 MB Whisper API limit.
+        "-ac",
+        "1",
+        "-ar",
+        "16000",
+        "-b:a",
+        "32k",
         "-acodec",
         "libmp3lame",
         str(output_path),

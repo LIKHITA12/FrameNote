@@ -42,6 +42,12 @@ The backend can run fully via Docker Compose (API + worker + Redis + Postgres), 
    DATABASE_URL=postgresql+psycopg://postgres:postgres@postgres:5432/framenote
    OPENAI_API_KEY=
    OPENAI_VIDEO_CHAT_MODEL=gpt-4o-mini
+   # Transcription order: Groq, then local Whisper (if enabled), then OpenAI Whisper, then Gemini (no timestamps).
+   # A failing provider falls through to the next one. Free Groq key: console.groq.com
+   GROQ_API_KEY=
+   GEMINI_API_KEY=
+   # Offline fallback; requires `pip install openai-whisper`. Unset = on in development only; blocked in production.
+   ENABLE_LOCAL_WHISPER=
    ```
 2. From `backend/`, build and start everything:
    ```bash
