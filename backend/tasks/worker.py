@@ -6,6 +6,7 @@ from celery.exceptions import SoftTimeLimitExceeded
 
 from app.core.config import settings
 from app.db import SessionLocal
+from app.services.auth import user_is_pro
 from app.services.jobs import (
     advance_job_stage,
     fail_stale_jobs,
@@ -167,12 +168,13 @@ def process_public_video_url(job_id: str, detailed: bool = True) -> None:
 
         job = get_job_or_404(db=db, job_id=job_id)
         key_points = json.loads(job.key_points_json or "[]")
-        if detailed:
+        # The analysis is always generated, but the PDF depth and watermark follow the owner's plan.
+        if user_is_pro(db, job.owner_id):
             asset_key = generate_job_pdf(
                 job=job, key_points=key_points, analysis=get_job_analysis(job), include_frames=False
             )
         else:
-            asset_key = generate_job_summary_pdf(job=job, key_points=key_points, include_frames=False)
+            asset_key = generate_job_summary_pdf(job=job, key_points=key_points, include_frames=False, watermark=True)
         set_job_pdf_asset_key(db=db, job=job, asset_key=asset_key)
     except Exception as exc:
         _fail_job(db, job_id, exc)

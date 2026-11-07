@@ -24,13 +24,14 @@ from app.schemas.video_chat import (
     VideoChatMessage,
     VideoChatUsage,
 )
-from app.services.auth import get_user_subscription
+from app.services.auth import get_user_subscription, user_is_pro
+from app.services.jobs import analysis_for_viewer, get_job_analysis
 
 logger = logging.getLogger("framenote.video_chat")
 
 FREE_MONTHLY_LIMIT = 10
 FREE_PER_VIDEO_LIMIT = 3
-PRO_MONTHLY_LIMIT = 100
+PRO_MONTHLY_LIMIT = 300
 
 _CONTEXT_LABELS = {
     "summary": "Summary",
@@ -170,12 +171,15 @@ def ask_video_question(
         ]
     )
     excerpts = _select_excerpts(job=job, question=relevance_query)
+    # Chat must not reveal analysis the viewer's plan only previews.
+    visible_analysis, _ = analysis_for_viewer(get_job_analysis(job), is_pro=user_is_pro(db, user.id))
     raw_answer, input_tokens, output_tokens = _generate_answer(
         job=job,
         question=clean_question,
         excerpts=excerpts,
         prior_messages=prior_messages,
         contexts=clean_contexts,
+        analysis=visible_analysis or {},
     )
     answer, citation_ids = _parse_model_answer(raw_answer)
 
@@ -410,19 +414,19 @@ def _generate_answer(
     excerpts: list[_Excerpt],
     prior_messages: list[ChatMessage],
     contexts: list[VideoChatContext],
+    analysis: dict[str, Any] | None = None,
 ) -> tuple[str, int, int]:
     source_lines = [
         f"C{index} [{_clock(item.start_seconds)}-{_clock(item.end_seconds)}] {item.text}"
         for index, item in enumerate(excerpts, start=1)
     ]
-    analysis = ""
-    if job.analysis_json:
-        analysis = job.analysis_json[:8000]
+    analysis = analysis or {}
+    analysis_text = json.dumps(analysis, ensure_ascii=True)[:8000] if analysis else ""
     history = "\n".join(f"{item.role}: {item.content[:1000]}" for item in prior_messages)
-    focus_context = _build_focus_context(job=job, contexts=contexts)
+    focus_context = _build_focus_context(job=job, contexts=contexts, analysis=analysis)
     user_content = (
         f"VIDEO SUMMARY:\n{job.summary[:4000]}\n\n"
-        f"VIDEO ANALYSIS:\n{analysis}\n\n"
+        f"VIDEO ANALYSIS:\n{analysis_text}\n\n"
         f"RECENT CONVERSATION:\n{history or '(none)'}\n\n"
         f"USER-ATTACHED PAGE CONTEXT:\n{focus_context or '(none; answer from the whole video)'}\n\n"
         f"TIMESTAMPED EXCERPTS:\n{chr(10).join(source_lines)}\n\n"
@@ -492,13 +496,10 @@ def _generate_answer(
     raise HTTPException(status_code=503, detail="AI chat is not configured on this server yet.")
 
 
-def _build_focus_context(job: Job, contexts: list[VideoChatContext]) -> str:
+def _build_focus_context(job: Job, contexts: list[VideoChatContext], analysis: dict[str, Any] | None = None) -> str:
     if not contexts:
         return ""
-    try:
-        analysis = json.loads(job.analysis_json or "{}")
-    except ValueError:
-        analysis = {}
+    analysis = analysis or {}
     try:
         key_points = json.loads(job.key_points_json or "[]")
     except ValueError:

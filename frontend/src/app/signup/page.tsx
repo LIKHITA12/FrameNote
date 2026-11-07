@@ -17,8 +17,8 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const PERKS = [
   "Free account with no credit card required",
-  "1 short upload and 3 YouTube caption notes each month",
-  "AI summary, key moments, and timestamps",
+  "1 hour of video and 3 YouTube caption notes each month",
+  "AI summary, key moments, and a detailed-analysis preview",
   "PDF export included",
 ];
 

@@ -158,6 +158,15 @@ export interface JobAnalysis {
   duration_seconds?: number | null;
 }
 
+/** Present when the viewer only sees a preview of the detailed analysis (Free plan). */
+export interface AnalysisLock {
+  hidden_sections: number;
+  hidden_questions: number;
+  hidden_decisions: number;
+  hidden_action_items: number;
+  hidden_terms: number;
+}
+
 export interface StageEvent {
   stage?: number | null;
   message: string;
@@ -179,6 +188,7 @@ export interface JobCreateResponse {
   tags?: string[];
   sentiment?: SentimentLabel;
   analysis?: JobAnalysis | null;
+  analysis_locked?: AnalysisLock | null;
   custom_action_items?: string[];
   completed_action_items?: number[];
   stage_events?: StageEvent[];

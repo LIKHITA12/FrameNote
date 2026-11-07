@@ -20,7 +20,7 @@ from app.schemas.plans import (
 )
 from app.services.auth import get_user_subscription
 
-ANNUAL_DISCOUNT_PERCENT = 20
+ANNUAL_DISCOUNT_PERCENT = 33
 
 _PLANS: list[PricingPlan] = [
     PricingPlan(
@@ -34,11 +34,12 @@ _PLANS: list[PricingPlan] = [
         price_annual_total=0,
         features_heading="INCLUDED IN STARTER:",
         features=[
-            PlanFeature(emphasis="1 uploaded video", text="/ month (up to 15 minutes)"),
+            PlanFeature(emphasis="1 hour", text="of uploaded video / month (up to 30 minutes each)"),
             PlanFeature(emphasis="3 YouTube caption notes", text="/ month"),
             PlanFeature(text="Standard AI summary and key moments"),
+            PlanFeature(text="Preview of the detailed analysis"),
             PlanFeature(text="Ask this video: 3 questions per video, 10 per month"),
-            PlanFeature(text="PDF export"),
+            PlanFeature(text="Watermarked PDF export"),
             PlanFeature(text="7-day cloud history retention"),
             PlanFeature(text="Self-service support"),
         ],
@@ -51,17 +52,17 @@ _PLANS: list[PricingPlan] = [
         name="Solo Pro",
         icon="psychology",
         tagline="For regular use with longer recordings and detailed analysis.",
-        price_monthly=15,
-        price_annual_monthly=12,
-        price_annual_total=144,
+        price_monthly=12,
+        price_annual_monthly=8,
+        price_annual_total=96,
         features_heading="EVERYTHING IN STARTER PLUS:",
         features=[
-            PlanFeature(emphasis="5 hours", text="of uploaded video / month"),
-            PlanFeature(text="Up to 90 minutes per uploaded video"),
-            PlanFeature(text="Detailed timeline, decisions, Q&A and action items"),
-            PlanFeature(text="Ask this video: 100 questions per month"),
+            PlanFeature(emphasis="15 hours", text="of uploaded video / month"),
+            PlanFeature(text="Up to 2 hours per uploaded video"),
+            PlanFeature(text="Full detailed timeline, decisions, Q&A and action items"),
+            PlanFeature(text="Ask this video: 300 questions per month"),
             PlanFeature(text="Speaker airtime from supported transcript files"),
-            PlanFeature(text="Detailed and summary PDF exports"),
+            PlanFeature(text="Detailed and summary PDF exports, no watermark"),
             PlanFeature(text="90-day cloud history retention"),
         ],
         cta_label="Upgrade to Solo Pro",
@@ -92,13 +93,13 @@ _COMPARISON: list[ComparisonGroup] = [
             ComparisonRow(
                 label="Monthly transcription allocation",
                 cells=[
-                    _text("1 upload / mo"),
-                    _text("5 hours / mo", highlight=True),
+                    _text("1 hour / mo"),
+                    _text("15 hours / mo", highlight=True),
                 ],
             ),
             ComparisonRow(
                 label="Max individual file length",
-                cells=[_text("15 mins"), _text("90 mins")],
+                cells=[_text("30 mins"), _text("2 hours")],
             ),
             ComparisonRow(
                 label="YouTube videos with captions",
@@ -119,15 +120,15 @@ _COMPARISON: list[ComparisonGroup] = [
             ),
             ComparisonRow(
                 label="Detailed timeline, decisions, Q&A and actions",
-                cells=[_none(), _check()],
+                cells=[_text("Preview"), _check()],
             ),
             ComparisonRow(
                 label="Ask this video",
-                cells=[_text("3 / video, 10 / mo"), _text("100 / mo", highlight=True)],
+                cells=[_text("3 / video, 10 / mo"), _text("300 / mo", highlight=True)],
             ),
             ComparisonRow(
                 label="PDF export",
-                cells=[_check(), _check()],
+                cells=[_text("Watermarked"), _text("Clean", highlight=True)],
             ),
             ComparisonRow(
                 label="Speaker airtime from an uploaded transcript",

@@ -37,3 +37,18 @@ Managed platforms only, no VM/Kubernetes:
 - File storage: Cloudflare R2 (free tier, zero egress fees)
 - Estimated cost at current scale: ~$5-20/month
 
+## Pricing (decided)
+Single source of truth: `backend/app/services/plans.py` (catalog copy) and `TIER_QUOTAS` in `backend/app/services/usage.py` (enforced limits).
+
+| | Free Starter | Solo Pro |
+|---|---|---|
+| Price | $0 | $12/month, or $8/month billed annually ($96/year) |
+| Uploaded/linked video | 1 hour/month, max 30 min per video | 15 hours/month, max 2 hours per video |
+| YouTube caption notes | 3/month | Unlimited |
+| Summary + key moments | Yes | Yes |
+| Detailed analysis | Preview (overview + first section, locked counts) | Full |
+| Ask this video | 3 per video, 10/month | 300/month |
+| PDF export | Watermarked summary | Clean summary + detailed |
+
+The full analysis is generated for every job; `analysis_for_viewer` in `services/jobs.py` trims it per viewer (API and video chat), so upgrading unlocks existing videos without reprocessing.
+Stripe: create Pro prices of $12/month and $96/year and set `STRIPE_PRICE_ID_PRO_MONTHLY` / `STRIPE_PRICE_ID_PRO_ANNUAL`.

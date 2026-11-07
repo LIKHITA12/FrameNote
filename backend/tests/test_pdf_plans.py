@@ -58,7 +58,7 @@ class PdfPlanTests(unittest.TestCase):
         summary_pdf.return_value = f"frames/{self.job.id}/summary-report.pdf"
         detailed_pdf.return_value = f"frames/{self.job.id}/report.pdf"
         generate_pdf_for_job(self.job.id, db=self.db, current_user=self.user)
-        summary_pdf.assert_called_once_with(job=self.job, key_points=unittest.mock.ANY, include_frames=True)
+        summary_pdf.assert_called_once_with(job=self.job, key_points=unittest.mock.ANY, include_frames=True, watermark=True)
         detailed_pdf.assert_not_called()
 
         summary_pdf.reset_mock()
@@ -94,11 +94,15 @@ class PdfPlanTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             settings.local_processed_dir = temp_dir
             summary_key = generate_job_summary_pdf(self.job, points)
-            detailed_key = generate_job_pdf(self.job, points, analysis)
             summary_text = _pdf_text(Path(temp_dir) / summary_key)
+            watermarked_key = generate_job_summary_pdf(self.job, points, watermark=True)
+            watermarked_text = _pdf_text(Path(temp_dir) / watermarked_key)
+            detailed_key = generate_job_pdf(self.job, points, analysis)
             detailed_text = _pdf_text(Path(temp_dir) / detailed_key)
         settings.local_processed_dir = original_dir
 
+        self.assertNotIn("FrameNote Free", summary_text)
+        self.assertIn("FrameNote Free", watermarked_text)
         self.assertIn("Key Points", summary_text)
         self.assertNotIn("Questions people asked", summary_text)
         self.assertIn("Questions people asked", detailed_text)

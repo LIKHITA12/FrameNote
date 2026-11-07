@@ -230,7 +230,7 @@ function UpgradeContent() {
                   {option === "monthly" ? "Billed Monthly" : "Billed Annually"}
                   {option === "annual" ? (
                     <span className="rounded-full bg-core-primary-fixed px-2 py-0.5 font-jetbrains-mono text-[9px] font-bold uppercase text-core-primary">
-                      Save {catalog?.annual_discount_percent ?? 20}%
+                      Save {catalog?.annual_discount_percent ?? 33}%
                     </span>
                   ) : null}
                 </button>

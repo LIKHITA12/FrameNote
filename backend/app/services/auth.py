@@ -83,6 +83,11 @@ def get_user_subscription(db: Session, user_id: str) -> Subscription:
     return subscription
 
 
+def user_is_pro(db: Session, user_id: str) -> bool:
+    subscription = get_user_subscription(db=db, user_id=user_id)
+    return subscription.tier.lower() == "pro" and subscription.status.lower() == "active"
+
+
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 

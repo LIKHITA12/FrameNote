@@ -11,6 +11,7 @@ from app.api.routes import create_job_clip, delete_job_clip, list_job_clips, upd
 from app.db import Base
 from app.models.job import Job
 from app.models.job_collaborator import JobCollaborator
+from app.models.subscription import Subscription
 from app.models.user import User
 from app.schemas.jobs import JobClipRequest, JobNotesUpdateRequest
 
@@ -49,6 +50,14 @@ class NotesAndClipsTests(unittest.TestCase):
         self.db.close()
 
     def test_edit_updates_notes_and_invalidates_pdf(self) -> None:
+        with self.assertRaises(HTTPException) as free_denied:
+            update_job_notes(self.job.id, JobNotesUpdateRequest(decisions=["Hidden on Free"]), db=self.db, current_user=self.owner)
+        self.assertEqual(free_denied.exception.status_code, 403)
+        self.assertEqual(json.loads(self.job.analysis_json)["decisions"], ["Old decision"])
+
+        subscription = self.db.query(Subscription).filter_by(user_id=self.owner.id).one()
+        subscription.tier = "pro"
+        self.db.commit()
         response = update_job_notes(
             self.job.id,
             JobNotesUpdateRequest(summary="  Revised summary  ", decisions=["New decision"], action_items=["New action"]),

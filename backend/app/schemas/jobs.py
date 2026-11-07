@@ -89,6 +89,16 @@ class JobAnalysis(BaseModel):
     duration_seconds: int | None = None
 
 
+class AnalysisLock(BaseModel):
+    """Present when the viewer only sees a preview of the detailed analysis; counts what Pro unlocks."""
+
+    hidden_sections: int = 0
+    hidden_questions: int = 0
+    hidden_decisions: int = 0
+    hidden_action_items: int = 0
+    hidden_terms: int = 0
+
+
 class StageEvent(BaseModel):
     """One real pipeline transition, replayed as a line in the Analyzing page's processing log."""
 
@@ -109,6 +119,7 @@ class JobCreateResponse(BaseModel):
     tags: list[str] = Field(default_factory=list)
     sentiment: SentimentLabel = "Neutral"
     analysis: JobAnalysis | None = None
+    analysis_locked: AnalysisLock | None = None
     custom_action_items: list[str] = Field(default_factory=list)
     # Positions within [analysis.action_items, *custom_action_items] that the user has ticked off.
     completed_action_items: list[int] = Field(default_factory=list)
