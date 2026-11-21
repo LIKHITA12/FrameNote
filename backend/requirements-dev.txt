@@ -1,0 +1,5 @@
+# Local development only: production (Railway) installs requirements.txt.
+# Local Whisper transcription pulls in PyTorch (several GB) and is blocked when ENVIRONMENT=production.
+-r requirements.txt
+openai-whisper
+pypdf

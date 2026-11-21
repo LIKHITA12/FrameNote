@@ -68,7 +68,7 @@ function statusBadge(status: JobCreateResponse["status"]) {
 function noteHref(job: JobCreateResponse) {
   return job.status === "completed" || job.status === "failed"
     ? `/workspace/insights?job=${job.job_id}`
-    : `/workspace/analyzing?job=${job.job_id}`;
+    : "/";
 }
 
 function greeting() {
@@ -102,7 +102,7 @@ const TOUR_STEPS: TourStep[] = [
 ];
 
 function DashboardHome() {
-  const { beginProcessing, startProcessing, failPreparing, setUploadProgress } = useProcessing();
+  const { beginProcessing, startProcessing, failPreparing, setUploadProgress, openProcessing } = useProcessing();
   const [url, setUrl] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -293,13 +293,14 @@ function DashboardHome() {
                     <p className="text-sm text-core-on-surface-variant">We&apos;ll notify you the moment it&apos;s ready.</p>
                   </div>
                 </div>
-                <Link
-                  href={`/workspace/analyzing?job=${activeJob.job_id}`}
+                <button
+                  type="button"
+                  onClick={() => openProcessing(activeJob.job_id)}
                   className="flex items-center gap-1.5 rounded-xl bg-core-surface-container-lowest px-4 py-2 text-sm font-semibold text-core-primary shadow-sm transition hover:bg-core-surface"
                 >
                   View Progress
                   <Icon name="arrow_forward" className="!text-[16px]" />
-                </Link>
+                </button>
               </div>
             ) : null}
 
@@ -498,8 +499,14 @@ function DashboardHome() {
                     <Link
                       key={job.job_id}
                       href={noteHref(job)}
-                      className="group flex flex-col items-start gap-6 rounded-2xl bg-core-surface-container-lowest p-6 shadow-sm transition hover:shadow-md md:flex-row"
-                    >
+                        onClick={(event) => {
+                          if (job.status === "queued" || job.status === "processing") {
+                            event.preventDefault();
+                            openProcessing(job.job_id);
+                          }
+                        }}
+                        className="group flex flex-col items-start gap-6 rounded-2xl bg-core-surface-container-lowest p-6 shadow-sm transition hover:shadow-md md:flex-row"
+                      >
                       <div className="relative h-36 w-full shrink-0 overflow-hidden rounded-xl bg-core-surface-container text-core-primary md:w-56">
                         {jobThumbnail(job) ? (
                           // eslint-disable-next-line @next/next/no-img-element

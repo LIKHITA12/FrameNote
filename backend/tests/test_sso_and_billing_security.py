@@ -1,3 +1,4 @@
+import base64
 import hashlib
 import hmac
 import json
@@ -31,14 +32,20 @@ from app.services.oauth import (
     microsoft_verified_email,
 )
 
-WEBHOOK_SECRET = "whsec_test_secret"
+WEBHOOK_SECRET = "whsec_" + base64.b64encode(b"framenote-test-webhook-key").decode()
 
 
-def _stripe_signature(payload: bytes, secret: str = WEBHOOK_SECRET) -> str:
-    timestamp = int(time.time())
-    signed = f"{timestamp}.".encode() + payload
-    digest = hmac.new(secret.encode(), signed, hashlib.sha256).hexdigest()
-    return f"t={timestamp},v1={digest}"
+def _dodo_headers(payload: bytes, secret: str = WEBHOOK_SECRET, timestamp: int | None = None) -> dict[str, str]:
+    """Standard Webhooks headers, signed the way Dodo Payments signs them."""
+    webhook_id = "msg_test"
+    sent_at = str(timestamp if timestamp is not None else int(time.time()))
+    key = base64.b64decode(secret.removeprefix("whsec_"))
+    digest = hmac.new(key, f"{webhook_id}.{sent_at}.".encode() + payload, hashlib.sha256).digest()
+    return {
+        "webhook-id": webhook_id,
+        "webhook-timestamp": sent_at,
+        "webhook-signature": f"v1,{base64.b64encode(digest).decode()}",
+    }
 
 
 class _ApiTestCase(unittest.TestCase):
@@ -67,7 +74,7 @@ class _ApiTestCase(unittest.TestCase):
         self.engine.dispose()
 
 
-class StripeWebhookTests(_ApiTestCase):
+class DodoWebhookTests(_ApiTestCase):
     def setUp(self) -> None:
         super().setUp()
         self.user = User(email="buyer@example.test")
@@ -75,47 +82,94 @@ class StripeWebhookTests(_ApiTestCase):
         self.db.commit()
         self.db.add(Subscription(user_id=self.user.id, tier="free", status="active"))
         self.db.commit()
-        self.payload = json.dumps(
+        self.payload = self._event("subscription.active", status="active", metadata={"user_id": self.user.id})
+        self.endpoint = f"{settings.api_v1_prefix}/billing/webhook"
+        self._patches = [
+            patch.object(settings, "dodo_payments_api_key", "dodo_test_key"),
+            patch.object(settings, "dodo_payments_webhook_key", WEBHOOK_SECRET),
+        ]
+        for item in self._patches:
+            item.start()
+
+    def tearDown(self) -> None:
+        for item in self._patches:
+            item.stop()
+        super().tearDown()
+
+    @staticmethod
+    def _event(event_type: str, status: str, metadata: dict | None = None, email: str = "buyer@example.test") -> bytes:
+        return json.dumps(
             {
-                "id": "evt_test",
-                "object": "event",
-                "type": "checkout.session.completed",
-                "data": {"object": {"metadata": {"user_id": self.user.id}, "customer": "cus_1", "subscription": "sub_1"}},
+                "business_id": "bus_test",
+                "type": event_type,
+                "timestamp": "2026-11-21T00:00:00Z",
+                "data": {
+                    "payload_type": "Subscription",
+                    "subscription_id": "sub_1",
+                    "customer": {"customer_id": "cus_1", "email": email},
+                    "status": status,
+                    "metadata": metadata or {},
+                },
             }
         ).encode()
-        self.endpoint = f"{settings.api_v1_prefix}/billing/webhook"
 
-    def _tier(self) -> str:
+    def _subscription(self) -> Subscription:
         self.db.expire_all()
-        return self.db.scalar(select(Subscription).where(Subscription.user_id == self.user.id)).tier
+        return self.db.scalar(select(Subscription).where(Subscription.user_id == self.user.id))
+
+    def _post(self, payload: bytes, headers: dict[str, str] | None = None):
+        return self.client.post(self.endpoint, content=payload, headers=headers or {})
 
     def test_unsigned_event_cannot_grant_pro(self) -> None:
-        with patch.object(settings, "stripe_secret_key", "sk_test"), patch.object(settings, "stripe_webhook_secret", WEBHOOK_SECRET):
-            response = self.client.post(self.endpoint, content=self.payload)
+        response = self._post(self.payload)
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(self._tier(), "free")
+        self.assertEqual(self._subscription().tier, "free")
 
     def test_forged_signature_is_rejected(self) -> None:
-        with patch.object(settings, "stripe_secret_key", "sk_test"), patch.object(settings, "stripe_webhook_secret", WEBHOOK_SECRET):
-            response = self.client.post(
-                self.endpoint, content=self.payload, headers={"Stripe-Signature": _stripe_signature(self.payload, "whsec_wrong")}
-            )
+        wrong_secret = "whsec_" + base64.b64encode(b"not-the-real-key").decode()
+        response = self._post(self.payload, _dodo_headers(self.payload, wrong_secret))
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(self._tier(), "free")
+        self.assertEqual(self._subscription().tier, "free")
+
+    def test_stale_timestamp_is_rejected(self) -> None:
+        response = self._post(self.payload, _dodo_headers(self.payload, timestamp=int(time.time()) - 3600))
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(self._subscription().tier, "free")
 
     def test_missing_webhook_secret_refuses_events(self) -> None:
-        with patch.object(settings, "stripe_secret_key", "sk_test"), patch.object(settings, "stripe_webhook_secret", None):
-            response = self.client.post(self.endpoint, content=self.payload, headers={"Stripe-Signature": "t=1,v1=abc"})
+        with patch.object(settings, "dodo_payments_webhook_key", None):
+            response = self._post(self.payload, _dodo_headers(self.payload))
         self.assertEqual(response.status_code, 503)
-        self.assertEqual(self._tier(), "free")
+        self.assertEqual(self._subscription().tier, "free")
 
-    def test_signed_checkout_completion_grants_pro(self) -> None:
-        with patch.object(settings, "stripe_secret_key", "sk_test"), patch.object(settings, "stripe_webhook_secret", WEBHOOK_SECRET):
-            response = self.client.post(
-                self.endpoint, content=self.payload, headers={"Stripe-Signature": _stripe_signature(self.payload)}
-            )
+    def test_signed_activation_grants_pro_and_stores_ids(self) -> None:
+        response = self._post(self.payload, _dodo_headers(self.payload))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(self._tier(), "pro")
+        subscription = self._subscription()
+        self.assertEqual(subscription.tier, "pro")
+        self.assertEqual(subscription.payment_customer_id, "cus_1")
+        self.assertEqual(subscription.payment_subscription_id, "sub_1")
+
+    def test_activation_without_metadata_matches_customer_email(self) -> None:
+        payload = self._event("subscription.active", status="active", email="BUYER@example.test")
+        response = self._post(payload, _dodo_headers(payload))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self._subscription().tier, "pro")
+
+    def test_cancellation_downgrades_to_free(self) -> None:
+        self._post(self.payload, _dodo_headers(self.payload))
+        cancelled = self._event("subscription.cancelled", status="cancelled")
+        response = self._post(cancelled, _dodo_headers(cancelled))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self._subscription().tier, "free")
+
+    def test_past_due_keeps_pro_during_grace_period(self) -> None:
+        self._post(self.payload, _dodo_headers(self.payload))
+        past_due = self._event("subscription.past_due", status="past_due")
+        self._post(past_due, _dodo_headers(past_due))
+        subscription = self._subscription()
+        self.assertEqual(subscription.tier, "pro")
+        self.assertEqual(subscription.status, "past_due")
 
 
 class SsoLoginTests(_ApiTestCase):

@@ -12,6 +12,8 @@ type ProcessingContextValue = {
   minimized: boolean;
   /** Show the modal immediately, before the job id is known. */
   beginProcessing: (label?: string) => void;
+  /** Open the modal for an existing job. */
+  openProcessing: (jobId: string) => void;
   setUploadProgress: (percent: number | null) => void;
   startProcessing: (jobId: string) => void;
   failPreparing: () => void;
@@ -44,6 +46,14 @@ export function ProcessingProvider({ children }: { children: ReactNode }) {
     setMinimized(false);
   }, []);
 
+  const openProcessing = useCallback((jobId: string) => {
+    setActiveJobId(jobId);
+    setPreparing(false);
+    setPreparingLabel(null);
+    setUploadProgress(null);
+    setMinimized(false);
+  }, []);
+
   const failPreparing = useCallback(() => {
     setPreparing(false);
     setPreparingLabel(null);
@@ -69,6 +79,7 @@ export function ProcessingProvider({ children }: { children: ReactNode }) {
       uploadProgress,
       minimized,
       beginProcessing,
+      openProcessing,
       setUploadProgress,
       startProcessing,
       failPreparing,
@@ -83,6 +94,7 @@ export function ProcessingProvider({ children }: { children: ReactNode }) {
       uploadProgress,
       minimized,
       beginProcessing,
+      openProcessing,
       startProcessing,
       failPreparing,
       minimize,

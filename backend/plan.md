@@ -13,9 +13,11 @@
   - Frontend: Next.js + React + TypeScript + Tailwind.
   - Backend: FastAPI + Celery + Redis + Postgres.
 - Hosting target:
-  - Frontend on Vercel.
-  - Backend worker/API on Render or Railway.
-  - Storage on Cloudflare R2.
+  - Frontend on Cloudflare Pages.
+  - Backend worker/API and Redis on Railway.
+  - Database on Neon; storage on Cloudflare R2.
+  - Payments via Dodo Payments.
+  - Full service and budget breakdown: see `PLAN.md` at the repo root.
 
 ## Product UX decisions (updated)
 - Do not expose raw "jobs" terminology or job IDs in primary UI.
@@ -80,7 +82,7 @@
 5. PDF export
    - Render summary + key points + media references.
 6. Monetization and hardening
-   - Stripe subscriptions/usage limits.
+   - Dodo Payments subscriptions/usage limits.
    - Error handling, quotas, observability.
 
 ## Immediate implementation baseline (now)

@@ -20,9 +20,11 @@ from app.services.auth import get_user_subscription
 
 # Per-tier allowances. Mirrors the published plan matrix in services/plans.py.
 TIER_QUOTAS: dict[str, dict[str, float | None]] = {
-    "free": {"hours": 0.25, "storage_gb": 0.5, "price": 0},
-    "pro": {"hours": 5.0, "storage_gb": 5.0, "price": 10},
+    "free": {"hours": 1.0, "storage_gb": 0.5, "price": 0, "max_video_minutes": 30},
+    "pro": {"hours": 15.0, "storage_gb": 20.0, "price": 12, "max_video_minutes": 120},
 }
+# YouTube notes use published captions (no transcription cost), so they are counted, not timed.
+FREE_YOUTUBE_NOTES_PER_MONTH = 3
 
 TIER_LABELS: dict[str, str] = {
     "free": "Free Starter",
@@ -205,20 +207,31 @@ def ensure_job_creation_allowed(db: Session, user: User, source_type: str) -> No
     # A failed job may be retried, so it must not consume a separate monthly slot.
     jobs = [job for job in jobs if job.status != "failed"]
 
-    if tier != "pro":
-        if source_type == "youtube":
-            used = sum(job.source_type == "youtube" for job in jobs)
-            if used >= 3:
-                raise HTTPException(status_code=403, detail="Free Starter includes 3 YouTube notes per month. Upgrade or wait for the monthly reset.")
-        else:
-            used = sum(job.source_type in {"upload", "url"} for job in jobs)
-            if used >= 1:
-                raise HTTPException(status_code=403, detail="Free Starter includes 1 uploaded or linked video per month. Upgrade or wait for the monthly reset.")
+    if tier != "pro" and source_type == "youtube":
+        used = sum(job.source_type == "youtube" for job in jobs)
+        if used >= FREE_YOUTUBE_NOTES_PER_MONTH:
+            raise HTTPException(
+                status_code=403,
+                detail=f"Free Starter includes {FREE_YOUTUBE_NOTES_PER_MONTH} YouTube notes per month. Upgrade or wait for the monthly reset.",
+            )
         return
 
+    quota_hours = _quota(tier, "hours")
     used_seconds = sum(_job_duration_seconds(job) for job in jobs if job.source_type in {"upload", "url"})
-    if used_seconds >= 5 * 3600:
-        raise HTTPException(status_code=403, detail="Your 5 monthly transcription hours are used. Please wait for the monthly reset or contact support.")
+    if used_seconds >= quota_hours * 3600:
+        upgrade_hint = "Upgrade to Solo Pro or wait" if tier != "pro" else "Please wait"
+        raise HTTPException(
+            status_code=403,
+            detail=f"Your {_hours_label(quota_hours)} of monthly video are used. {upgrade_hint} for the monthly reset.",
+        )
+
+
+def _quota(tier: str, key: str) -> float:
+    return float(TIER_QUOTAS.get(tier, TIER_QUOTAS["free"])[key] or 0)
+
+
+def _hours_label(hours: float) -> str:
+    return f"{hours:g} hour" + ("" if hours == 1 else "s")
 
 
 def reserve_media_duration(db: Session, job: Job, duration_seconds: int | None) -> None:
@@ -230,9 +243,9 @@ def reserve_media_duration(db: Session, job: Job, duration_seconds: int | None) 
         raise HTTPException(status_code=404, detail="Account not found")
     subscription = get_user_subscription(db=db, user_id=user.id)
     tier = subscription.tier if subscription.status.lower() == "active" else "free"
-    per_video_limit = 90 * 60 if tier == "pro" else 15 * 60
-    if duration_seconds > per_video_limit:
-        raise HTTPException(status_code=403, detail=f"This video exceeds the {90 if tier == 'pro' else 15}-minute limit for your plan.")
+    max_minutes = int(_quota(tier, "max_video_minutes"))
+    if duration_seconds > max_minutes * 60:
+        raise HTTPException(status_code=403, detail=f"This video exceeds the {max_minutes}-minute limit for your plan.")
 
     period_start = _billing_period_start(datetime.now(timezone.utc))
     other_jobs = db.scalars(select(Job).where(Job.owner_id == user.id, Job.created_at >= period_start, Job.id != job.id)).all()
@@ -241,7 +254,7 @@ def reserve_media_duration(db: Session, job: Job, duration_seconds: int | None) 
         for other in other_jobs
         if other.status != "failed" and other.source_type in {"upload", "url"}
     )
-    monthly_limit = 5 * 3600 if tier == "pro" else 15 * 60
+    monthly_limit = _quota(tier, "hours") * 3600
     if used_seconds + duration_seconds > monthly_limit:
         raise HTTPException(status_code=403, detail="This video would exceed your monthly transcription allowance. Try a shorter video or wait for the reset.")
     job.media_duration_seconds = duration_seconds

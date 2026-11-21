@@ -20,7 +20,18 @@ def _redis_client() -> redis.Redis:
 
 
 def request_ip(request: Request) -> str:
-    # Do not trust a client-supplied X-Forwarded-For value.
+    """The client's IP for rate limiting.
+
+    Behind a reverse proxy (Railway), request.client is the proxy, so every user would share one bucket.
+    Each trusted proxy appends the address it received the request from to X-Forwarded-For, so the
+    entry TRUSTED_PROXY_HOPS from the right is the real client. Entries further left are whatever the
+    client sent and are never trusted.
+    """
+    hops = settings.trusted_proxy_hops
+    if hops > 0:
+        forwarded = [part.strip() for part in request.headers.get("x-forwarded-for", "").split(",") if part.strip()]
+        if len(forwarded) >= hops:
+            return forwarded[-hops]
     return request.client.host if request.client else "unknown"
 
 

@@ -9,7 +9,7 @@ import { AppTopbar } from "@/components/AppTopbar";
 import { AuthGuard } from "@/components/AuthGuard";
 import { useSidebar } from "@/components/SidebarContext";
 import { Accordion } from "@/components/ui/Accordion";
-import { createCheckoutSession, getPricingCatalog } from "@/lib/api";
+import { createCheckoutSession, detectPricingRegion, getPricingCatalog } from "@/lib/api";
 import { BillingCycle, ComparisonCell, PricingCatalogResponse, PricingPlan } from "@/types/job";
 
 function Icon({ name, className = "" }: { name: string; className?: string }) {
@@ -30,30 +30,36 @@ function Banner({ tone, children }: { tone: "success" | "warning" | "error" | "i
   return <div className={`rounded-xl border px-4 py-3 text-sm ${tones[tone]}`}>{children}</div>;
 }
 
-function planPrice(plan: PricingPlan, cycle: BillingCycle) {
+function formatMoney(symbol: string, value: number) {
+  return `${symbol}${value.toLocaleString(symbol === "₹" ? "en-IN" : "en-US")}`;
+}
+
+function planPrice(plan: PricingPlan, cycle: BillingCycle, symbol: string) {
   if (plan.custom_price_label) {
     return { amount: plan.custom_price_label, suffix: null, note: plan.price_note };
   }
   const monthly = cycle === "annual" ? plan.price_annual_monthly : plan.price_monthly;
   const note =
     cycle === "annual" && plan.price_annual_total
-      ? `Billed annually ($${plan.price_annual_total}/year)`
+      ? `Billed annually (${formatMoney(symbol, plan.price_annual_total)}/year)`
       : plan.price_note ?? null;
-  return { amount: `$${monthly ?? 0}`, suffix: plan.price_monthly === 0 ? "/ FOREVER" : "/ MONTH", note };
+  return { amount: formatMoney(symbol, monthly ?? 0), suffix: plan.price_monthly === 0 ? "/ FOREVER" : "/ MONTH", note };
 }
 
 function PlanCard({
   plan,
   cycle,
+  currencySymbol,
   onSelect,
   busy,
 }: {
   plan: PricingPlan;
   cycle: BillingCycle;
+  currencySymbol: string;
   onSelect: (plan: PricingPlan) => void;
   busy: boolean;
 }) {
-  const { amount, suffix, note } = planPrice(plan, cycle);
+  const { amount, suffix, note } = planPrice(plan, cycle, currencySymbol);
   const featured = plan.most_popular;
 
   return (
@@ -167,7 +173,7 @@ function UpgradeContent() {
 
   useEffect(() => {
     let cancelled = false;
-    void getPricingCatalog()
+    void getPricingCatalog(detectPricingRegion())
       .then((data) => {
         if (!cancelled) setCatalog(data);
       })
@@ -230,7 +236,7 @@ function UpgradeContent() {
                   {option === "monthly" ? "Billed Monthly" : "Billed Annually"}
                   {option === "annual" ? (
                     <span className="rounded-full bg-core-primary-fixed px-2 py-0.5 font-jetbrains-mono text-[9px] font-bold uppercase text-core-primary">
-                      Save {catalog?.annual_discount_percent ?? 20}%
+                      Save {catalog?.annual_discount_percent ?? 33}%
                     </span>
                   ) : null}
                 </button>
@@ -265,11 +271,17 @@ function UpgradeContent() {
                 key={plan.id}
                 plan={plan}
                 cycle={cycle}
+                currencySymbol={catalog?.currency_symbol ?? "$"}
                 onSelect={(selected) => void onSelect(selected)}
                 busy={busyPlan === plan.id}
               />
             ))}
           </section>
+          {catalog?.currency === "INR" ? (
+            <p className="mx-auto mt-4 max-w-3xl text-center text-xs text-core-on-surface-variant">
+              Prices for India in INR, GST included. Checkout confirms the final price for your billing country.
+            </p>
+          ) : null}
 
           {trust ? (
             <section className="mt-10 rounded-xl2 border border-core-outline-variant/15 bg-core-surface-container-low p-6 sm:p-8">

@@ -14,7 +14,7 @@ FrameNote turns videos into structured notes. Upload a video or paste a public v
 - **Frontend**: Next.js (App Router) + React + TypeScript + Tailwind CSS
 - **Backend**: FastAPI + Celery (task queue) + Redis (broker) + Postgres (database)
 - **Storage**: Local disk in dev, Cloudflare R2 in production
-- **Optional integrations**: OpenAI (transcription/summaries), Stripe (subscriptions)
+- **Optional integrations**: OpenAI (transcription/summaries), Dodo Payments (subscriptions)
 
 ## Project structure
 
@@ -67,7 +67,7 @@ The backend can run fully via Docker Compose (API + worker + Redis + Postgres), 
    cd backend
    python3 -m venv venv
    source venv/bin/activate
-   pip install -r requirements.txt
+   pip install -r requirements-dev.txt
    ```
 2. Create a `backend/.env` file pointing at local services. For a no-Docker fallback, SQLite works:
    ```env
@@ -75,7 +75,7 @@ The backend can run fully via Docker Compose (API + worker + Redis + Postgres), 
    DATABASE_URL=sqlite:///./framenote.db
    REDIS_URL=redis://localhost:6379/0
    ```
-   (Redis is still required for Celery; run it via `docker run -p 6379:6379 redis:7-alpine` or a local install.)
+   (Redis is still required for Celery; run it via `docker run -p 6379:6379 redis:7-alpine`, install it locally, or use an existing Redis service on `localhost:6379`.)
 3. Apply migrations:
    ```bash
    alembic upgrade head
@@ -92,11 +92,24 @@ The backend can run fully via Docker Compose (API + worker + Redis + Postgres), 
    ```bash
    uvicorn app.main:app --reload --port 8000
    ```
-5. In a separate terminal (with the venv activated), start the Celery worker:
+5. In a separate terminal, start Redis if it is not already running:
    ```bash
-   celery -A tasks.worker.celery_app worker --loglevel=info
+   docker run --rm -p 6379:6379 redis:7-alpine
    ```
+6. In another terminal (with the venv activated), start the Celery worker:
+   ```bash
+   celery -A tasks.worker.celery_app worker --loglevel=info --pool=solo
+   ```
+   The `--pool=solo` option is recommended for local macOS development. It avoids the
+   prefork worker-process error that can occur with Celery/Billiard on macOS.
    In production, also run `celery -A tasks.worker.celery_app beat` so jobs left behind by a crashed worker are marked failed and can be retried.
+
+For local development, keep these processes running in separate terminals:
+
+1. Redis
+2. FastAPI/Uvicorn API on port 8000
+3. Celery worker with `--pool=solo`
+4. Next.js frontend on port 3000
 
 The API is served under the `/api/v1` prefix, e.g. [http://localhost:8000/api/v1](http://localhost:8000/api/v1).
 

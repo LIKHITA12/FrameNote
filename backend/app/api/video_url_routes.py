@@ -18,7 +18,6 @@ from app.schemas.jobs import (
     PublicVideoUrlRequest,
 )
 from app.services.dispatch import enqueue_job_task
-from app.services.auth import get_user_subscription
 from app.services.jobs import create_job_record, to_job_response
 from app.services.pipeline import extract_youtube_video_id
 from app.services.video_url import (
@@ -67,12 +66,8 @@ def create_job_from_url(
         ),
         owner=current_user,
     )
-    subscription = get_user_subscription(db=db, user_id=current_user.id)
-    # Report depth is a plan entitlement: Free always receives the compact summary
-    # and an active Pro subscription always receives the full detailed report.
-    detailed = subscription.tier.lower() == "pro" and subscription.status.lower() == "active"
-
-    enqueue_job_task(process_public_video_url, (job.id, detailed), background_tasks, db, job)
+    # Every plan gets the full analysis generated; free viewers are shown a preview (see analysis_for_viewer).
+    enqueue_job_task(process_public_video_url, (job.id, True), background_tasks, db, job)
 
     return to_job_response(job)
 

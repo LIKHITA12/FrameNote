@@ -5,13 +5,14 @@ from typing import Any
 from fastapi import HTTPException
 from pydantic import ValidationError
 from sqlalchemy import desc, exists, or_, select, update
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, object_session
 
 from app.models.job import Job
 from app.models.job_collaborator import JobCollaborator
 from app.models.user import User
 from app.core.config import settings
 from app.schemas.jobs import (
+    AnalysisLock,
     JobAnalysis,
     JobCreateRequest,
     JobCreateResponse,
@@ -21,6 +22,7 @@ from app.schemas.jobs import (
     StageEvent,
     TranscriptSegment,
 )
+from app.services.auth import user_is_pro
 from app.services.pipeline import extract_youtube_video_id
 from app.services.media_access import sign_asset_url, sign_existing_asset_url
 from app.services.usage import ensure_job_creation_allowed, job_duration_seconds, job_insight_count
@@ -147,15 +149,50 @@ def _coerce_sentiment(value: str | None) -> SentimentLabel:
     return value if value in _VALID_SENTIMENTS else "Neutral"  # type: ignore[return-value]
 
 
-def _parse_job_analysis(job: Job) -> JobAnalysis | None:
-    raw = get_job_analysis(job)
+def _parse_job_analysis(job: Job, is_pro: bool = True) -> tuple[JobAnalysis | None, AnalysisLock | None]:
+    raw, lock = analysis_for_viewer(get_job_analysis(job), is_pro=is_pro)
     if not raw:
-        return None
+        return None, None
     try:
-        return JobAnalysis.model_validate(raw)
+        return JobAnalysis.model_validate(raw), lock
     except ValidationError:
         # LLM-produced payload didn't match the expected shape; degrade to no analysis rather than 500.
-        return None
+        return None, None
+
+
+# Free viewers see the overview plus this many timeline sections; everything else is counted, not sent.
+ANALYSIS_PREVIEW_SECTIONS = 1
+
+
+def analysis_for_viewer(analysis: dict[str, Any] | None, is_pro: bool) -> tuple[dict[str, Any] | None, AnalysisLock | None]:
+    """Return the analysis a viewer may see: all of it for Pro, otherwise a preview plus locked counts."""
+    if not analysis or is_pro:
+        return analysis, None
+
+    def items(key: str) -> list[Any]:
+        value = analysis.get(key)
+        return value if isinstance(value, list) else []
+
+    timeline = items("timeline")
+    preview = {
+        "overview": analysis.get("overview") or "",
+        "timeline": timeline[:ANALYSIS_PREVIEW_SECTIONS],
+        "duration_seconds": analysis.get("duration_seconds"),
+    }
+    lock = AnalysisLock(
+        hidden_sections=max(0, len(timeline) - ANALYSIS_PREVIEW_SECTIONS),
+        hidden_questions=len(items("questions_and_answers")),
+        hidden_decisions=len(items("decisions")),
+        hidden_action_items=len(items("action_items")),
+        hidden_terms=len(items("terms")),
+    )
+    return preview, lock
+
+
+def _viewer_is_pro(job: Job, viewer_id: str) -> bool:
+    db = object_session(job)
+    # Without a session the viewer's plan can't be checked, so fail closed to the preview.
+    return user_is_pro(db, viewer_id) if db is not None else False
 
 
 def to_job_response(job: Job, viewer_id: str | None = None) -> JobCreateResponse:
@@ -164,7 +201,9 @@ def to_job_response(job: Job, viewer_id: str | None = None) -> JobCreateResponse
     key_points = [KeyPoint(**point) for point in raw_points]
     for point in key_points:
         point.frame_image_url = sign_existing_asset_url(job, point.frame_image_url, viewer_id)
-    analysis = _parse_job_analysis(job)
+    analysis, analysis_locked = (
+        _parse_job_analysis(job, is_pro=_viewer_is_pro(job, viewer_id)) if job.analysis_json else (None, None)
+    )
     if analysis:
         for section in analysis.timeline:
             if hasattr(section, "frame_image_url"):
@@ -204,6 +243,7 @@ def to_job_response(job: Job, viewer_id: str | None = None) -> JobCreateResponse
         tags=tags if isinstance(tags, list) else [],
         sentiment=_coerce_sentiment(job.sentiment),
         analysis=analysis,
+        analysis_locked=analysis_locked,
         custom_action_items=custom_action_items if isinstance(custom_action_items, list) else [],
         completed_action_items=completed_action_items,
         stage_events=stage_events,
@@ -245,6 +285,28 @@ def _append_stage_event(job: Job, message: str, stage: int | None = None) -> Non
         {"stage": stage, "message": message, "at": datetime.now(timezone.utc).isoformat()}
     )
     job.stage_events_json = json.dumps(events)
+
+
+def append_job_event(db: Session, job_id: str, message: str, stage: int | None = None) -> None:
+    job = db.get(Job, job_id)
+    if job is None:
+        return
+    _append_stage_event(job, message, stage=stage)
+    db.add(job)
+    db.commit()
+
+
+def save_job_summary_preview(db: Session, job_id: str, preview: dict[str, Any]) -> None:
+    job = db.get(Job, job_id)
+    if job is None:
+        return
+    job.summary = str(preview.get("summary") or "Summary unavailable")
+    job.key_points_json = json.dumps(preview.get("key_points") or [])
+    job.tags_json = json.dumps(preview.get("tags") or [])
+    job.sentiment = _coerce_sentiment(preview.get("sentiment"))
+    job.summary_model = preview.get("summary_model")
+    db.add(job)
+    db.commit()
 
 
 def mark_job_processing(db: Session, job: Job) -> None:

@@ -5,7 +5,7 @@ from pathlib import Path
 
 from datetime import datetime
 
-from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException, Query, Request, Response
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Request, Response
 from fastapi.responses import FileResponse, RedirectResponse, StreamingResponse
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -73,8 +73,9 @@ from app.services.auth import (
     get_user_subscription,
     request_password_reset,
     signup_user,
+    user_is_pro,
 )
-from app.services.billing import create_checkout_url, handle_webhook_event
+from app.services.billing import create_checkout_url, create_customer_portal_url, handle_webhook_event
 from app.services.feedback import (
     COMMUNITY_PAGE_SIZE,
     build_feedback_meta,
@@ -110,6 +111,7 @@ from app.services.user_settings import (
 from app.services.storage import (
     build_object_key,
     create_upload_presign,
+    presigned_processed_asset_url,
     resolve_processed_asset_path,
     presigned_upload_download_url,
     resolve_uploaded_object_path,
@@ -412,10 +414,11 @@ def submit_feedback(
 
 @router.get("/billing/plans", response_model=PricingCatalogResponse)
 def get_billing_plans(
+    region: str | None = Query(default=None, max_length=8, description="ISO country code, e.g. IN, for localized display prices"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ) -> PricingCatalogResponse:
-    return build_pricing_catalog(db=db, user=current_user)
+    return build_pricing_catalog(db=db, user=current_user, region=region)
 
 
 @router.post("/jobs", response_model=JobCreateResponse)
@@ -426,9 +429,8 @@ def create_job(
     current_user: User = Depends(get_current_user),
 ) -> JobCreateResponse:
     job = create_job_record(db=db, payload=payload, owner=current_user)
-    subscription = get_user_subscription(db=db, user_id=current_user.id)
-    detailed = subscription.tier.lower() == "pro" and subscription.status.lower() == "active"
-    enqueue_job_task(process_job, (job.id, detailed), background_tasks, db, job)
+    # Every plan gets the full analysis generated; free viewers are shown a preview (see analysis_for_viewer).
+    enqueue_job_task(process_job, (job.id, True), background_tasks, db, job)
 
     return to_job_response(job)
 
@@ -465,6 +467,9 @@ def update_job_notes(
         raise HTTPException(status_code=409, detail="Only completed notes can be edited")
     if payload.summary is None and payload.decisions is None and payload.action_items is None:
         raise HTTPException(status_code=422, detail="Provide at least one notes field")
+    # Free users only see a preview, so saving these would overwrite analysis they cannot see.
+    if (payload.decisions is not None or payload.action_items is not None) and not user_is_pro(db, current_user.id):
+        raise HTTPException(status_code=403, detail="Editing decisions and action items requires Solo Pro.")
 
     analysis = get_job_analysis(job) or {}
     if payload.summary is not None:
@@ -601,10 +606,8 @@ def retry_job(
         raise HTTPException(status_code=409, detail="Only failed jobs can be retried")
     ensure_job_creation_allowed(db=db, user=current_user, source_type=job.source_type)
     job = prepare_job_retry(db=db, job=job)
-    subscription = get_user_subscription(db=db, user_id=current_user.id)
-    detailed = subscription.tier.lower() == "pro" and subscription.status.lower() == "active"
     task = process_public_video_url if job.source_type in {"url", "youtube"} else process_job
-    enqueue_job_task(task, (job.id, detailed), background_tasks, db, job)
+    enqueue_job_task(task, (job.id, True), background_tasks, db, job)
     return to_job_response(job)
 
 
@@ -656,6 +659,7 @@ def generate_pdf_for_job(
             job=job,
             key_points=points,
             include_frames=include_frames,
+            watermark=True,
         )
     set_job_pdf_asset_key(db=db, job=job, asset_key=asset_key)
     refreshed = get_job_or_404(db=db, job_id=job_id, owner_id=current_user.id)
@@ -681,14 +685,20 @@ def create_checkout_session(
     return BillingCheckoutResponse(checkout_url=checkout_url)
 
 
-@router.post("/billing/webhook")
-async def stripe_webhook(
-    request: Request,
-    stripe_signature: str | None = Header(default=None, alias="Stripe-Signature"),
+@router.post("/billing/portal-session", response_model=BillingCheckoutResponse)
+def create_billing_portal_session(
     db: Session = Depends(get_db),
-) -> dict[str, str]:
+    current_user: User = Depends(get_current_user),
+) -> BillingCheckoutResponse:
+    """Dodo's hosted portal for updating the card or cancelling. Reuses the checkout response shape: {checkout_url}."""
+    return BillingCheckoutResponse(checkout_url=create_customer_portal_url(db=db, user=current_user))
+
+
+@router.post("/billing/webhook")
+async def billing_webhook(request: Request, db: Session = Depends(get_db)) -> dict[str, str]:
     payload = await request.body()
-    handle_webhook_event(db=db, payload=payload, signature=stripe_signature)
+    headers = {name: request.headers.get(name, "") for name in ("webhook-id", "webhook-timestamp", "webhook-signature")}
+    handle_webhook_event(db=db, payload=payload, headers=headers)
     return {"status": "ok"}
 
 
@@ -786,10 +796,14 @@ def get_asset(asset_key: str, request: Request, access_token: str | None = None,
         raise HTTPException(status_code=404, detail="Asset not found")
     if asset_key.startswith("uploads/"):
         redirect_url = presigned_upload_download_url(asset_key)
-        if redirect_url:
-            return RedirectResponse(
-                redirect_url, status_code=307, headers={"Cache-Control": "private, no-store", "Referrer-Policy": "no-referrer"}
-            )
+    else:
+        redirect_url = presigned_processed_asset_url(asset_key)
+    if redirect_url:
+        # R2 serves the bytes (and Range requests) directly; on Railway the API and worker don't share a disk.
+        return RedirectResponse(
+            redirect_url, status_code=307, headers={"Cache-Control": "private, no-store", "Referrer-Policy": "no-referrer"}
+        )
+    if asset_key.startswith("uploads/"):
         path = resolve_uploaded_object_path(asset_key)
     else:
         path = resolve_processed_asset_path(asset_key)

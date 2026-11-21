@@ -9,6 +9,7 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { AppTopbar } from "@/components/AppTopbar";
 import { Footer } from "@/components/Footer";
 import { AuthGuard } from "@/components/AuthGuard";
+import { useProcessing } from "@/components/ProcessingContext";
 import { DetailedKeyMoments } from "@/components/insights/DetailedKeyMoments";
 import { AskVideoDrawer } from "@/components/insights/AskVideoDrawer";
 import { useSidebar } from "@/components/SidebarContext";
@@ -34,6 +35,7 @@ import {
 import { jobSourceIcon, jobSourceLabel } from "@/lib/jobThumbnail";
 import { downloadReportMarkdown } from "@/lib/exportMarkdown";
 import {
+  AnalysisLock,
   DetailedKeyMoment,
   JobCollaborator,
   JobClip,
@@ -219,6 +221,40 @@ function SectionCard({ children, className = "" }: { children: React.ReactNode; 
   );
 }
 
+function LockedAnalysisCard({ lock }: { lock: AnalysisLock }) {
+  const hidden = [
+    [lock.hidden_sections, "more discussion section", "more discussion sections"],
+    [lock.hidden_questions, "question & answer", "questions & answers"],
+    [lock.hidden_decisions, "decision", "decisions"],
+    [lock.hidden_action_items, "action item", "action items"],
+    [lock.hidden_terms, "glossary term", "glossary terms"],
+  ].filter(([count]) => Number(count) > 0) as Array<[number, string, string]>;
+
+  return (
+    <SectionCard className="flex flex-col items-center gap-3 border-dashed px-6 py-8 text-center">
+      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-core-primary-fixed text-core-primary">
+        <Icon name="lock" className="!text-[20px]" />
+      </div>
+      <h3 className="font-display text-[17px] font-bold text-core-on-surface">Unlock the full analysis for this video</h3>
+      {hidden.length ? (
+        <ul className="flex flex-wrap justify-center gap-2">
+          {hidden.map(([count, singular, plural]) => (
+            <li key={plural} className="rounded-full bg-core-surface-container px-3 py-1 text-xs font-semibold text-core-on-surface-variant">
+              {count} {count === 1 ? singular : plural}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-sm text-core-on-surface-variant">Decisions, action items and Q&amp;A are included with Solo Pro.</p>
+      )}
+      <Link href="/upgrade" className="mt-1 rounded-xl bg-core-primary px-4 py-2 text-sm font-semibold text-core-on-primary hover:opacity-90">
+        Upgrade to Solo Pro
+      </Link>
+      <p className="text-[11px] text-core-outline">Already analysed - upgrading unlocks it instantly, no reprocessing.</p>
+    </SectionCard>
+  );
+}
+
 function TabScrollArea({ children, context }: { children: React.ReactNode; context: VideoChatContext }) {
   return (
     <div
@@ -273,6 +309,7 @@ function KpiCard({
 }
 
 function InsightsPageContent() {
+  const { openProcessing } = useProcessing();
   const searchParams = useSearchParams();
   const requestedJobId = searchParams.get("job");
   const { collapsed } = useSidebar();
@@ -334,9 +371,11 @@ function InsightsPageContent() {
   const transcriptListRef = useRef<HTMLDivElement | null>(null);
   const segmentRefs = useRef<Record<number, HTMLDivElement | null>>({});
   const isPro = profile?.tier.toLowerCase() === "pro" && profile.subscription_status.toLowerCase() === "active";
+  const analysisLocked = !isPro ? result?.analysis_locked ?? null : null;
 
   useEffect(() => {
-    if (!isPro && leftTab !== "moments") {
+    // Free users keep Key Moments plus the Full Detailed Notes preview.
+    if (!isPro && leftTab === "speakers") {
       setLeftTab("moments");
       setChatContexts([LEFT_CHAT_CONTEXT.moments]);
     }
@@ -417,7 +456,7 @@ function InsightsPageContent() {
     try {
       const queued = await retryJob(result.job_id);
       setResult(queued);
-      window.location.href = `/workspace/analyzing?job=${queued.job_id}`;
+      openProcessing(queued.job_id);
     } catch (retryError) {
       setError(retryError instanceof Error ? retryError.message : "Could not retry this job.");
       setRetrying(false);
@@ -517,8 +556,13 @@ function InsightsPageContent() {
     try {
       const updated = await updateJobNotes(result.job_id, {
         summary: editSummary.trim(),
-        decisions: editDecisions.split("\n").map((item) => item.trim()).filter(Boolean),
-        action_items: editActionItems.split("\n").map((item) => item.trim()).filter(Boolean),
+        // Free plans only see a preview, so decisions and action items aren't editable there.
+        ...(isPro
+          ? {
+              decisions: editDecisions.split("\n").map((item) => item.trim()).filter(Boolean),
+              action_items: editActionItems.split("\n").map((item) => item.trim()).filter(Boolean),
+            }
+          : {}),
       });
       setResult(updated);
       setHistory((current) => current.map((job) => job.job_id === updated.job_id ? updated : job));
@@ -1168,7 +1212,10 @@ function InsightsPageContent() {
                           { id: "detailed" as const, label: "Full Detailed Notes", icon: "fact_check" },
                           { id: "moments" as const, label: "Key Moments", icon: "photo_library" },
                         ]
-                      : [{ id: "moments" as const, label: "Key Moments", icon: "photo_library" }]
+                      : [
+                          { id: "moments" as const, label: "Key Moments", icon: "photo_library" },
+                          { id: "detailed" as const, label: "Detailed Notes preview", icon: "fact_check" },
+                        ]
                   ).map((item) => (
                     <button
                       key={item.id}
@@ -1360,8 +1407,8 @@ function InsightsPageContent() {
                   </SectionCard>
                   ) : null}
 
-                  {/* Full Detailed Notes tab */}
-                  {leftTab === "detailed" && isPro ? (
+                  {/* Full Detailed Notes tab (Free sees a preview of the first section) */}
+                  {leftTab === "detailed" ? (
                   <div className="flex flex-col gap-6">
                     {/* Strategic themes & key discussion topics */}
                     {result.analysis?.timeline.length ? (
@@ -1423,8 +1470,10 @@ function InsightsPageContent() {
                       </SectionCard>
                     ) : null}
 
+                    {analysisLocked ? <LockedAnalysisCard lock={analysisLocked} /> : null}
+
                     {!result.analysis ||
-                    (!result.analysis.timeline.length && !result.analysis.questions_and_answers.length) ? (
+                    (!result.analysis.timeline.length && !result.analysis.questions_and_answers.length && !analysisLocked) ? (
                       <SectionCard className="px-6 py-10 text-center">
                         <Icon name="fact_check" className="!text-[28px] text-core-outline" />
                         <p className="mt-3 text-sm text-core-on-surface-variant">
@@ -1551,10 +1600,10 @@ function InsightsPageContent() {
                 <TabScrollArea context={REPORT_CHAT_CONTEXT[tab]}>
                   {tab === "summary" && editNotesOpen ? (
                     <SectionCard className="space-y-4 p-6">
-                      <div><h2 className="text-lg font-bold text-core-on-surface">Edit notes</h2><p className="text-xs text-core-on-surface-variant">Put each decision and action item on its own line. Saving clears completed checkmarks and requires a new PDF export.</p></div>
+                      <div><h2 className="text-lg font-bold text-core-on-surface">Edit notes</h2><p className="text-xs text-core-on-surface-variant">{isPro ? "Put each decision and action item on its own line. Saving clears completed checkmarks and requires a new PDF export." : "Saving requires a new PDF export. Editing decisions and action items is part of Solo Pro."}</p></div>
                       <label className="block text-xs font-semibold text-core-on-surface">Summary<textarea value={editSummary} onChange={(event) => setEditSummary(event.target.value)} rows={6} maxLength={20000} className="mt-1 w-full rounded-xl border border-core-outline-variant/30 bg-core-surface-container-lowest p-3 text-sm font-normal" /></label>
-                      <label className="block text-xs font-semibold text-core-on-surface">Decisions<textarea value={editDecisions} onChange={(event) => setEditDecisions(event.target.value)} rows={4} className="mt-1 w-full rounded-xl border border-core-outline-variant/30 bg-core-surface-container-lowest p-3 text-sm font-normal" /></label>
-                      <label className="block text-xs font-semibold text-core-on-surface">Action items<textarea value={editActionItems} onChange={(event) => setEditActionItems(event.target.value)} rows={5} className="mt-1 w-full rounded-xl border border-core-outline-variant/30 bg-core-surface-container-lowest p-3 text-sm font-normal" /></label>
+                      {isPro ? <label className="block text-xs font-semibold text-core-on-surface">Decisions<textarea value={editDecisions} onChange={(event) => setEditDecisions(event.target.value)} rows={4} className="mt-1 w-full rounded-xl border border-core-outline-variant/30 bg-core-surface-container-lowest p-3 text-sm font-normal" /></label> : null}
+                      {isPro ? <label className="block text-xs font-semibold text-core-on-surface">Action items<textarea value={editActionItems} onChange={(event) => setEditActionItems(event.target.value)} rows={5} className="mt-1 w-full rounded-xl border border-core-outline-variant/30 bg-core-surface-container-lowest p-3 text-sm font-normal" /></label> : null}
                       {editNotesError ? <p role="alert" className="text-xs text-core-error">{editNotesError}</p> : null}
                       <div className="flex gap-2"><button type="button" onClick={() => setEditNotesOpen(false)} className="rounded-lg px-4 py-2 text-sm font-semibold text-core-on-surface">Cancel</button><button type="button" onClick={() => void saveNotes()} disabled={editNotesBusy || !editSummary.trim()} className="rounded-lg bg-core-primary px-4 py-2 text-sm font-semibold text-core-on-primary disabled:opacity-50">{editNotesBusy ? "Saving…" : "Save notes"}</button></div>
                     </SectionCard>

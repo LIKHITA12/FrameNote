@@ -509,8 +509,20 @@ export async function getUsageSummary(): Promise<UsageSummaryResponse> {
 
 // --- Pricing & plans --------------------------------------------------------
 
-export async function getPricingCatalog(): Promise<PricingCatalogResponse> {
-  const response = await authFetch(`${apiBaseUrl}/billing/plans`, { method: "GET" });
+/** Best-effort visitor country for display prices. Checkout still charges by billing country via Dodo. */
+export function detectPricingRegion(): string | undefined {
+  try {
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (timeZone === "Asia/Kolkata" || timeZone === "Asia/Calcutta") return "IN";
+  } catch {
+    // Intl unavailable: fall back to global pricing.
+  }
+  return undefined;
+}
+
+export async function getPricingCatalog(region?: string): Promise<PricingCatalogResponse> {
+  const query = region ? `?region=${encodeURIComponent(region)}` : "";
+  const response = await authFetch(`${apiBaseUrl}/billing/plans${query}`, { method: "GET" });
   if (!response.ok) {
     throw new Error("Failed to load plans");
   }

@@ -86,7 +86,7 @@ type Insight = { icon: string; iconClassName: string; label: string; text: strin
 function buildInsights(job: JobCreateResponse): Insight[] {
   const stage = job.processing_stage ?? 0;
 
-  if (stage < 2) {
+  if (!job.summary && job.key_points.length === 0 && stage < 2) {
     return [
       {
         icon: "graphic_eq",
@@ -96,7 +96,7 @@ function buildInsights(job: JobCreateResponse): Insight[] {
       },
     ];
   }
-  if (stage < 3) {
+  if (!job.summary && job.key_points.length === 0) {
     return [
       {
         icon: "record_voice_over",
@@ -108,20 +108,20 @@ function buildInsights(job: JobCreateResponse): Insight[] {
   }
 
   const insights: Insight[] = [];
-  if (job.summary) {
+  if (job.summary && job.summary !== "Summary unavailable") {
     insights.push({
       icon: "summarize",
       iconClassName: "bg-core-primary/10 text-core-primary",
-      label: "Executive Summary",
-      text: job.summary,
+      label: "Summary",
+      text: job.summary.length > 280 ? `${job.summary.slice(0, 280)}…` : job.summary,
     });
   }
   job.key_points.slice(0, 3).forEach((point) => {
     insights.push({
-      icon: "task_alt",
+      icon: "bookmark",
       iconClassName: "bg-state-warning-soft text-state-on-warning-soft",
-      label: `Key Moment · ${formatTimestamp(point.timestamp_seconds)}`,
-      text: `${point.title} — ${point.description}`,
+      label: `Chapter · ${formatTimestamp(point.timestamp_seconds)}`,
+      text: point.description ? `${point.title}: ${point.description}` : point.title,
     });
   });
   if (insights.length === 0) {
