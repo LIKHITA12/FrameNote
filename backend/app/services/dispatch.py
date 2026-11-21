@@ -17,12 +17,19 @@ QUEUE_UNAVAILABLE_REASON = "The processing queue was unavailable. Please retry i
 
 def enqueue_job_task(task: Any, args: tuple, background_tasks: BackgroundTasks, db: Session, job: Job) -> None:
     try:
+        if settings.environment != "production":
+            # Check for a live worker *before* queueing: a task left in Redis would otherwise be picked up
+            # by the next worker that starts, on top of the in-process run below (the job processed twice).
+            inspector = task.app.control.inspect(timeout=0.5)
+            if not (inspector and inspector.ping()):
+                raise RuntimeError("No Celery worker is responding")
         task.apply_async(args=args, retry=False)
         return
-    except Exception:
+    except Exception as exc:
         if settings.environment != "production":
             # No broker running locally: run the same task in-process after the response is sent,
             # so the client still gets the job id immediately and can poll for stage progress.
+            logger.info("Using local in-process processing for job %s: %s", job.id, exc)
             background_tasks.add_task(task, *args)
             return
         logger.exception("Could not enqueue job %s", job.id)

@@ -9,12 +9,14 @@ from app.db import SessionLocal
 from app.services.auth import user_is_pro
 from app.services.jobs import (
     advance_job_stage,
+    append_job_event,
     fail_stale_jobs,
     get_job_analysis,
     get_job_or_404,
     mark_job_completed,
     mark_job_failed,
     mark_job_processing,
+    save_job_summary_preview,
     set_job_pdf_asset_key,
     set_job_source_title,
 )
@@ -88,6 +90,28 @@ def _stage_reporter(job_id: str):
     return report
 
 
+def _progress_reporter(job_id: str):
+    def report(message: str) -> None:
+        db = SessionLocal()
+        try:
+            append_job_event(db=db, job_id=job_id, message=message)
+        finally:
+            db.close()
+
+    return report
+
+
+def _summary_reporter(job_id: str):
+    def report(preview: dict) -> None:
+        db = SessionLocal()
+        try:
+            save_job_summary_preview(db=db, job_id=job_id, preview=preview)
+        finally:
+            db.close()
+
+    return report
+
+
 @celery_app.task
 def ping() -> str:
     return "pong"
@@ -100,7 +124,14 @@ def process_job(job_id: str, detailed: bool = False) -> None:
         job = _claim_job(db, job_id)
         if job is None:
             return
-        result = run_job_pipeline(job=job, detailed=detailed, on_stage=_stage_reporter(job_id), on_duration=lambda duration: reserve_media_duration(db, job, duration))
+        result = run_job_pipeline(
+            job=job,
+            detailed=detailed,
+            on_stage=_stage_reporter(job_id),
+            on_progress=_progress_reporter(job_id),
+            on_summary=_summary_reporter(job_id),
+            on_duration=lambda duration: reserve_media_duration(db, job, duration),
+        )
         mark_job_completed(db=db, job=job, result=result)
     except Exception as exc:
         _fail_job(db, job_id, exc)
@@ -116,7 +147,13 @@ def run_video_processing_pipeline(job_id: str) -> None:
         job = _claim_job(db, job_id)
         if job is None:
             return
-        result = run_job_pipeline(job=job, on_stage=_stage_reporter(job_id), on_duration=lambda duration: reserve_media_duration(db, job, duration))
+        result = run_job_pipeline(
+            job=job,
+            on_stage=_stage_reporter(job_id),
+            on_progress=_progress_reporter(job_id),
+            on_summary=_summary_reporter(job_id),
+            on_duration=lambda duration: reserve_media_duration(db, job, duration),
+        )
         mark_job_completed(db=db, job=job, result=result)
 
         job = get_job_or_404(db=db, job_id=job_id)
@@ -137,7 +174,14 @@ def run_summary_pdf_pipeline(job_id: str) -> None:
         job = _claim_job(db, job_id)
         if job is None:
             return
-        result = run_job_pipeline(job=job, detailed=False, on_stage=_stage_reporter(job_id), on_duration=lambda duration: reserve_media_duration(db, job, duration))
+        result = run_job_pipeline(
+            job=job,
+            detailed=False,
+            on_stage=_stage_reporter(job_id),
+            on_progress=_progress_reporter(job_id),
+            on_summary=_summary_reporter(job_id),
+            on_duration=lambda duration: reserve_media_duration(db, job, duration),
+        )
         mark_job_completed(db=db, job=job, result=result)
 
         job = get_job_or_404(db=db, job_id=job_id)
@@ -190,7 +234,12 @@ def run_local_test_pipeline(job_id: str) -> None:
         job = _claim_job(db, job_id)
         if job is None:
             return
-        result = run_job_pipeline(job=job, on_stage=_stage_reporter(job_id))
+        result = run_job_pipeline(
+            job=job,
+            on_stage=_stage_reporter(job_id),
+            on_progress=_progress_reporter(job_id),
+            on_summary=_summary_reporter(job_id),
+        )
         mark_job_completed(db=db, job=job, result=result)
 
         job = get_job_or_404(db=db, job_id=job_id)

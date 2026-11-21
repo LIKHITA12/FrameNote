@@ -146,8 +146,46 @@ def build_processed_asset_path(asset_key: str) -> Path:
     return resolved
 
 
-def resolve_processed_asset_path(asset_key: str) -> Path:
+_ASSET_CONTENT_TYPES = {".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png", ".pdf": "application/pdf"}
+
+
+def persist_processed_asset(asset_key: str) -> None:
+    """Copy a frame or PDF the current process just wrote to R2.
+
+    In production the API and the Celery worker run on separate machines with separate disks, so a
+    file only on the worker's disk would be invisible to the API (and the other way round). No-op
+    without R2, where both processes share the local disk.
+    """
+    if not _can_use_r2():
+        return
     path = build_processed_asset_path(asset_key)
-    if not path.exists() or not path.is_file():
-        raise HTTPException(status_code=404, detail="Asset not found")
-    return path
+    content_type = _ASSET_CONTENT_TYPES.get(path.suffix.lower(), "application/octet-stream")
+    _r2_client().upload_file(str(path), settings.r2_bucket, asset_key, ExtraArgs={"ContentType": content_type})
+
+
+def presigned_processed_asset_url(asset_key: str, expires_seconds: int = 600) -> str | None:
+    """A short-lived R2 GET link for a frame/PDF this machine doesn't have locally, else None."""
+    if build_processed_asset_path(asset_key).is_file() or not _can_use_r2():
+        return None
+    return _r2_client().generate_presigned_url(
+        "get_object", Params={"Bucket": settings.r2_bucket, "Key": asset_key}, ExpiresIn=expires_seconds
+    )
+
+
+def resolve_processed_asset_path(asset_key: str) -> Path:
+    """Local path of a frame/PDF, downloading it from R2 when another machine produced it."""
+    path = build_processed_asset_path(asset_key)
+    if path.is_file():
+        return path
+    if _can_use_r2():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        partial_path = path.with_name(f"{path.name}.{uuid4().hex}.part")
+        try:
+            _r2_client().download_file(settings.r2_bucket, asset_key, str(partial_path))
+            os.replace(partial_path, path)
+            return path
+        except Exception as exc:
+            raise HTTPException(status_code=404, detail="Asset not found") from exc
+        finally:
+            partial_path.unlink(missing_ok=True)
+    raise HTTPException(status_code=404, detail="Asset not found")

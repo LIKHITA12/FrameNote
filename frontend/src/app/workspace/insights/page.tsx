@@ -9,6 +9,7 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { AppTopbar } from "@/components/AppTopbar";
 import { Footer } from "@/components/Footer";
 import { AuthGuard } from "@/components/AuthGuard";
+import { useProcessing } from "@/components/ProcessingContext";
 import { DetailedKeyMoments } from "@/components/insights/DetailedKeyMoments";
 import { AskVideoDrawer } from "@/components/insights/AskVideoDrawer";
 import { useSidebar } from "@/components/SidebarContext";
@@ -308,6 +309,7 @@ function KpiCard({
 }
 
 function InsightsPageContent() {
+  const { openProcessing } = useProcessing();
   const searchParams = useSearchParams();
   const requestedJobId = searchParams.get("job");
   const { collapsed } = useSidebar();
@@ -454,7 +456,7 @@ function InsightsPageContent() {
     try {
       const queued = await retryJob(result.job_id);
       setResult(queued);
-      window.location.href = `/workspace/analyzing?job=${queued.job_id}`;
+      openProcessing(queued.job_id);
     } catch (retryError) {
       setError(retryError instanceof Error ? retryError.message : "Could not retry this job.");
       setRetrying(false);

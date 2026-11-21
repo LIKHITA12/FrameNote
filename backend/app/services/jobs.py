@@ -287,6 +287,28 @@ def _append_stage_event(job: Job, message: str, stage: int | None = None) -> Non
     job.stage_events_json = json.dumps(events)
 
 
+def append_job_event(db: Session, job_id: str, message: str, stage: int | None = None) -> None:
+    job = db.get(Job, job_id)
+    if job is None:
+        return
+    _append_stage_event(job, message, stage=stage)
+    db.add(job)
+    db.commit()
+
+
+def save_job_summary_preview(db: Session, job_id: str, preview: dict[str, Any]) -> None:
+    job = db.get(Job, job_id)
+    if job is None:
+        return
+    job.summary = str(preview.get("summary") or "Summary unavailable")
+    job.key_points_json = json.dumps(preview.get("key_points") or [])
+    job.tags_json = json.dumps(preview.get("tags") or [])
+    job.sentiment = _coerce_sentiment(preview.get("sentiment"))
+    job.summary_model = preview.get("summary_model")
+    db.add(job)
+    db.commit()
+
+
 def mark_job_processing(db: Session, job: Job) -> None:
     job.status = "processing"
     job.processing_stage = 0

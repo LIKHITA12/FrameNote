@@ -13,8 +13,8 @@ class Subscription(Base):
     user_id: Mapped[str] = mapped_column(String(36), ForeignKey("users.id"), nullable=False, unique=True)
     tier: Mapped[str] = mapped_column(String(32), nullable=False, default="free")
     status: Mapped[str] = mapped_column(String(32), nullable=False, default="active")
-    stripe_customer_id: Mapped[str | None] = mapped_column(String(255), nullable=True)
-    stripe_subscription_id: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    payment_customer_id: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    payment_subscription_id: Mapped[str | None] = mapped_column(String(255), nullable=True)
 
     created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
     updated_at: Mapped[DateTime] = mapped_column(

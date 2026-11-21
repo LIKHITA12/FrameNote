@@ -446,28 +446,6 @@ def _generate_answer(
         except ImportError:
             pass
 
-    if settings.openai_api_key:
-        try:
-            client = OpenAI(api_key=settings.openai_api_key, timeout=60.0)
-            response = client.chat.completions.create(
-                model=settings.openai_video_chat_model,
-                response_format={"type": "json_object"},
-                max_tokens=max(100, settings.video_chat_max_output_tokens),
-                messages=[
-                    {"role": "system", "content": _SYSTEM_PROMPT},
-                    {"role": "user", "content": user_content},
-                ],
-            )
-            usage = response.usage
-            return (
-                response.choices[0].message.content or "{}",
-                int(getattr(usage, "prompt_tokens", 0) or 0),
-                int(getattr(usage, "completion_tokens", 0) or 0),
-            )
-        except Exception as exc:
-            logger.exception("OpenAI video chat request failed")
-            raise HTTPException(status_code=502, detail="The AI assistant could not answer right now. Try again.") from exc
-
     if settings.gemini_api_key:
         try:
             import google.generativeai as genai
@@ -488,7 +466,28 @@ def _generate_answer(
                 int(getattr(usage, "candidates_token_count", 0) or 0),
             )
         except Exception as exc:
-            logger.exception("Gemini video chat request failed")
+            logger.warning("Gemini video chat request failed, trying OpenAI fallback: %s", exc)
+
+    if settings.openai_api_key:
+        try:
+            client = OpenAI(api_key=settings.openai_api_key, timeout=60.0)
+            response = client.chat.completions.create(
+                model=settings.openai_video_chat_model,
+                response_format={"type": "json_object"},
+                max_tokens=max(100, settings.video_chat_max_output_tokens),
+                messages=[
+                    {"role": "system", "content": _SYSTEM_PROMPT},
+                    {"role": "user", "content": user_content},
+                ],
+            )
+            usage = response.usage
+            return (
+                response.choices[0].message.content or "{}",
+                int(getattr(usage, "prompt_tokens", 0) or 0),
+                int(getattr(usage, "completion_tokens", 0) or 0),
+            )
+        except Exception as exc:
+            logger.exception("OpenAI video chat fallback failed")
             raise HTTPException(status_code=502, detail="The AI assistant could not answer right now. Try again.") from exc
 
     if azure_configured:

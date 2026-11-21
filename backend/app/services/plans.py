@@ -22,6 +22,24 @@ from app.services.auth import get_user_subscription
 
 ANNUAL_DISCOUNT_PERCENT = 33
 
+
+class RegionalPricing:
+    """Display prices for a country. Must match the Localized Pricing (By Country) set on the Dodo products."""
+
+    def __init__(self, currency: str, symbol: str, monthly: int, annual_total: int) -> None:
+        self.currency = currency
+        self.symbol = symbol
+        self.monthly = monthly
+        self.annual_total = annual_total
+        self.annual_monthly = round(annual_total / 12)
+        self.annual_discount_percent = round(100 * (1 - annual_total / (monthly * 12)))
+
+
+# Solo Pro prices per ISO country code. Anything not listed sees the USD prices in _PLANS.
+REGIONAL_PRICING: dict[str, RegionalPricing] = {
+    "IN": RegionalPricing(currency="INR", symbol="₹", monthly=399, annual_total=3999),
+}
+
 _PLANS: list[PricingPlan] = [
     PricingPlan(
         id="starter",
@@ -209,14 +227,20 @@ _FAQS = [
 _TIER_RANK = {"free": 0, "pro": 1}
 
 
-def build_pricing_catalog(db: Session, user: User) -> PricingCatalogResponse:
+def build_pricing_catalog(db: Session, user: User, region: str | None = None) -> PricingCatalogResponse:
     subscription = get_user_subscription(db=db, user_id=user.id)
     current_tier = subscription.tier if subscription.tier in _TIER_RANK else "free"
     current_rank = _TIER_RANK[current_tier]
 
+    regional = REGIONAL_PRICING.get((region or "").upper())
+
     plans: list[PricingPlan] = []
     for plan in _PLANS:
         resolved = plan.model_copy()
+        if regional and plan.tier == "pro":
+            resolved.price_monthly = regional.monthly
+            resolved.price_annual_monthly = regional.annual_monthly
+            resolved.price_annual_total = regional.annual_total
         resolved.is_current = plan.tier == current_tier
         if resolved.is_current:
             resolved.cta_label = "Current Plan"
@@ -232,7 +256,10 @@ def build_pricing_catalog(db: Session, user: User) -> PricingCatalogResponse:
 
     return PricingCatalogResponse(
         current_tier=current_tier,
-        annual_discount_percent=ANNUAL_DISCOUNT_PERCENT,
+        region=(region or "").upper() if regional else "GLOBAL",
+        currency=regional.currency if regional else "USD",
+        currency_symbol=regional.symbol if regional else "$",
+        annual_discount_percent=regional.annual_discount_percent if regional else ANNUAL_DISCOUNT_PERCENT,
         plans=plans,
         comparison_columns=COMPARISON_COLUMNS,
         comparison=_COMPARISON,

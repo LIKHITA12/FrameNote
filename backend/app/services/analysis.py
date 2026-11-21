@@ -230,6 +230,20 @@ def _llm_json(system_prompt: str, user_content: str) -> str | None:
     if content:
         return content
 
+    if settings.gemini_api_key:
+        try:
+            import google.generativeai as genai
+
+            genai.configure(api_key=settings.gemini_api_key)
+            model = genai.GenerativeModel(settings.gemini_model)
+            response = model.generate_content(
+                f"{system_prompt}\n\n{user_content}",
+                generation_config={"response_mime_type": "application/json"},
+            )
+            return getattr(response, "text", None)
+        except Exception as exc:
+            logger.warning("Gemini analysis call failed, trying OpenAI fallback: %s", exc)
+
     if settings.openai_api_key:
         try:
             client = OpenAI(api_key=settings.openai_api_key)
@@ -243,21 +257,7 @@ def _llm_json(system_prompt: str, user_content: str) -> str | None:
             )
             return response.choices[0].message.content
         except Exception:
-            logger.exception("OpenAI analysis call failed")
-
-    if settings.gemini_api_key:
-        try:
-            import google.generativeai as genai
-
-            genai.configure(api_key=settings.gemini_api_key)
-            model = genai.GenerativeModel(settings.gemini_model)
-            response = model.generate_content(
-                f"{system_prompt}\n\n{user_content}",
-                generation_config={"response_mime_type": "application/json"},
-            )
-            return getattr(response, "text", None)
-        except Exception:
-            logger.exception("Gemini analysis call failed")
+            logger.exception("OpenAI analysis fallback failed")
 
     return None
 

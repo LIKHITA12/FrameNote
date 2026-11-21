@@ -71,6 +71,10 @@ class PlanFaq(BaseModel):
 
 class PricingCatalogResponse(BaseModel):
     current_tier: str
+    # Display currency for the prices in `plans`. Dodo Payments charges the matching localized price at checkout.
+    region: str = "GLOBAL"
+    currency: str = "USD"
+    currency_symbol: str = "$"
     annual_discount_percent: int = 20
     plans: list[PricingPlan]
     comparison_columns: list[str]

@@ -449,6 +449,9 @@ export interface PlanFaq {
 
 export interface PricingCatalogResponse {
   current_tier: string;
+  region: string;
+  currency: string;
+  currency_symbol: string;
   annual_discount_percent: number;
   plans: PricingPlan[];
   comparison_columns: string[];

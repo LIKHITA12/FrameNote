@@ -2,12 +2,12 @@ import os
 from typing import Literal
 
 import certifi
-from pydantic import model_validator
+from pydantic import field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy.engine import make_url
 
 # macOS python.org installs ship without a populated root CA bundle; point OpenSSL/requests at certifi's bundle
-# so outbound HTTPS calls (e.g. Gemini, OpenAI, Stripe) don't fail with CERTIFICATE_VERIFY_FAILED.
+# so outbound HTTPS calls (e.g. Gemini, OpenAI, Dodo Payments) don't fail with CERTIFICATE_VERIFY_FAILED.
 os.environ.setdefault("SSL_CERT_FILE", certifi.where())
 os.environ.setdefault("REQUESTS_CA_BUNDLE", certifi.where())
 
@@ -35,16 +35,18 @@ class Settings(BaseSettings):
     db_max_overflow: int = 5
     db_pool_recycle_seconds: int = 1800
     openai_api_key: str | None = None
-    openai_summary_model: str = "gpt-4o-mini"
-    openai_video_chat_model: str = "gpt-4o-mini"
+    openai_summary_model: str = "gpt-4.1-mini"
+    openai_video_chat_model: str = "gpt-4.1-mini"
     openai_transcription_model: str = "whisper-1"
     gemini_api_key: str | None = None
-    gemini_model: str = "gemini-2.0-flash"
+    gemini_model: str = "gemini-3.5-flash-lite"
     # Groq serves Whisper through an OpenAI-compatible API; when set it is the preferred transcription provider.
     groq_api_key: str | None = None
     groq_transcription_model: str = "whisper-large-v3-turbo"
     groq_base_url: str = "https://api.groq.com/openai/v1"
     public_api_base_url: str = "http://localhost:8000"
+    # Number of reverse proxies in front of the API that append to X-Forwarded-For (Railway: 1). 0 = direct.
+    trusted_proxy_hops: int = 0
     # Public video link ingestion limits and its local-test escape hatch.
     video_url_max_bytes: int = 2 * 1024 * 1024 * 1024
     video_url_timeout_seconds: int = 900
@@ -71,14 +73,14 @@ class Settings(BaseSettings):
     r2_bucket: str | None = None
     local_upload_dir: str = "/data/framenote/uploads"
     local_processed_dir: str = "/data/framenote/processed"
-    stripe_secret_key: str | None = None
-    stripe_webhook_secret: str | None = None
-    # Keep the legacy price id as a fallback for existing local environments.
-    stripe_price_id_pro: str | None = None
-    stripe_price_id_pro_monthly: str | None = None
-    stripe_price_id_pro_annual: str | None = None
-    stripe_success_url: str = "http://localhost:3000/upgrade?billing=success"
-    stripe_cancel_url: str = "http://localhost:3000/upgrade?billing=cancel"
+    # Dodo Payments (https://dodopayments.com). Use test_mode keys locally and live_mode keys in production.
+    dodo_payments_api_key: str | None = None
+    dodo_payments_webhook_key: str | None = None
+    dodo_payments_environment: Literal["test_mode", "live_mode"] = "test_mode"
+    dodo_product_id_pro_monthly: str | None = None
+    dodo_product_id_pro_annual: str | None = None
+    billing_success_url: str = "http://localhost:3000/upgrade?billing=success"
+    billing_cancel_url: str = "http://localhost:3000/upgrade?billing=cancel"
     jwt_secret_key: str = "dev-insecure-secret-change-me"
     jwt_algorithm: str = "HS256"
     jwt_access_token_expire_minutes: int = 60 * 24 * 30
@@ -135,8 +137,8 @@ class Settings(BaseSettings):
             raise ValueError("Production requires a randomly generated JWT_SECRET_KEY of at least 32 characters")
         if self.legacy_header_auth_enabled:
             raise ValueError("Production requires LEGACY_HEADER_AUTH_ENABLED=false")
-        if self.stripe_secret_key and not self.stripe_webhook_secret:
-            raise ValueError("Production requires STRIPE_WEBHOOK_SECRET whenever STRIPE_SECRET_KEY is set")
+        if self.dodo_payments_api_key and not self.dodo_payments_webhook_key:
+            raise ValueError("Production requires DODO_PAYMENTS_WEBHOOK_KEY whenever DODO_PAYMENTS_API_KEY is set")
         if not all((self.r2_endpoint, self.r2_access_key_id, self.r2_secret_access_key, self.r2_bucket)):
             raise ValueError("Production requires private R2 storage configuration")
         try:

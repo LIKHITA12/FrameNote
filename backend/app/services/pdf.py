@@ -8,7 +8,7 @@ from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.pdfgen import canvas
 
 from app.models.job import Job
-from app.services.storage import build_processed_asset_path, resolve_processed_asset_path
+from app.services.storage import build_processed_asset_path, persist_processed_asset, resolve_processed_asset_path
 
 
 PAGE_WIDTH, PAGE_HEIGHT = A4
@@ -104,6 +104,7 @@ def generate_job_pdf(
         doc.bullets([f"{term.get('term')}: {term.get('meaning')}" for term in terms])
 
     doc.save()
+    persist_processed_asset(asset_key)
     return asset_key
 
 
@@ -221,6 +222,7 @@ def _render_summary_pdf(
 
     draw_footer()
     c.save()
+    persist_processed_asset(asset_key)
     return asset_key
 
 

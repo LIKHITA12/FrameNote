@@ -8,6 +8,7 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { AppTopbar } from "@/components/AppTopbar";
 import { Footer } from "@/components/Footer";
 import { AuthGuard } from "@/components/AuthGuard";
+import { useProcessing } from "@/components/ProcessingContext";
 import { useSidebar } from "@/components/SidebarContext";
 import { deleteProject, listHistory, listProjects, renameProject } from "@/lib/api";
 import { jobThumbnail } from "@/lib/jobThumbnail";
@@ -71,7 +72,7 @@ function jobTitle(job: JobCreateResponse): string {
 function noteHref(job: JobCreateResponse): string {
   return job.status === "completed" || job.status === "failed"
     ? `/workspace/insights?job=${job.job_id}`
-    : `/workspace/analyzing?job=${job.job_id}`;
+    : "/";
 }
 
 function statusChip(status: JobCreateResponse["status"]) {
@@ -157,9 +158,18 @@ function Thumbnail({ job, className = "sm:w-48" }: { job: JobCreateResponse; cla
 }
 
 function HistoryRow({ job }: { job: JobCreateResponse }) {
+  const { openProcessing } = useProcessing();
+  const isActive = job.status === "queued" || job.status === "processing";
+
   return (
     <Link
       href={noteHref(job)}
+      onClick={(event) => {
+        if (isActive) {
+          event.preventDefault();
+          openProcessing(job.job_id);
+        }
+      }}
       className="group relative flex flex-col items-start gap-5 overflow-hidden rounded-xl border border-core-outline-variant/20 bg-core-surface p-4 transition-all hover:border-core-primary/30 hover:shadow-md sm:flex-row"
     >
       <span
@@ -208,9 +218,18 @@ function HistoryRow({ job }: { job: JobCreateResponse }) {
 }
 
 function HistoryCard({ job }: { job: JobCreateResponse }) {
+  const { openProcessing } = useProcessing();
+  const isActive = job.status === "queued" || job.status === "processing";
+
   return (
     <Link
       href={noteHref(job)}
+      onClick={(event) => {
+        if (isActive) {
+          event.preventDefault();
+          openProcessing(job.job_id);
+        }
+      }}
       className="group flex flex-col overflow-hidden rounded-xl border border-core-outline-variant/20 bg-core-surface transition-all hover:border-core-primary/30 hover:shadow-md"
     >
       <Thumbnail job={job} className="rounded-b-none border-x-0 border-t-0" />

@@ -124,6 +124,87 @@ class DispatchTests(DbTestCase):
         self.assertEqual(len(tasks.tasks), 1)
         self.assertEqual(job.status, "queued")
 
+    def test_development_without_worker_does_not_also_queue_the_task(self) -> None:
+        job = self._job(status="queued")
+        task = MagicMock()
+        task.app.control.inspect.return_value.ping.return_value = None
+        tasks = BackgroundTasks()
+        with patch.object(settings, "environment", "development"):
+            enqueue_job_task(task, (job.id,), tasks, self.db, job)
+        task.apply_async.assert_not_called()
+        self.assertEqual(len(tasks.tasks), 1)
+
+    def test_development_with_worker_only_queues(self) -> None:
+        job = self._job(status="queued")
+        task = MagicMock()
+        task.app.control.inspect.return_value.ping.return_value = {"worker@host": {"ok": "pong"}}
+        tasks = BackgroundTasks()
+        with patch.object(settings, "environment", "development"):
+            enqueue_job_task(task, (job.id,), tasks, self.db, job)
+        task.apply_async.assert_called_once()
+        self.assertEqual(tasks.tasks, [])
+
+
+class ProcessedAssetR2Tests(unittest.TestCase):
+    """On Railway the API and worker have separate disks, so frames and PDFs must round-trip through R2."""
+
+    def test_persist_uploads_with_content_type(self) -> None:
+        s3 = MagicMock()
+        with tempfile.TemporaryDirectory() as root, patch.object(settings, "local_processed_dir", root), patch.object(
+            storage, "_can_use_r2", return_value=True
+        ), patch.object(storage, "_r2_client", return_value=s3):
+            path = storage.build_processed_asset_path("frames/job-1/report.pdf")
+            path.parent.mkdir(parents=True)
+            path.write_bytes(b"%PDF")
+            storage.persist_processed_asset("frames/job-1/report.pdf")
+        s3.upload_file.assert_called_once()
+        self.assertEqual(s3.upload_file.call_args.kwargs["ExtraArgs"], {"ContentType": "application/pdf"})
+        self.assertEqual(s3.upload_file.call_args.args[2], "frames/job-1/report.pdf")
+
+    def test_persist_is_a_noop_without_r2(self) -> None:
+        with patch.object(storage, "_can_use_r2", return_value=False), patch.object(storage, "_r2_client") as client:
+            storage.persist_processed_asset("frames/job-1/01-5.jpg")
+        client.assert_not_called()
+
+    def test_missing_local_asset_redirects_to_r2(self) -> None:
+        s3 = MagicMock()
+        s3.generate_presigned_url.return_value = "https://r2.example.test/frame"
+        with tempfile.TemporaryDirectory() as root, patch.object(settings, "local_processed_dir", root), patch.object(
+            storage, "_can_use_r2", return_value=True
+        ), patch.object(storage, "_r2_client", return_value=s3):
+            self.assertEqual(storage.presigned_processed_asset_url("frames/job-1/01-5.jpg"), "https://r2.example.test/frame")
+
+    def test_frame_made_by_worker_is_downloaded_for_api_pdf_rendering(self) -> None:
+        s3 = MagicMock()
+        s3.download_file.side_effect = lambda bucket, key, dest: Path(dest).write_bytes(b"jpeg")
+        with tempfile.TemporaryDirectory() as root, patch.object(settings, "local_processed_dir", root), patch.object(
+            storage, "_can_use_r2", return_value=True
+        ), patch.object(storage, "_r2_client", return_value=s3):
+            path = storage.resolve_processed_asset_path("frames/job-1/01-5.jpg")
+            self.assertEqual(path.read_bytes(), b"jpeg")
+
+
+class ProxyClientIpTests(unittest.TestCase):
+    def _request(self, forwarded: str | None, client: str = "10.0.0.2") -> MagicMock:
+        request = MagicMock()
+        request.headers = {"x-forwarded-for": forwarded} if forwarded is not None else {}
+        request.client.host = client
+        return request
+
+    def test_direct_connection_ignores_forwarded_header(self) -> None:
+        from app.services.rate_limit import request_ip
+
+        with patch.object(settings, "trusted_proxy_hops", 0):
+            self.assertEqual(request_ip(self._request("6.6.6.6")), "10.0.0.2")
+
+    def test_behind_one_proxy_uses_the_address_the_proxy_saw(self) -> None:
+        from app.services.rate_limit import request_ip
+
+        with patch.object(settings, "trusted_proxy_hops", 1):
+            # The client tried to spoof 6.6.6.6; Railway appended the real address.
+            self.assertEqual(request_ip(self._request("6.6.6.6, 203.0.113.9")), "203.0.113.9")
+            self.assertEqual(request_ip(self._request(None)), "10.0.0.2")
+
 
 class R2StreamingTests(unittest.TestCase):
     def test_r2_upload_is_streamed_through_a_presigned_link(self) -> None:

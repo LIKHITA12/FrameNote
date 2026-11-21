@@ -12,12 +12,14 @@ from openai import OpenAI
 from app.core.config import settings
 from app.models.job import Job
 from app.services.analysis import build_detailed_analysis
-from app.services.storage import resolve_uploaded_object_path
+from app.services.storage import persist_processed_asset, resolve_uploaded_object_path
 
 # Frames sampled purely so the analyzer can read the on-screen participant names.
 PARTICIPANT_FRAME_RATIOS = (0.002, 0.02, 0.25, 0.55, 0.95)
 
 OnStage = Callable[[int], None]
+OnProgress = Callable[[str], None]
+OnSummary = Callable[[dict[str, Any]], None]
 
 logger = logging.getLogger("framenote.processing")
 
@@ -30,6 +32,8 @@ def analyse_transcript(
     detailed: bool = True,
     participant_frames: list[Path] | None = None,
     on_summary_done: Callable[[], None] | None = None,
+    on_progress: OnProgress | None = None,
+    on_summary: OnSummary | None = None,
 ) -> dict[str, Any]:
     """Summary, key points, tags, sentiment and (when detailed) the full report analysis.
 
@@ -37,7 +41,21 @@ def analyse_transcript(
     services/video_url.py. It never produces frame images: a caller whose source allows
     screenshots attaches them to the returned payload afterwards.
     """
-    summary, key_points, tags, sentiment, summary_model = _summarize_transcript(transcript=transcript, source_type=source_type)
+    summary, key_points, tags, sentiment, summary_model = _summarize_transcript(
+        transcript=transcript,
+        source_type=source_type,
+        on_progress=on_progress,
+    )
+    if on_summary:
+        on_summary(
+            {
+                "summary": summary,
+                "key_points": key_points,
+                "tags": tags,
+                "sentiment": sentiment,
+                "summary_model": summary_model,
+            }
+        )
     if on_summary_done:
         on_summary_done()
 
@@ -63,7 +81,14 @@ def analyse_transcript(
     }
 
 
-def run_job_pipeline(job: Job, detailed: bool = True, on_stage: OnStage | None = None, on_duration: Callable[[int | None], None] | None = None) -> dict[str, Any]:
+def run_job_pipeline(
+    job: Job,
+    detailed: bool = True,
+    on_stage: OnStage | None = None,
+    on_progress: OnProgress | None = None,
+    on_summary: OnSummary | None = None,
+    on_duration: Callable[[int | None], None] | None = None,
+) -> dict[str, Any]:
     """Transcribe and analyse a local/captioned source. With detailed=False only the short summary is produced.
 
     on_stage(n), when provided, is invoked as each of the 4 client-facing stages completes:
@@ -88,6 +113,8 @@ def run_job_pipeline(job: Job, detailed: bool = True, on_stage: OnStage | None =
         detailed=detailed,
         participant_frames=participant_frames,
         on_summary_done=(lambda: on_stage(3)) if on_stage else None,
+        on_progress=on_progress,
+        on_summary=on_summary,
     )
     result["speaker_airtime"] = speaker_airtime
     result["transcription_model"] = transcription_models[-1] if transcription_models else None
@@ -190,7 +217,9 @@ def _transcribe_uploaded_media(
     local_path: Any, on_audio_extracted: Callable[[], None] | None = None,
     on_model: Callable[[str], None] | None = None,
 ) -> tuple[str, list[dict[str, Any]]]:
+    logger.info("Extracting audio from %s", local_path)
     audio_path = extract_audio_track(Path(local_path))
+    logger.info("Audio extraction completed: %s", audio_path)
     if on_audio_extracted:
         on_audio_extracted()
     return transcribe_audio_file(audio_path, on_model=on_model)
@@ -206,8 +235,10 @@ def transcribe_audio_file(audio_path: Path, on_model: Callable[[str], None] | No
 
     if settings.groq_api_key:
         try:
+            logger.info("Attempting Groq transcription with model %s", settings.groq_transcription_model)
             client = OpenAI(api_key=settings.groq_api_key, base_url=settings.groq_base_url)
             result = _transcribe_with_whisper_api(client, settings.groq_transcription_model, audio_path)
+            logger.info("Groq transcription completed with model %s", settings.groq_transcription_model)
             if on_model:
                 on_model(f"Groq {settings.groq_transcription_model}")
             return result
@@ -393,7 +424,7 @@ def _merge_tags(source_type: str, content_tags: list[str]) -> list[str]:
 
 
 def _summarize_transcript(
-    transcript: str, source_type: str
+    transcript: str, source_type: str, on_progress: OnProgress | None = None
 ) -> tuple[str, list[dict[str, Any]], list[str], str, str]:
     content = _try_temp_azure_summary(transcript)
     if content is not None:
@@ -406,12 +437,25 @@ def _summarize_transcript(
         )
         return (*_parse_summary_json(content=content, transcript=transcript, source_type=source_type), deployment or "Azure OpenAI")
 
-    if settings.openai_api_key:
+    if settings.gemini_api_key:
+        if on_progress:
+            on_progress(f"AI summarization started · Gemini {settings.gemini_model}")
+        try:
+            content = _summarize_with_gemini(transcript)
+            model = settings.gemini_model
+        except Exception as exc:
+            if not settings.openai_api_key:
+                raise
+            logger.warning("Gemini summarization failed, trying OpenAI fallback: %s", exc)
+            if on_progress:
+                on_progress(f"Gemini failed; trying OpenAI {settings.openai_summary_model}")
+            content = _summarize_with_openai(transcript)
+            model = settings.openai_summary_model
+    elif settings.openai_api_key:
+        if on_progress:
+            on_progress(f"AI summarization started · OpenAI {settings.openai_summary_model}")
         content = _summarize_with_openai(transcript)
         model = settings.openai_summary_model
-    elif settings.gemini_api_key:
-        content = _summarize_with_gemini(transcript)
-        model = settings.gemini_model
     elif settings.environment == "production":
         raise ValueError("No summary provider is configured")
     else:
@@ -586,6 +630,7 @@ def _attach_upload_frames(job_id: str, media_path: Path, key_points: list[dict[s
         try:
             _extract_frame_at_timestamp(media_path=media_path, timestamp_seconds=timestamp, output_path=frame_path)
             asset_key = f"frames/{job_id}/{frame_name}"
+            persist_processed_asset(asset_key)
             point["frame_image_url"] = f"{api_base}{settings.api_v1_prefix}/assets/{asset_key}"
         except Exception:
             point["frame_image_url"] = None
@@ -611,6 +656,7 @@ def _attach_timeline_frames(
         try:
             _extract_frame_at_timestamp(media_path=media_path, timestamp_seconds=timestamp, output_path=frame_path)
             asset_key = f"frames/{job_id}/{frame_name}"
+            persist_processed_asset(asset_key)
             section["frame_image_url"] = f"{api_base}{settings.api_v1_prefix}/assets/{asset_key}"
         except Exception:
             section["frame_image_url"] = None
@@ -659,6 +705,7 @@ def extract_audio_track(media_path: Path) -> Path:
         "libmp3lame",
         str(output_path),
     ]
+    logger.info("Starting ffmpeg audio extraction for %s", media_path)
     _run_command(command=command, error_message="Failed to extract audio from uploaded media")
     return output_path
 
