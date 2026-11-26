@@ -102,7 +102,19 @@ const TOUR_STEPS: TourStep[] = [
 ];
 
 function DashboardHome() {
-  const { beginProcessing, startProcessing, failPreparing, setUploadProgress, openProcessing } = useProcessing();
+  const { beginProcessing, startProcessing, failPreparing, setUploadProgress, openProcessing, openPasteTranscript } = useProcessing();
+  const uploadButtonRef = useRef<HTMLButtonElement>(null);
+  const [uploadHint, setUploadHint] = useState(false);
+
+  // Arriving from a failed link job's "Upload video" button: point at the Upload button.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("upload") === "1") {
+      setUploadHint(true);
+      uploadButtonRef.current?.focus();
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  }, []);
   const [url, setUrl] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -340,8 +352,12 @@ function DashboardHome() {
                 <div className="flex shrink-0 items-center gap-2">
                   <input ref={fileInputRef} type="file" accept="video/*" className="hidden" onChange={onFileSelected} />
                   <button
+                    ref={uploadButtonRef}
                     type="button"
-                    onClick={onUploadClick}
+                    onClick={() => {
+                      setUploadHint(false);
+                      onUploadClick();
+                    }}
                     disabled={submitting}
                     className="flex h-12 items-center gap-2 whitespace-nowrap rounded-xl bg-core-surface-container-lowest px-4 text-sm font-semibold text-core-on-surface-variant shadow-sm transition hover:bg-core-surface hover:text-core-on-surface disabled:cursor-not-allowed disabled:opacity-60"
                   >
@@ -358,6 +374,24 @@ function DashboardHome() {
                   </button>
                 </div>
               </form>
+              <div className="relative z-10 mt-2 flex flex-wrap items-center gap-x-1.5 px-2 text-xs text-core-on-surface-variant">
+                <span>Link not working, or already have the transcript?</span>
+                <button
+                  type="button"
+                  onClick={() => openPasteTranscript(url.trim())}
+                  className="font-semibold text-core-primary underline-offset-2 hover:underline"
+                >
+                  Paste transcript instead
+                </button>
+              </div>
+              {uploadHint ? (
+                <div className="relative z-10 mt-3">
+                  <StatusBanner tone="info">
+                    Click <strong>Upload</strong> above to choose the video file from your computer. You&apos;ll get the
+                    same notes without needing the link.
+                  </StatusBanner>
+                </div>
+              ) : null}
               <div className="relative z-10 mt-3 flex flex-wrap items-center gap-2 px-2 text-sm">
                 <label htmlFor="new-note-project" className="font-medium text-core-on-surface-variant">Save to project</label>
                 <select id="new-note-project" value={projectId} onChange={(event) => setProjectId(event.target.value)} className="rounded-lg border border-core-outline-variant/30 bg-core-surface-container-lowest px-3 py-2 text-core-on-surface">

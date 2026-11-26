@@ -50,6 +50,10 @@ class Settings(BaseSettings):
     # Optional HTTP(S) proxy for YouTube captions and yt-dlp, e.g. http://user:pass@host:port.
     # YouTube blocks many cloud-server IPs, so production may need a residential proxy here.
     youtube_proxy_url: str | None = None
+    # When captions can't be read, ask Gemini to transcribe the YouTube link itself (Google fetches it).
+    youtube_gemini_fallback: bool = True
+    youtube_gemini_max_seconds: int = 3 * 60 * 60
+    youtube_gemini_timeout_seconds: int = 600
     # Public video link ingestion limits and its local-test escape hatch.
     video_url_max_bytes: int = 2 * 1024 * 1024 * 1024
     video_url_timeout_seconds: int = 900

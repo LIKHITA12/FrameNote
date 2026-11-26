@@ -35,10 +35,15 @@ import httpx
 from app.core.config import settings
 from app.models.job import Job
 from app.services.pipeline import extract_youtube_video_id
+from app.services.youtube_transcript import (
+    YOUTUBE_UNAVAILABLE_MESSAGE,
+    YouTubeTranscriptUnavailable,
+    transcribe_youtube,
+)
 from app.services.processing import (
     analyse_transcript,
     extract_audio_track,
-    get_youtube_captions,
+    load_user_transcript,
     probe_duration_seconds,
     transcribe_audio_file,
 )
@@ -193,7 +198,7 @@ def _probe_public_video(clean_url: str) -> PublicVideoSource:
         return PublicVideoSource(
             url=clean_url,
             provider="YouTube",
-            title=_clean_title(info.get("title")),
+            title=_clean_title(info.get("title")) or _youtube_oembed_title(youtube_video_id),
             duration_seconds=_clean_duration(info.get("duration")),
             youtube_video_id=youtube_video_id,
         )
@@ -217,6 +222,21 @@ def _probe_public_video(clean_url: str) -> PublicVideoSource:
         "That link could not be read as a public video. Use a link to a video page "
         "(YouTube, Vimeo, Loom, ...) or a direct link to a video file."
     )
+
+
+def _youtube_oembed_title(video_id: str) -> str | None:
+    """YouTube's public oEmbed endpoint still answers when yt-dlp is blocked on a cloud server."""
+    try:
+        response = httpx.get(
+            "https://www.youtube.com/oembed",
+            params={"url": f"https://www.youtube.com/watch?v={video_id}", "format": "json"},
+            timeout=10.0,
+        )
+        if response.status_code == 200:
+            return _clean_title(response.json().get("title"))
+    except (httpx.HTTPError, ValueError) as exc:
+        logger.info("YouTube oEmbed title lookup failed for %s: %s", video_id, exc)
+    return None
 
 
 def _direct_media_source(url: str) -> PublicVideoSource:
@@ -389,15 +409,15 @@ def build_transcript(
     source: PublicVideoSource, on_stage: OnStage | None = None,
     on_model: Callable[[str], None] | None = None,
 ) -> tuple[str, list[dict[str, Any]], int | None]:
-    """Transcribe a resolved link, preferring published captions over downloading audio."""
+    """Transcribe a resolved link. YouTube: captions, then Gemini reading the link, then downloading audio."""
     if source.is_youtube and source.youtube_video_id:
         try:
-            text, segments = get_youtube_captions(source.youtube_video_id)
-        except Exception as exc:
-            logger.info("No usable captions for %s (%s); falling back to audio", source.url, exc)
+            text, segments = transcribe_youtube(
+                source.youtube_video_id, duration_seconds=source.duration_seconds, on_model=on_model
+            )
+        except YouTubeTranscriptUnavailable as exc:
+            logger.info("Captions and Gemini both failed for %s (%s); trying an audio download", source.url, exc)
         else:
-            if on_model:
-                on_model("YouTube captions")
             if on_stage:
                 on_stage(1)
                 on_stage(2)
@@ -405,7 +425,13 @@ def build_transcript(
 
     workdir = Path(tempfile.mkdtemp(prefix="framenote-url-"))
     try:
-        audio_path = fetch_audio_track(source, workdir)
+        try:
+            audio_path = fetch_audio_track(source, workdir)
+        except PublicVideoUrlError:
+            if source.is_youtube:
+                # YouTube usually refuses audio downloads from cloud servers; point the user at what works.
+                raise PublicVideoUrlError(YOUTUBE_UNAVAILABLE_MESSAGE) from None
+            raise
         if on_stage:
             on_stage(1)
         text, segments = transcribe_audio_file(audio_path, on_model=on_model)
@@ -439,9 +465,19 @@ def run_public_video_pipeline(
     logger.info("Resolved %s as %s (%s)", job.source_url, source.provider, source.title or "untitled")
 
     transcription_models: list[str] = []
-    transcript, segments, duration_seconds = build_transcript(
-        source, on_stage=on_stage, on_model=transcription_models.append
-    )
+    if job.transcript_object_key:
+        # The user pasted or uploaded the transcript (e.g. after YouTube couldn't be read): use it verbatim.
+        if on_stage:
+            on_stage(1)
+        transcript, segments, _ = load_user_transcript(job)
+        transcription_models.append("User-provided transcript")
+        if on_stage:
+            on_stage(2)
+        duration_seconds = source.duration_seconds or _duration_from_segments(segments)
+    else:
+        transcript, segments, duration_seconds = build_transcript(
+            source, on_stage=on_stage, on_model=transcription_models.append
+        )
     if on_duration and source.duration_seconds is None:
         on_duration(duration_seconds)
     if not transcript.strip():

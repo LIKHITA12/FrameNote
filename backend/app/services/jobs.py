@@ -50,7 +50,7 @@ def create_job_record(
             raise HTTPException(status_code=400, detail="Invalid YouTube URL")
         youtube_embed_url = f"https://www.youtube.com/embed/{youtube_video_id}"
 
-    transcript_object_key = payload.transcript_object_key if payload.source_type == "upload" else None
+    transcript_object_key = payload.transcript_object_key
     if transcript_object_key and not transcript_object_key.startswith(f"uploads/{owner.id}/"):
         raise HTTPException(status_code=403, detail="Transcript does not belong to this account")
     transcript_file_name = payload.transcript_file_name if transcript_object_key else None

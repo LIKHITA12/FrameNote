@@ -144,9 +144,17 @@ def _build_transcript(
         # No separate audio-extraction phase for captions-based sources.
         if on_stage:
             on_stage(1)
-        text, segments = get_youtube_captions(job.youtube_video_id)
-        if on_model:
-            on_model("YouTube captions")
+        if job.transcript_object_key:
+            text, segments, _ = load_user_transcript(job)
+            if on_model:
+                on_model("User-provided transcript")
+        else:
+            from app.services.youtube_transcript import YOUTUBE_UNAVAILABLE_MESSAGE, transcribe_youtube
+
+            try:
+                text, segments = transcribe_youtube(job.youtube_video_id, on_model=on_model)
+            except ValueError as exc:
+                raise ValueError(YOUTUBE_UNAVAILABLE_MESSAGE) from exc
         if on_stage:
             on_stage(2)
         return text, segments, None, None, []
@@ -163,7 +171,7 @@ def _build_transcript(
         # A user-supplied transcript file replaces audio transcription entirely.
         if on_stage:
             on_stage(1)
-        text, segments, speaker_airtime = _load_user_transcript(job)
+        text, segments, speaker_airtime = load_user_transcript(job)
         if on_model:
             on_model("User-provided transcript")
         if on_stage:
@@ -177,7 +185,7 @@ def _build_transcript(
     return text, segments, local_path, duration, []
 
 
-def _load_user_transcript(job: Job) -> tuple[str, list[dict[str, Any]], list[dict[str, Any]]]:
+def load_user_transcript(job: Job) -> tuple[str, list[dict[str, Any]], list[dict[str, Any]]]:
     from app.services.transcript_import import parse_transcript_file
 
     transcript_path = resolve_uploaded_object_path(job.transcript_object_key)

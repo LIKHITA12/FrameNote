@@ -140,6 +140,17 @@ export async function createJobFromUrl(payload: PublicVideoUrlRequest): Promise<
   return (await response.json()) as JobCreateResponse;
 }
 
+/**
+ * Starts a job from a video link plus a transcript the user pasted (the fallback when a YouTube video
+ * can't be read). The text is stored like an uploaded .txt transcript, so retries keep working.
+ */
+export async function createJobFromPastedTranscript(url: string, transcript: string): Promise<JobCreateResponse> {
+  const file = new File([transcript], "pasted-transcript.txt", { type: "text/plain" });
+  const presigned = await presignUpload({ file_name: file.name, content_type: file.type, file_size: file.size });
+  await uploadFileToSignedUrl(presigned.upload_url, file, presigned.headers, undefined, presigned.method, presigned.fields);
+  return createJobFromUrl({ url, transcript_object_key: presigned.object_key, transcript_file_name: file.name });
+}
+
 /** Checks a pasted link and reads its title/duration without starting a job. */
 export async function previewVideoUrl(payload: PublicVideoUrlRequest): Promise<PublicVideoPreviewResponse> {
   const response = await authFetch(`${apiBaseUrl}/videos/from-url/preview`, {
