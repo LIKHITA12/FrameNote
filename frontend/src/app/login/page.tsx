@@ -197,7 +197,7 @@ function LoginPageContent() {
                 <span className="h-2 w-2 animate-pulse rounded-full bg-brand" />
                 <span className="text-xs font-bold uppercase tracking-widest text-brand">Welcome Back</span>
               </div>
-              <h2 className="font-display text-2xl font-bold tracking-tight text-brand-ink">Sign in to FrameNote</h2>
+              <h2 className="font-display text-2xl font-bold tracking-tight text-ink">Sign in to FrameNote</h2>
               <p className="text-sm text-muted">Enter your email and password to continue.</p>
             </div>
 

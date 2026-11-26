@@ -52,7 +52,7 @@ export function Logo({ className = "", size = 32, showWordmark = true, onDark = 
       </span>
       {showWordmark ? (
         <span
-          className={`flex items-baseline leading-none ${onDark ? "text-white" : "text-brand-ink"}`}
+          className={`flex items-baseline leading-none ${onDark ? "text-white" : "text-core-on-surface"}`}
           style={{ fontSize: size * 0.62 }}
         >
           <span className="font-display font-extrabold tracking-tight">Frame</span>

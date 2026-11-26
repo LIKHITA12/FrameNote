@@ -257,7 +257,7 @@ function TierRail({
             type="button"
             onClick={onUpgrade}
             disabled={upgrading}
-            className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-core-primary-container px-4 py-3 text-sm font-semibold text-core-on-primary transition hover:bg-core-primary disabled:cursor-not-allowed disabled:opacity-60"
+            className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-core-primary px-4 py-3 text-sm font-semibold text-core-on-primary transition hover:bg-core-surface-tint disabled:cursor-not-allowed disabled:opacity-60"
           >
             {upgrading ? "Opening checkout..." : "Upgrade to Solo Pro"}
             <Icon name="arrow_forward" className="!text-[18px]" />
@@ -498,7 +498,7 @@ function SettingsPageContent() {
                 type="button"
                 onClick={() => void onSave()}
                 disabled={!dirty || saving}
-                className="flex items-center gap-2 rounded-xl bg-core-primary-container px-5 py-2.5 text-sm font-semibold text-core-on-primary shadow-sm transition hover:bg-core-primary disabled:cursor-not-allowed disabled:opacity-60"
+                className="flex items-center gap-2 rounded-xl bg-core-primary px-5 py-2.5 text-sm font-semibold text-core-on-primary shadow-sm transition hover:bg-core-surface-tint disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <Icon name={saving ? "autorenew" : "check"} className={`!text-[18px] ${saving ? "animate-spin" : ""}`} />
                 {saving ? "Saving..." : "Save Preferences"}
