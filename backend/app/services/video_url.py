@@ -359,6 +359,8 @@ def _download_audio_with_ytdlp(url: str, workdir: Path) -> Path:
         "socket_timeout": 60,
         "concurrent_fragment_downloads": 1,
         "max_filesize": settings.video_url_max_bytes,
+        # YouTube often refuses cloud-server IPs ("confirm you're not a bot"); a proxy gets around that.
+        **({"proxy": settings.youtube_proxy_url} if settings.youtube_proxy_url else {}),
         "postprocessors": [
             {"key": "FFmpegExtractAudio", "preferredcodec": "mp3", "preferredquality": "128"}
         ],
@@ -368,7 +370,7 @@ def _download_audio_with_ytdlp(url: str, workdir: Path) -> Path:
         with yt_dlp.YoutubeDL(options) as downloader:
             downloader.download([url])
     except Exception as exc:
-        logger.info("yt-dlp could not download %s: %s", url, exc)
+        logger.warning("yt-dlp could not download %s: %s", url, str(exc)[:300])
         raise PublicVideoUrlError("Could not download the audio for that video") from exc
 
     audio_files = sorted(

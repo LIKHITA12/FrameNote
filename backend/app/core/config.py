@@ -47,6 +47,9 @@ class Settings(BaseSettings):
     public_api_base_url: str = "http://localhost:8000"
     # Number of reverse proxies in front of the API that append to X-Forwarded-For (Railway: 1). 0 = direct.
     trusted_proxy_hops: int = 0
+    # Optional HTTP(S) proxy for YouTube captions and yt-dlp, e.g. http://user:pass@host:port.
+    # YouTube blocks many cloud-server IPs, so production may need a residential proxy here.
+    youtube_proxy_url: str | None = None
     # Public video link ingestion limits and its local-test escape hatch.
     video_url_max_bytes: int = 2 * 1024 * 1024 * 1024
     video_url_timeout_seconds: int = 900

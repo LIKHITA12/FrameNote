@@ -187,16 +187,38 @@ def _load_user_transcript(job: Job) -> tuple[str, list[dict[str, Any]], list[dic
     return parsed.text, parsed.segments, parsed.speaker_airtime
 
 
+_CAPTION_LANGUAGES = ["en", "en-US", "en-GB", "en-IN"]
+
+
 def get_youtube_captions(video_id: str) -> tuple[str, list[dict[str, Any]]]:
-    """Read a YouTube video's published captions. Raises ValueError when none are usable."""
+    """Read a YouTube video's published captions. Raises ValueError when none are usable.
+
+    English is preferred; otherwise the first available track (manual or auto-generated) is used, since
+    the summary model handles other languages. YouTube often blocks requests from cloud servers, so
+    YOUTUBE_PROXY_URL routes these requests through a proxy when set.
+    """
     try:
         from youtube_transcript_api import YouTubeTranscriptApi
+        from youtube_transcript_api.proxies import GenericProxyConfig
 
-        transcript_items = YouTubeTranscriptApi.get_transcript(video_id, languages=["en"])
+        proxy = settings.youtube_proxy_url
+        api = YouTubeTranscriptApi(
+            proxy_config=GenericProxyConfig(http_url=proxy, https_url=proxy) if proxy else None
+        )
+        try:
+            fetched = api.fetch(video_id, languages=_CAPTION_LANGUAGES)
+        except Exception as english_exc:
+            transcripts = list(api.list(video_id))
+            if not transcripts:
+                raise english_exc
+            fetched = transcripts[0].fetch()
+        transcript_items = fetched.to_raw_data()
     except Exception as exc:
+        logger.warning("YouTube captions unavailable for %s: %s: %s", video_id, type(exc).__name__, str(exc)[:300])
         raise ValueError("Captions unavailable for this YouTube video") from exc
 
-    lines = [item.get("text", "").strip() for item in transcript_items if item.get("text")]
+    lines = [str(item.get("text") or "").strip() for item in transcript_items]
+    lines = [line for line in lines if line]
     merged = " ".join(lines).strip()
     if not merged:
         raise ValueError("Transcript is empty")
