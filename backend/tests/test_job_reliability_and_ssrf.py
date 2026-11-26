@@ -161,6 +161,17 @@ class ProcessedAssetR2Tests(unittest.TestCase):
         self.assertEqual(s3.upload_file.call_args.kwargs["ExtraArgs"], {"ContentType": "application/pdf"})
         self.assertEqual(s3.upload_file.call_args.args[2], "frames/job-1/report.pdf")
 
+    def test_persist_failure_does_not_fail_the_job(self) -> None:
+        s3 = MagicMock()
+        s3.upload_file.side_effect = RuntimeError("Unauthorized")
+        with tempfile.TemporaryDirectory() as root, patch.object(settings, "local_processed_dir", root), patch.object(
+            storage, "_can_use_r2", return_value=True
+        ), patch.object(storage, "_r2_client", return_value=s3), self.assertLogs("framenote.storage", "ERROR"):
+            path = storage.build_processed_asset_path("frames/job-1/report.pdf")
+            path.parent.mkdir(parents=True)
+            path.write_bytes(b"%PDF")
+            storage.persist_processed_asset("frames/job-1/report.pdf")
+
     def test_persist_is_a_noop_without_r2(self) -> None:
         with patch.object(storage, "_can_use_r2", return_value=False), patch.object(storage, "_r2_client") as client:
             storage.persist_processed_asset("frames/job-1/01-5.jpg")

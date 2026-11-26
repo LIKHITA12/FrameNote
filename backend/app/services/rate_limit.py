@@ -1,6 +1,7 @@
 """Small fixed-window limits for sensitive API actions."""
 
 import hashlib
+import logging
 import threading
 import time
 from functools import lru_cache
@@ -9,6 +10,8 @@ import redis
 from fastapi import HTTPException, Request
 
 from app.core.config import settings
+
+logger = logging.getLogger("framenote.rate_limit")
 
 _local_counts: dict[str, tuple[int, float]] = {}
 _lock = threading.Lock()
@@ -39,25 +42,33 @@ def check_rate_limit(scope: str, identity: str, limit: int, window_seconds: int)
     digest = hashlib.sha256(identity.encode("utf-8")).hexdigest()
     window = int(time.time()) // window_seconds
     key = f"framenote:rate:{scope}:{digest}:{window}"
+    count: int | None = None
     if settings.environment == "production":
+        # Redis shares the counts across API replicas and restarts. If it is unreachable, fall back to this
+        # process's own counter rather than refusing every sign-in: limits still apply, just per process.
         try:
             client = _redis_client()
-            count = client.incr(key)
+            count = int(client.incr(key))
             if count == 1:
                 client.expire(key, window_seconds + 1)
         except redis.RedisError as exc:
-            raise HTTPException(status_code=503, detail="Rate limiting is unavailable") from exc
-    else:
-        with _lock:
-            count, expires = _local_counts.get(key, (0, 0.0))
-            if expires < time.time():
-                count = 0
-            count += 1
-            _local_counts[key] = (count, (window + 1) * window_seconds)
-            if len(_local_counts) > 10000:
-                now = time.time()
-                for old_key, (_, old_expiry) in list(_local_counts.items()):
-                    if old_expiry < now:
-                        del _local_counts[old_key]
+            logger.error("Redis unavailable for rate limiting (%s: %s); using in-process limits", type(exc).__name__, exc)
+    if count is None:
+        count = _local_increment(key, window, window_seconds)
     if count > limit:
         raise HTTPException(status_code=429, detail="Too many requests. Please try again later.", headers={"Retry-After": str(window_seconds)})
+
+
+def _local_increment(key: str, window: int, window_seconds: int) -> int:
+    with _lock:
+        count, expires = _local_counts.get(key, (0, 0.0))
+        if expires < time.time():
+            count = 0
+        count += 1
+        _local_counts[key] = (count, (window + 1) * window_seconds)
+        if len(_local_counts) > 10000:
+            now = time.time()
+            for old_key, (_, old_expiry) in list(_local_counts.items()):
+                if old_expiry < now:
+                    del _local_counts[old_key]
+        return count

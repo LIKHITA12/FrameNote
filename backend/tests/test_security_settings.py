@@ -53,6 +53,22 @@ class SecuritySettingsTests(unittest.TestCase):
                 check_rate_limit("security-test", "unique-media-security-identity", 2, 3600)
             self.assertEqual(denied.exception.status_code, 429)
 
+    def test_production_falls_back_to_local_limits_when_redis_is_down(self) -> None:
+        import redis
+
+        broken = MagicMock()
+        broken.incr.side_effect = redis.ConnectionError("connection refused")
+        with patch.object(settings, "environment", "production"), patch(
+            "app.services.rate_limit._redis_client", return_value=broken
+        ):
+            # Sign-ins keep working while Redis is down...
+            check_rate_limit("redis-down-test", "redis-down-identity", 2, 3600)
+            check_rate_limit("redis-down-test", "redis-down-identity", 2, 3600)
+            # ...and the limit is still enforced by the in-process counter.
+            with self.assertRaises(HTTPException) as denied:
+                check_rate_limit("redis-down-test", "redis-down-identity", 2, 3600)
+        self.assertEqual(denied.exception.status_code, 429)
+
     def test_r2_upload_uses_presigned_put(self) -> None:
         s3 = MagicMock()
         s3.generate_presigned_url.return_value = "https://r2.example.test/upload"
