@@ -224,6 +224,10 @@ class PublicVideoUrlRequest(BaseModel):
     )
     # False produces the short summary-only report instead of the full timeline/Q&A report.
     detailed: bool = True
+    # Optional transcript the user pasted/uploaded (stored like an upload, e.g. "uploads/<user>/...txt"),
+    # used instead of reading captions - the fallback when a YouTube video can't be read.
+    transcript_object_key: str | None = Field(default=None, max_length=512)
+    transcript_file_name: str | None = Field(default=None, max_length=255)
 
 
 class PublicVideoPreviewResponse(BaseModel):

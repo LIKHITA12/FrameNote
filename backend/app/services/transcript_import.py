@@ -7,7 +7,9 @@ generic fallbacks for other meeting tools):
   - .vtt   WebVTT captions, optionally with "<v Speaker Name>" voice tags.
   - .srt   SubRip captions (no speaker tags).
   - .docx  Teams "Download transcript" export (speaker name + timestamp per line).
-  - .txt / .md  Plain text, used verbatim with no segments/airtime.
+  - .txt / .md  Plain text. Timestamped lines ("[01:23] text", "1:23 text", or YouTube's
+                "Show transcript" copy with each timestamp on its own line) become segments;
+                anything else is used verbatim with no segments/airtime.
 """
 from __future__ import annotations
 
@@ -26,6 +28,9 @@ _STRIP_TAGS = re.compile(r"</?v[^>]*>")
 # immediately followed by the spoken text (no separator), e.g. "Tekale, Vishal B   0:16I hope...".
 _DOCX_UTTERANCE = re.compile(r"^(?P<speaker>.*?)\s*(?P<ts>\d{1,2}(?::\d{2}){1,2})(?P<text>.*)$", re.DOTALL)
 _TRANSCRIPTION_MARKER = re.compile(r"started (transcription|recording)", re.IGNORECASE)
+# A plain-text line that starts with a short timestamp: "[01:23] text", "1:23 text", "1:02:03", "(0:05)".
+_TEXT_TIMESTAMP = re.compile(r"^\s*[\[(]?(?P<ts>\d{1,2}(?::\d{2}){1,2})[\])]?\s*[-–:]?\s*(?P<text>.*)$")
+_MIN_TIMESTAMPED_LINES = 3
 
 
 class UnsupportedTranscriptFormat(ValueError):
@@ -57,7 +62,7 @@ def parse_transcript_file(path: Path, original_filename: str) -> ParsedTranscrip
         return _finalize(_parse_teams_docx(path))
     if suffix in (".txt", ".md"):
         text = path.read_text(encoding="utf-8", errors="ignore").strip()
-        return ParsedTranscript(text=text, segments=[], speaker_airtime=[])
+        return parse_plain_text_transcript(text)
     raise UnsupportedTranscriptFormat(
         f"Unsupported transcript file type '{suffix or original_filename}'. "
         f"Supported types: {', '.join(SUPPORTED_EXTENSIONS)}"
@@ -154,6 +159,43 @@ def _parse_teams_docx(path: Path) -> list[_Segment]:
             segment.end = max(segment.start, segments[index + 1].start)
         else:
             segment.end = segment.start + 3.0
+    return segments
+
+
+def parse_plain_text_transcript(text: str) -> ParsedTranscript:
+    """Timestamped text becomes segments (so key moments get real times); other text is used verbatim."""
+    segments = _parse_timestamped_text(text)
+    if segments:
+        return _finalize(segments)
+    return ParsedTranscript(text=text.strip(), segments=[], speaker_airtime=[])
+
+
+def _parse_timestamped_text(content: str) -> list[_Segment]:
+    starts: list[tuple[float, list[str]]] = []
+    for raw_line in content.splitlines():
+        line = raw_line.strip()
+        if not line:
+            continue
+        match = _TEXT_TIMESTAMP.match(line)
+        if match:
+            starts.append((_docx_timestamp_to_seconds(match.group("ts")), [match.group("text").strip()]))
+        elif starts:
+            starts[-1][1].append(line)
+        # Text before the first timestamp (e.g. a title line) is ignored.
+
+    entries = [(start, " ".join(part for part in parts if part)) for start, parts in starts]
+    entries = [(start, text) for start, text in entries if text]
+    if len(entries) < _MIN_TIMESTAMPED_LINES:
+        return []
+    # Real transcripts move forward in time; if most stamps go backwards these weren't timestamps.
+    backwards = sum(1 for (a, _), (b, _) in zip(entries, entries[1:]) if b < a)
+    if backwards > len(entries) // 5:
+        return []
+
+    segments: list[_Segment] = []
+    for index, (start, text) in enumerate(entries):
+        next_start = entries[index + 1][0] if index + 1 < len(entries) else start + 5.0
+        segments.append(_Segment(start=start, end=max(start, next_start), text=text))
     return segments
 
 

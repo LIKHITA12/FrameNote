@@ -63,6 +63,8 @@ def create_job_from_url(
         payload=JobCreateRequest(
             source_type="youtube" if youtube_video_id else "url",
             source_url=clean_url,
+            transcript_object_key=payload.transcript_object_key,
+            transcript_file_name=payload.transcript_file_name,
         ),
         owner=current_user,
     )

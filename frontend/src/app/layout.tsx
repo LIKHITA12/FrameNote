@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Caveat, Inter, JetBrains_Mono, Manrope } from "next/font/google";
 import "./globals.css";
 
+import { PasteTranscriptDialog } from "@/components/PasteTranscriptDialog";
 import { ProcessingModal } from "@/components/ProcessingModal";
 import { ProcessingProvider } from "@/components/ProcessingContext";
 import { SidebarProvider } from "@/components/SidebarContext";
@@ -42,6 +43,7 @@ export default function RootLayout({
             <ProcessingProvider>
               {children}
               <ProcessingModal />
+              <PasteTranscriptDialog />
             </ProcessingProvider>
           </SidebarProvider>
         </ThemeProvider>

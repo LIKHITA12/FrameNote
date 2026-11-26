@@ -15,6 +15,9 @@ export interface JobCreateRequest {
 export interface PublicVideoUrlRequest {
   url: string;
   detailed?: boolean;
+  /** A pasted/uploaded transcript stored via /uploads/presign, used instead of reading the video. */
+  transcript_object_key?: string;
+  transcript_file_name?: string;
 }
 
 export interface PublicVideoPreviewResponse {

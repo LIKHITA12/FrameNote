@@ -20,6 +20,10 @@ type ProcessingContextValue = {
   minimize: () => void;
   restore: () => void;
   dismiss: () => void;
+  /** Link to prefill in the "Paste transcript" dialog, or null when the dialog is closed. */
+  pasteTranscriptUrl: string | null;
+  openPasteTranscript: (url?: string | null) => void;
+  closePasteTranscript: () => void;
 };
 
 const ProcessingContext = createContext<ProcessingContextValue | null>(null);
@@ -30,6 +34,7 @@ export function ProcessingProvider({ children }: { children: ReactNode }) {
   const [preparingLabel, setPreparingLabel] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [minimized, setMinimized] = useState(false);
+  const [pasteTranscriptUrl, setPasteTranscriptUrl] = useState<string | null>(null);
 
   const beginProcessing = useCallback((label?: string) => {
     setActiveJobId(null);
@@ -71,6 +76,9 @@ export function ProcessingProvider({ children }: { children: ReactNode }) {
     setMinimized(false);
   }, []);
 
+  const openPasteTranscript = useCallback((url?: string | null) => setPasteTranscriptUrl(url ?? ""), []);
+  const closePasteTranscript = useCallback(() => setPasteTranscriptUrl(null), []);
+
   const value = useMemo(
     () => ({
       activeJobId,
@@ -86,8 +94,14 @@ export function ProcessingProvider({ children }: { children: ReactNode }) {
       minimize,
       restore,
       dismiss,
+      pasteTranscriptUrl,
+      openPasteTranscript,
+      closePasteTranscript,
     }),
     [
+      pasteTranscriptUrl,
+      openPasteTranscript,
+      closePasteTranscript,
       activeJobId,
       preparing,
       preparingLabel,
