@@ -20,6 +20,10 @@ from app.services.pdf import generate_job_pdf, generate_job_summary_pdf
 
 class PdfPlanTests(unittest.TestCase):
     def setUp(self) -> None:
+        # Never reach real cloud storage from tests, even when the developer's .env has R2 keys.
+        no_r2 = patch("app.services.storage._can_use_r2", return_value=False)
+        no_r2.start()
+        self.addCleanup(no_r2.stop)
         engine = create_engine(
             "sqlite://",
             connect_args={"check_same_thread": False},

@@ -1,3 +1,4 @@
+import logging
 import os
 from pathlib import Path
 import tempfile
@@ -13,6 +14,9 @@ try:
     import boto3
 except ImportError:  # pragma: no cover - dependency installed in runtime.
     boto3 = None
+
+
+logger = logging.getLogger("framenote.storage")
 
 
 def _can_use_r2() -> bool:
@@ -160,7 +164,11 @@ def persist_processed_asset(asset_key: str) -> None:
         return
     path = build_processed_asset_path(asset_key)
     content_type = _ASSET_CONTENT_TYPES.get(path.suffix.lower(), "application/octet-stream")
-    _r2_client().upload_file(str(path), settings.r2_bucket, asset_key, ExtraArgs={"ContentType": content_type})
+    try:
+        _r2_client().upload_file(str(path), settings.r2_bucket, asset_key, ExtraArgs={"ContentType": content_type})
+    except Exception:
+        # The local copy still works on this machine; failing the whole job over a copy would lose the analysis.
+        logger.exception("Could not copy %s to R2; it will only be served by this machine", asset_key)
 
 
 def presigned_processed_asset_url(asset_key: str, expires_seconds: int = 600) -> str | None:
