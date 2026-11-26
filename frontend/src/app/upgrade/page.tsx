@@ -71,7 +71,7 @@ function PlanCard({
       }`}
     >
       {featured ? (
-        <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-core-primary-container px-3 py-1 font-jetbrains-mono text-[10px] font-bold uppercase tracking-wider text-core-on-primary">
+        <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-core-primary px-3 py-1 font-jetbrains-mono text-[10px] font-bold uppercase tracking-wider text-core-on-primary">
           Most Popular
         </span>
       ) : null}
@@ -130,7 +130,7 @@ function PlanCard({
             disabled={busy}
             className={`flex w-full items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${
               featured
-                ? "bg-core-primary-container text-core-on-primary hover:bg-core-primary"
+                ? "bg-core-primary text-core-on-primary hover:bg-core-surface-tint"
                 : "border border-core-outline-variant/30 bg-core-surface text-core-on-surface hover:bg-core-surface-container-high"
             }`}
           >

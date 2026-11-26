@@ -143,7 +143,7 @@ export function AppTopbar() {
         ) : (
           <Link
             href="/upgrade"
-            className="hidden items-center gap-1.5 rounded-full bg-core-primary-fixed px-3 py-1 text-xs font-semibold text-core-primary transition hover:bg-core-primary-container hover:text-core-on-primary sm:inline-flex"
+            className="hidden items-center gap-1.5 rounded-full bg-core-primary-fixed px-3 py-1 text-xs font-semibold text-core-primary transition hover:bg-core-primary-container hover:text-core-on-primary-container sm:inline-flex"
           >
             <Icon name="credit_card" className="!text-[14px]" />
             Manage plan

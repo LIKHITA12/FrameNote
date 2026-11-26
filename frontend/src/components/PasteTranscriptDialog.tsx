@@ -36,6 +36,15 @@ export function PasteTranscriptDialog() {
     }
   }, [pasteTranscriptUrl]);
 
+  useEffect(() => {
+    if (pasteTranscriptUrl === null) return;
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape" && !submitting) closePasteTranscript();
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [pasteTranscriptUrl, submitting, closePasteTranscript]);
+
   if (pasteTranscriptUrl === null) return null;
 
   async function onSubmit(event: FormEvent) {

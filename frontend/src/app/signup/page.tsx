@@ -212,7 +212,7 @@ export default function SignupPage() {
                 <span className="h-2 w-2 animate-pulse rounded-full bg-brand" />
                 <span className="text-xs font-bold uppercase tracking-widest text-brand">Get Started Free</span>
               </div>
-              <h2 className="font-display text-2xl font-bold tracking-tight text-brand-ink">Create your account</h2>
+              <h2 className="font-display text-2xl font-bold tracking-tight text-ink">Create your account</h2>
               <p className="text-sm text-muted">Start on the Free plan. No credit card required.</p>
             </div>
 

@@ -166,7 +166,7 @@ function ContactPageContent() {
             </div>
 
             <div className="flex items-center gap-3 rounded-xl bg-core-surface-container-high px-5 py-4">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-core-primary-container text-core-on-primary">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-core-primary text-core-on-primary">
                 <Icon name="bolt" className="!text-[20px]" />
               </span>
               <div>
@@ -309,7 +309,7 @@ function ContactPageContent() {
                     <button
                       type="submit"
                       disabled={sending || message.trim().length < 10}
-                      className="flex items-center gap-2 rounded-xl bg-core-primary-container px-6 py-3 text-sm font-semibold text-core-on-primary shadow-sm transition hover:bg-core-primary disabled:cursor-not-allowed disabled:opacity-60"
+                      className="flex items-center gap-2 rounded-xl bg-core-primary px-6 py-3 text-sm font-semibold text-core-on-primary shadow-sm transition hover:bg-core-surface-tint disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       {sending ? "Sending..." : "Send Message"}
                       <Icon
